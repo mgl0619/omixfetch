@@ -63,3 +63,84 @@ def series_soft() -> str:
 @pytest.fixture
 def samples_soft() -> str:
     return SAMPLES_SOFT
+BIOSTUDIES_JSON = {
+    "accno": "E-MTAB-0001",
+    "attributes": [{"name": "ReleaseDate", "value": "2016-09-21"}],
+    "type": "submission",
+    "section": {
+        "accno": "E-MTAB-0001",
+        "type": "Study",
+        "attributes": [
+            {"name": "Title", "value": "A small test experiment"},
+            {"name": "Description", "value": "Single-cell RNA-seq of test tissue."},
+            {"name": "Study Type", "value": "RNA-seq of coding RNA from single cells"},
+            {"name": "Organism", "value": "Homo sapiens"},
+        ],
+        "subsections": [
+            {
+                "type": "Processed Data",
+                "files": [
+                    [
+                        {
+                            "path": "counts.txt",
+                            "size": 722957491,
+                            "type": "file",
+                            "attributes": [
+                                {"name": "Description", "value": "Processed Data"}
+                            ],
+                        }
+                    ]
+                ],
+            },
+            {
+                "type": "MAGE-TAB",
+                "files": [
+                    {
+                        "path": "E-MTAB-0001.idf.txt",
+                        "size": 4201,
+                        "type": "file",
+                        "attributes": [{"name": "Type", "value": "IDF File"}],
+                    },
+                    {
+                        "path": "E-MTAB-0001.sdrf.txt",
+                        "size": 2665069,
+                        "type": "file",
+                        "attributes": [{"name": "Type", "value": "SDRF File"}],
+                    },
+                ],
+            },
+        ],
+    },
+}
+
+IDF_TEXT = """Comment[ArrayExpressAccession]\tE-MTAB-0001
+Investigation Title\tA small test experiment
+Experiment Description\tSingle-cell RNA-seq of test tissue.
+Protocol Name\tP-MTAB-1\tP-MTAB-2
+Protocol Description\tCells were dissociated.\tLibraries were prepared.
+Public Release Date\t2016-09-21
+"""
+
+SDRF_TEXT = (
+    "Source Name\tCharacteristics [organism]\tCharacteristics [cell type]\t"
+    "Comment[ENA_SAMPLE]\tComment[LIBRARY_STRATEGY]\tAssay Name\n"
+    "cell_1\tHomo sapiens\tbeta cell\tERS1234567\tRNA-Seq\tassay_1\n"
+    "cell_2\tHomo sapiens\talpha cell\tERS1234568\tRNA-Seq\tassay_2\n"
+)
+
+
+
+
+@pytest.fixture
+def biostudies_json() -> dict:
+    return BIOSTUDIES_JSON
+
+
+@pytest.fixture
+def idf_text() -> str:
+    return IDF_TEXT
+
+
+@pytest.fixture
+def sdrf_text() -> str:
+    return SDRF_TEXT
