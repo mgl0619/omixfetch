@@ -291,6 +291,10 @@ Aria2Backend(connections=16, concurrent=4).download(big, "./data")
 
 ## Scope and roadmap
 
+Planned archives — ArrayExpress/E-MTAB, PRIDE proteomics, MetaboLights
+metabolomics — and the API groundwork established for each are tracked in
+[ROADMAP.md](ROADMAP.md).
+
 **0.1 — GEO processed files.** Series (GSE), samples (GSM) and platforms (GPL):
 supplementary files, series matrix files, study metadata, per-sample
 characteristics.
