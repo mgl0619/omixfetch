@@ -230,7 +230,8 @@ ruff check src tests
 ```
 
 The test suite runs entirely offline against recorded archive records, so it
-needs no network and no credentials. Tested on CPython 3.10 through 3.13.
+needs no network and no credentials. Locally verified on CPython 3.11 and 3.13;
+CI additionally exercises 3.10 and 3.12.
 
 ## License
 
