@@ -25,6 +25,14 @@ class RemoteFile:
     md5: str | None = None
     #: Free-text description from the archive, when available.
     description: str | None = None
+    #: Path relative to the download directory, set by the layout step.
+    #: ``None`` means the file lands at the top level under its own name.
+    relpath: str | None = None
+
+    @property
+    def target(self) -> str:
+        """Relative path this file should be written to."""
+        return self.relpath or self.filename
 
     def to_dict(self) -> dict[str, Any]:
         return dataclasses.asdict(self)

@@ -126,3 +126,20 @@ def test_fallback_rejects_bad_md5_and_removes_partial(tmp_path):
     # Neither the corrupt partial nor a misleading final file is left behind.
     assert not (tmp_path / "x.bin").exists()
     assert not (tmp_path / "x.bin.part").exists()
+
+
+def test_aria2_input_file_expresses_subdirectories(tmp_path):
+    """by-sample layout is carried to aria2 through per-entry dir=."""
+    f = RemoteFile(url="https://x/a.gz", filename="GSM1_RNA-matrix.mtx.gz")
+    f.relpath = "GSM1/matrix.mtx.gz"
+    lines = render_input_file([f], tmp_path).splitlines()
+    assert lines[1] == f"  dir={tmp_path / 'GSM1'}"
+    assert lines[2] == "  out=matrix.mtx.gz"
+
+
+def test_fallback_writes_into_subdirectories(tmp_path):
+    backend = _backend_with(b"hello")
+    f = RemoteFile(url="https://example.org/x", filename="GSM1_RNA-matrix.mtx.gz", size=5)
+    f.relpath = "GSM1/matrix.mtx.gz"
+    backend.download([f], tmp_path)
+    assert (tmp_path / "GSM1" / "matrix.mtx.gz").read_bytes() == b"hello"

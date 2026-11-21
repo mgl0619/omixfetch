@@ -23,16 +23,28 @@ _GEOFETCH_ONLY_KWARGS = ("verbose",)
 VALID_RESOLVERS = ("auto", "native", "geofetch")
 
 
-def choose_resolver(accession: str, requested: str = "auto") -> str:
+def choose_resolver(
+    accession: str, requested: str = "auto", include_reads: bool = False
+) -> str:
     """Decide which resolver to use for *accession*.
 
-    ``auto`` prefers geofetch when it is installed, because it is the more
-    mature and widely exercised GEO parser. It applies only to GSE series:
-    geofetch's project API returns nothing for GSM accessions and raises on
-    GPL, so those always use the built-in resolver.
+    ``auto`` prefers geofetch, the more mature and widely exercised GEO
+    parser, but only where it is actually the better source:
+
+    * GSM and GPL accessions always use the built-in resolver. geofetch's
+      project API returns an empty result for the former and raises on the
+      latter.
+    * Raw-read workflows always use the built-in resolver. geofetch's sample
+      table carries no ``relation`` columns, so the BioSample identifiers that
+      link an ENA run back to its GEO sample are unavailable -- runs would be
+      left ungrouped. It also returns no sample table at all for series that
+      have no processed files, which is common for reads-only submissions.
     """
     if requested != "auto":
         return requested
+
+    if include_reads:
+        return "native"
 
     match = GEO_RE.match(accession)
     is_series = bool(match) and match.group(1).upper() == "GSE"
@@ -70,7 +82,9 @@ def resolve(
 
     archive, normalised = parse_accession(accession)
     http = session or make_session()
-    chosen = choose_resolver(normalised, resolver)
+    chosen = choose_resolver(
+        normalised, resolver, include_reads=bool(kwargs.get("include_reads"))
+    )
 
     if chosen == "geofetch":
         from .sources.geofetch_resolver import resolve_geo_via_geofetch
@@ -79,6 +93,16 @@ def resolve(
             k: v for k, v in kwargs.items() if k not in _NATIVE_ONLY_KWARGS
         }
         dataset = resolve_geo_via_geofetch(normalised, http, **geofetch_kwargs)
+
+        # geofetch returns only a series table for submissions with no
+        # processed files; fall back rather than report a dataset with no
+        # samples.
+        if kwargs.get("include_samples", True) and not dataset.samples:
+            native_kwargs = {
+                k: v for k, v in kwargs.items() if k not in _GEOFETCH_ONLY_KWARGS
+            }
+            dataset = _RESOLVERS[archive](normalised, http, **native_kwargs)
+            chosen = "native"
     else:
         native_kwargs = {
             k: v for k, v in kwargs.items() if k not in _GEOFETCH_ONLY_KWARGS

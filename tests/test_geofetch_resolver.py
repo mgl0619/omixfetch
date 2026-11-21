@@ -90,7 +90,7 @@ def test_resolved_by_is_recorded(monkeypatch):
     # module itself has to come from sys.modules rather than attribute access.
     rv = sys.modules["omixfetch.resolve"]
 
-    monkeypatch.setattr(rv, "choose_resolver", lambda acc, req="auto": "native")
+    monkeypatch.setattr(rv, "choose_resolver", lambda *a, **k: "native")
     captured = {}
 
     def fake(accession, session, **kwargs):
@@ -144,3 +144,50 @@ def test_quiet_geofetch_disabled_is_a_no_op():
 def test_noisy_logger_list_covers_the_pepkit_stack():
     assert "geofetch" in _NOISY_LOGGERS
     assert "peppy" in _NOISY_LOGGERS
+
+
+def test_auto_uses_native_when_reads_are_requested(monkeypatch):
+    """geofetch exposes no relation columns, so runs cannot be mapped to samples."""
+    import omixfetch.sources.geofetch_resolver as gr
+
+    monkeypatch.setattr(gr, "geofetch_available", lambda: True)
+    assert choose_resolver("GSE52778", "auto", include_reads=True) == "native"
+    # Without reads, geofetch is still preferred.
+    assert choose_resolver("GSE52778", "auto", include_reads=False) == "geofetch"
+
+
+def test_explicit_geofetch_still_honoured_with_reads(monkeypatch):
+    """An explicit choice is the user's to make, even if grouping suffers."""
+    import omixfetch.sources.geofetch_resolver as gr
+
+    monkeypatch.setattr(gr, "geofetch_available", lambda: True)
+    assert choose_resolver("GSE52778", "geofetch", include_reads=True) == "geofetch"
+
+
+def test_geofetch_without_samples_falls_back_to_native(monkeypatch):
+    """Reads-only series yield a series table and nothing else."""
+    import sys
+
+    rv = sys.modules["omixfetch.resolve"]
+    from omixfetch.models import Dataset, DatasetMetadata, SampleMetadata
+
+    monkeypatch.setattr(rv, "choose_resolver", lambda *a, **k: "geofetch")
+    monkeypatch.setattr(
+        "omixfetch.sources.geofetch_resolver.resolve_geo_via_geofetch",
+        lambda acc, session, **kw: Dataset(
+            metadata=DatasetMetadata(accession=acc, archive="geo")
+        ),
+    )
+
+    def native(accession, session, **kwargs):
+        return Dataset(
+            metadata=DatasetMetadata(accession=accession, archive="geo"),
+            samples=[SampleMetadata(accession="GSM1")],
+        )
+
+    monkeypatch.setitem(rv._RESOLVERS, rv.Archive.GEO, native)
+    dataset = rv.resolve("GSE52778")
+
+    assert len(dataset.samples) == 1
+    # The record reports the backend that actually produced it.
+    assert dataset.metadata.resolved_by == "native"

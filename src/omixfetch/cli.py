@@ -13,6 +13,7 @@ from .backends import Aria2Backend, RequestsBackend, aria2_available, aria2_vers
 from .errors import OmixfetchError
 from .filters import apply_filters, parse_size
 from .http import make_session
+from .layout import LAYOUTS, apply_layout
 from .manifest import human_bytes, total_size, write_metadata
 from .models import Dataset
 from .pep import write_pep
@@ -32,6 +33,13 @@ RESOLVER = typer.Option(
     "--resolver",
     help="Metadata resolver: 'auto' (geofetch for series when installed), "
     "'native' or 'geofetch'.",
+)
+LAYOUT = typer.Option(
+    "by-sample",
+    "--layout",
+    help="File layout: 'by-sample' (default; a directory per GSM, with 10x "
+    "triplets renamed for scanpy/Seurat) or 'flat' (one directory, names as "
+    "published).",
 )
 VERBOSE = typer.Option(
     False,
@@ -316,9 +324,16 @@ def get(
     quiet: bool = typer.Option(
         False, "--quiet", "-q", help="Suppress transfer progress output."
     ),
+    layout: str = LAYOUT,
     verbose: bool = VERBOSE,
 ) -> None:
     """Download data files and metadata for each accession."""
+    if layout not in LAYOUTS:
+        error_console.print(
+            f"[red]Unknown layout {layout!r}. Use one of: {', '.join(LAYOUTS)}.[/red]"
+        )
+        raise typer.Exit(code=2)
+
     limit = parse_size(max_size) if max_size else None
     want_reads = reads or reads_only
     datasets = _resolve_all(
@@ -375,9 +390,11 @@ def get(
             if pep:
                 write_pep(dataset, destination / "metadata" / "pep")
 
+        apply_layout(selected, layout)
+
         if dry_run:
             for f in selected:
-                console.print(f"    would fetch  {f.filename}  ({human_bytes(f.size)})")
+                console.print(f"    would fetch  {f.target}  ({human_bytes(f.size)})")
             continue
 
         if not selected:
@@ -399,6 +416,11 @@ def get(
                 engine_name = "python"
                 try:
                     engine.download(selected, destination / "data")
+                    # aria2 keeps its input file for resume; the fallback
+                    # succeeded, so there is nothing left to resume.
+                    (destination / "data" / ".omixfetch.aria2.input").unlink(
+                        missing_ok=True
+                    )
                 except OmixfetchError as fallback_exc:
                     error_console.print(
                         f"[red]error[/red] {dataset.accession}: {fallback_exc}"

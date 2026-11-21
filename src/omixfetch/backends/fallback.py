@@ -39,18 +39,22 @@ class RequestsBackend:
         self,
         *,
         concurrent: int = 4,
-        max_tries: int = 5,
+        max_tries: int = 10,
         quiet: bool = False,
         session: requests.Session | None = None,
         **_: object,
     ) -> None:
         self.concurrent = max(1, concurrent)
+        # Multi-gigabyte transfers get dropped mid-stream often enough that a
+        # handful of attempts is not enough; each retry resumes from the
+        # partial file, so attempts are cheap and make forward progress.
         self.max_tries = max_tries
         self.quiet = quiet
         self.session = session or make_session()
 
     def _download_one(self, f: RemoteFile, dest_dir: Path) -> Path:
-        target = dest_dir / f.filename
+        target = dest_dir / f.target
+        target.parent.mkdir(parents=True, exist_ok=True)
         part = target.with_suffix(target.suffix + ".part")
 
         if target.exists() and f.size and target.stat().st_size == f.size:
@@ -107,7 +111,7 @@ class RequestsBackend:
                     errors.append(f"{f.filename}: {exc}")
                 else:
                     if not self.quiet:
-                        print(f"  done  {f.filename}")
+                        print(f"  done  {f.target}")
 
         if errors:
             raise BackendError(

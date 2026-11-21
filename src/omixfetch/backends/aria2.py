@@ -84,9 +84,12 @@ def render_input_file(files: Sequence[RemoteFile], dest_dir: Path) -> str:
     """
     lines: list[str] = []
     for f in files:
+        target = Path(f.target)
         lines.append(f.url)
-        lines.append(f"  dir={dest_dir}")
-        lines.append(f"  out={f.filename}")
+        # aria2 creates the directory, so grouping is expressed through dir=.
+        directory = dest_dir / target.parent if target.parent != Path(".") else dest_dir
+        lines.append(f"  dir={directory}")
+        lines.append(f"  out={target.name}")
         if f.md5:
             lines.append(f"  checksum=md5={f.md5}")
     return "\n".join(lines) + ("\n" if lines else "")

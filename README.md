@@ -149,7 +149,7 @@ Metadata resolution has two backends, selected by `--resolver`:
 
 | Value | Behaviour |
 |---|---|
-| `auto` (default) | geofetch for GSE series when it is installed, otherwise native |
+| `auto` (default) | geofetch for GSE series, except where it cannot serve the request |
 | `native` | the built-in SOFT parser, always |
 | `geofetch` | geofetch, always (GSE only) |
 
@@ -161,9 +161,19 @@ pip install "omixfetch[geofetch]"     # auto then uses it for GSE
 omixfetch info GSE164378              # the Resolver row shows which one ran
 ```
 
-It applies to series only. geofetch's project API returns an empty result for
-GSM accessions and raises on GPL, so those always use the native resolver —
-which handles all three. Both agree on GSE164378: 27 files, 1.47 GB.
+`auto` falls back to the native resolver in three cases, each verified against
+geofetch 0.12.11:
+
+- **GSM and GPL accessions** — geofetch's project API returns an empty result
+  for GSM and raises on GPL.
+- **Raw-read workflows** (`--reads`, `--reads-only`) — geofetch's sample table
+  has no `relation` columns, so the BioSample identifiers linking an ENA run to
+  its GEO sample are unavailable and runs would be left ungrouped. The native
+  resolver maps all 16 runs of GSE52778 to their samples.
+- **Series with no processed files** — geofetch returns a series table and no
+  samples at all, which is common for reads-only submissions.
+
+For processed-file workflows both agree on GSE164378: 27 files, 1.47 GB.
 
 **Transfers go through aria2c either way.** geofetch is called with
 `just_metadata=True` and never downloads anything; it resolves URLs, and
@@ -230,11 +240,20 @@ aria2c -i files.txt -j 8 -x 16
 
 ## What you get
 
+Files are grouped by sample by default, with 10x triplets given their
+Cell Ranger names so `scanpy.read_10x_mtx()` and Seurat's `Read10X()` can read
+a directory straight off:
+
 ```
 data/GSE164378/
 ├── data/
-│   ├── GSE164378_RAW.tar
-│   └── GSE164378_sc.meta.data_3P.csv.gz
+│   ├── GSM5008738/
+│   │   ├── barcodes.tsv.gz
+│   │   ├── features.tsv.gz
+│   │   └── matrix.mtx.gz
+│   ├── GSM5008739/
+│   │   └── ...
+│   └── GSE164378_sc.meta.data_3P.csv.gz     # series-level files stay at top
 └── metadata/
     ├── GSE164378.metadata.json      # complete parsed record
     ├── GSE164378.samples.tsv        # one row per sample, characteristics as columns
@@ -246,6 +265,11 @@ data/GSE164378/
     ├── GSE164378.soft.txt           # unmodified series SOFT record
     └── GSE164378.samples.soft.txt   # unmodified sample SOFT records
 ```
+
+Use `--layout flat` to keep everything in one directory under the names GEO
+published. Renaming is applied only when unambiguous: if one GSM holds several
+modalities whose files would collide, the original names are kept for that
+sample rather than risk overwriting data.
 
 `samples.tsv` flattens each sample's characteristics into columns, taking the
 union across samples so sparsely annotated samples carry empty cells rather
