@@ -1,0 +1,23 @@
+# Conda/mamba environment for omixfetch.
+#
+#   mamba env create -f environment.yml      # or: micromamba / conda
+#   mamba activate omixfetch
+#   pip install -e ".[dev]"
+#
+# aria2 is included here deliberately: it is the download engine, not an
+# optional extra, and installing it through conda-forge avoids depending on a
+# system package manager.
+name: omixfetch
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - requests>=2.28
+  - rich>=13.0
+  - typer>=0.9
+  - aria2>=1.36
+  # Development tooling; drop these for a runtime-only environment.
+  - pytest>=7.0
+  - pytest-cov>=4.0
+  - ruff>=0.4
+  - pip

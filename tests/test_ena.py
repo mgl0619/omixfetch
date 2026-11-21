@@ -5,10 +5,10 @@ import pytest
 from omixfetch.errors import ResolveError
 from omixfetch.models import Dataset, DatasetMetadata, SampleMetadata
 from omixfetch.sources.ena import (
+    _as_url,
     attach_reads,
     parse_filereport,
     project_accessions,
-    _as_url,
 )
 
 FILEREPORT = (

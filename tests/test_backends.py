@@ -12,7 +12,6 @@ from omixfetch.backends.aria2 import (
     subprocess_env,
 )
 from omixfetch.backends.fallback import RequestsBackend, file_md5
-from omixfetch.errors import ChecksumError
 from omixfetch.models import RemoteFile
 
 

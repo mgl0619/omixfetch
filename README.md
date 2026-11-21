@@ -30,6 +30,42 @@ Downloading a GEO series is nominally easy and repeatedly annoying:
 
 ## Install
 
+**Python 3.10 or newer is required.** Python 3.9 is past end of life and is not
+supported; `pip install` will refuse it rather than fail at import time.
+
+### With mamba or conda (recommended)
+
+`environment.yml` pins a working interpreter and includes `aria2`, so one
+command gives a complete setup:
+
+```bash
+mamba env create -f environment.yml     # or: micromamba / conda
+mamba activate omixfetch
+pip install -e ".[dev]"
+pytest
+```
+
+Using `micromamba` for the first time? It needs a root prefix before
+`env create` works:
+
+```bash
+micromamba shell init -s zsh -p ~/micromamba   # then restart your shell
+```
+
+### With a plain virtualenv
+
+No conda needed, but install `aria2` separately:
+
+```bash
+python3.13 -m venv .venv                 # any interpreter >= 3.10
+source .venv/bin/activate
+pip install -e ".[dev]"
+brew install aria2                       # macOS; apt install aria2 on Debian/Ubuntu
+pytest
+```
+
+### From PyPI
+
 ```bash
 pip install omixfetch
 ```
@@ -41,6 +77,12 @@ brew install aria2                        # macOS
 sudo apt install aria2                    # Debian/Ubuntu
 conda install -c conda-forge aria2        # conda
 ```
+
+> **If `pytest` reports `ModuleNotFoundError: No module named 'omixfetch'`**, the
+> editable install did not take effect — usually because `pip` and `pytest` are
+> different interpreters, or because the active Python is 3.9. Check with
+> `python -c "import sys; print(sys.version)"` and `python -m pytest` (which
+> always uses the interpreter you think it does).
 
 Without it, omixfetch falls back to a threaded pure-Python downloader that
 transfers several files at once but does not split a single file across
@@ -181,12 +223,14 @@ worth solving.
 ## Development
 
 ```bash
+mamba env create -f environment.yml && mamba activate omixfetch
 pip install -e ".[dev]"
-pytest
+python -m pytest
 ruff check src tests
 ```
 
-The test suite runs entirely offline against recorded archive records.
+The test suite runs entirely offline against recorded archive records, so it
+needs no network and no credentials. Tested on CPython 3.10 through 3.13.
 
 ## License
 

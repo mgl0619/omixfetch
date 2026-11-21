@@ -12,8 +12,8 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Iterable, Sequence
 
 from ..errors import BackendError
 from ..models import RemoteFile

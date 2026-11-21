@@ -47,3 +47,8 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# typer declares CLI options as call expressions in argument defaults; that is
+# the documented idiom for the library, not the mutable-default bug B008 targets.
+"src/omixfetch/cli.py" = ["B008"]

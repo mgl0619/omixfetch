@@ -102,6 +102,12 @@ def project_accessions(relations: dict[str, str]) -> list[str]:
     return ordered
 
 
+def _as_int(value: str | None) -> int | None:
+    """Parse an integer column, tolerating blanks the portal leaves empty."""
+    value = (value or "").strip()
+    return int(value) if value.isdigit() else None
+
+
 def _as_url(path: str) -> str:
     """ENA returns bare host paths; make them absolute HTTPS URLs."""
     path = path.strip()
@@ -135,7 +141,8 @@ def _row_files(row: dict[str, str], run_accession: str) -> list[RemoteFile]:
             size: int | None = None
             if index < len(sizes) and sizes[index].strip().isdigit():
                 size = int(sizes[index].strip())
-            md5 = md5s[index].strip() if index < len(md5s) and md5s[index].strip() else None
+            md5 = md5s[index].strip() if index < len(md5s) else ""
+            md5 = md5 or None
             files.append(
                 RemoteFile(
                     url=url,
@@ -169,8 +176,8 @@ def parse_filereport(text: str) -> list[RunMetadata]:
                 library_source=row.get("library_source") or None,
                 library_selection=row.get("library_selection") or None,
                 instrument_model=row.get("instrument_model") or None,
-                read_count=int(row["read_count"]) if (row.get("read_count") or "").isdigit() else None,
-                base_count=int(row["base_count"]) if (row.get("base_count") or "").isdigit() else None,
+                read_count=_as_int(row.get("read_count")),
+                base_count=_as_int(row.get("base_count")),
                 files=_row_files(row, accession),
                 raw={k: v for k, v in row.items() if v},
             )

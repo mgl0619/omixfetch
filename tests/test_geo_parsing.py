@@ -4,8 +4,8 @@ import requests
 
 from omixfetch.http import get_text
 from omixfetch.sources.geo import (
-    _series_metadata,
     _sample_metadata,
+    _series_metadata,
     _supplementary_files,
     parse_soft,
     series_matrix_url,

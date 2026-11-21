@@ -276,5 +276,6 @@ def _fill_sizes(
 ) -> None:
     """Populate ``size`` on each file via concurrent HEAD requests."""
     with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
-        for f, size in zip(files, pool.map(lambda x: head_size(session, x.url), files)):
+        sizes = pool.map(lambda x: head_size(session, x.url), files)
+        for f, size in zip(files, sizes, strict=True):
             f.size = size

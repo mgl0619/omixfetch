@@ -8,9 +8,9 @@ across connections -- for large files aria2c is substantially faster.
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Sequence
 
 import requests
 

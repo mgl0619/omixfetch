@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import fnmatch
-from typing import Sequence
+from collections.abc import Sequence
 
 from .models import RemoteFile
 

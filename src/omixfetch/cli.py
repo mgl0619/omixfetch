@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -93,13 +92,27 @@ def info(accessions: list[str] = ACCESSIONS) -> None:
 @app.command("list")
 def list_files(
     accessions: list[str] = ACCESSIONS,
-    include: list[str] = typer.Option([], "--include", "-i", help="Keep files matching this glob."),
-    exclude: list[str] = typer.Option([], "--exclude", "-e", help="Drop files matching this glob."),
-    kind: list[str] = typer.Option([], "--kind", help="Keep only these file kinds."),
-    max_size: Optional[str] = typer.Option(None, "--max-size", help="Drop files larger than this, e.g. 500MB."),
-    samples: bool = typer.Option(True, "--samples/--no-samples", help="Include per-sample files."),
-    sizes: bool = typer.Option(True, "--sizes/--no-sizes", help="Query file sizes (GEO needs one HEAD per file)."),
-    reads: bool = typer.Option(False, "--reads", help="Also resolve raw sequencing reads via ENA."),
+    include: list[str] = typer.Option(
+        [], "--include", "-i", help="Keep files matching this glob."
+    ),
+    exclude: list[str] = typer.Option(
+        [], "--exclude", "-e", help="Drop files matching this glob."
+    ),
+    kind: list[str] = typer.Option(
+        [], "--kind", help="Keep only these file kinds."
+    ),
+    max_size: str | None = typer.Option(
+        None, "--max-size", help="Drop files larger than this, e.g. 500MB."
+    ),
+    samples: bool = typer.Option(
+        True, "--samples/--no-samples", help="Include per-sample files."
+    ),
+    sizes: bool = typer.Option(
+        True, "--sizes/--no-sizes", help="Query file sizes (GEO needs one HEAD per file)."
+    ),
+    reads: bool = typer.Option(
+        False, "--reads", help="Also resolve raw sequencing reads via ENA."
+    ),
 ) -> None:
     """List the files an accession resolves to, without downloading."""
     limit = parse_size(max_size) if max_size else None
@@ -124,8 +137,12 @@ def list_files(
 def metadata_only(
     accessions: list[str] = ACCESSIONS,
     outdir: Path = typer.Option(Path("."), "--outdir", "-o", help="Destination directory."),
-    samples: bool = typer.Option(True, "--samples/--no-samples", help="Include per-sample annotation."),
-    reads: bool = typer.Option(False, "--reads", help="Also resolve ENA run metadata."),
+    samples: bool = typer.Option(
+        True, "--samples/--no-samples", help="Include per-sample annotation."
+    ),
+    reads: bool = typer.Option(
+        False, "--reads", help="Also resolve ENA run metadata."
+    ),
 ) -> None:
     """Fetch and write metadata only, downloading no data files."""
     for dataset in _resolve_all(
@@ -147,10 +164,12 @@ def manifest(
     accessions: list[str] = ACCESSIONS,
     out: Path = typer.Option(..., "--out", "-o", help="Path to write the manifest to."),
     fmt: str = typer.Option("aria2", "--format", "-f", help="aria2, tsv or json."),
-    outdir: Path = typer.Option(Path("."), "--outdir", help="Directory the aria2 manifest should target."),
+    outdir: Path = typer.Option(
+        Path("."), "--outdir", help="Directory the aria2 manifest should target."
+    ),
     include: list[str] = typer.Option([], "--include", "-i"),
     exclude: list[str] = typer.Option([], "--exclude", "-e"),
-    max_size: Optional[str] = typer.Option(None, "--max-size"),
+    max_size: str | None = typer.Option(None, "--max-size"),
 ) -> None:
     """Write a download manifest without downloading.
 
@@ -195,19 +214,41 @@ def get(
     accessions: list[str] = ACCESSIONS,
     outdir: Path = typer.Option(Path("."), "--outdir", "-o", help="Destination directory."),
     jobs: int = typer.Option(4, "--jobs", "-j", help="Files downloaded concurrently."),
-    connections: int = typer.Option(8, "--connections", "-x", help="Connections per file."),
+    connections: int = typer.Option(
+        8, "--connections", "-x", help="Connections per file."
+    ),
     backend: str = typer.Option("auto", "--backend", "-b", help="auto, aria2 or python."),
-    include: list[str] = typer.Option([], "--include", "-i", help="Keep files matching this glob."),
-    exclude: list[str] = typer.Option([], "--exclude", "-e", help="Drop files matching this glob."),
-    kind: list[str] = typer.Option([], "--kind", help="Keep only these file kinds."),
-    max_size: Optional[str] = typer.Option(None, "--max-size", help="Skip files larger than this."),
-    samples: bool = typer.Option(True, "--samples/--no-samples", help="Include per-sample files."),
-    metadata: bool = typer.Option(True, "--metadata/--no-metadata", help="Write metadata alongside the data."),
-    matrix: bool = typer.Option(False, "--matrix", help="Also fetch the GEO series matrix file."),
-    reads: bool = typer.Option(False, "--reads", help="Also fetch raw sequencing reads (FASTQ) via ENA."),
-    reads_only: bool = typer.Option(False, "--reads-only", help="Fetch only raw reads, no processed files."),
-    dry_run: bool = typer.Option(False, "--dry-run", help="Resolve and report, but download nothing."),
-    quiet: bool = typer.Option(False, "--quiet", "-q", help="Suppress transfer progress output."),
+    include: list[str] = typer.Option(
+        [], "--include", "-i", help="Keep files matching this glob."
+    ),
+    exclude: list[str] = typer.Option(
+        [], "--exclude", "-e", help="Drop files matching this glob."
+    ),
+    kind: list[str] = typer.Option(
+        [], "--kind", help="Keep only these file kinds."
+    ),
+    max_size: str | None = typer.Option(None, "--max-size", help="Skip files larger than this."),
+    samples: bool = typer.Option(
+        True, "--samples/--no-samples", help="Include per-sample files."
+    ),
+    metadata: bool = typer.Option(
+        True, "--metadata/--no-metadata", help="Write metadata alongside the data."
+    ),
+    matrix: bool = typer.Option(
+        False, "--matrix", help="Also fetch the GEO series matrix file."
+    ),
+    reads: bool = typer.Option(
+        False, "--reads", help="Also fetch raw sequencing reads (FASTQ) via ENA."
+    ),
+    reads_only: bool = typer.Option(
+        False, "--reads-only", help="Fetch only raw reads, no processed files."
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Resolve and report, but download nothing."
+    ),
+    quiet: bool = typer.Option(
+        False, "--quiet", "-q", help="Suppress transfer progress output."
+    ),
 ) -> None:
     """Download data files and metadata for each accession."""
     limit = parse_size(max_size) if max_size else None
