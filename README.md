@@ -324,6 +324,11 @@ omixfetch differs in covering processed files, raw reads and metadata behind one
 accession-driven interface, and in treating the transfer itself as the problem
 worth solving.
 
+## Tutorial
+
+A step-by-step walkthrough, from installation to a loaded AnnData, is in
+[TUTORIAL.md](TUTORIAL.md).
+
 ## Development
 
 ```bash
@@ -334,7 +339,7 @@ ruff check src tests
 ```
 
 The test suite runs entirely offline against recorded archive records, so it
-needs no network and no credentials. 91 tests; locally verified on CPython 3.11
+needs no network and no credentials. 114 tests; locally verified on CPython 3.11
 and 3.13, both with and without geofetch installed. CI additionally exercises
 3.10 and 3.12.
 
