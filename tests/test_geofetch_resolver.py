@@ -50,7 +50,8 @@ def test_unknown_resolver_is_rejected():
 
 @pytest.mark.skipif(geofetch_available(), reason="geofetch is installed")
 def test_missing_geofetch_gives_an_actionable_error():
-    with pytest.raises(ResolveError, match="omixfetch\\[geofetch\\]"):
+    """geofetch is a required dependency, so absence means a broken env."""
+    with pytest.raises(ResolveError, match="--resolver native"):
         resolve("GSE164378", resolver="geofetch")
 
 
