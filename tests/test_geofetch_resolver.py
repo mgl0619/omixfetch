@@ -5,10 +5,12 @@ import pytest
 from omixfetch.errors import AccessionError, ResolveError
 from omixfetch.resolve import choose_resolver, resolve
 from omixfetch.sources.geofetch_resolver import (
+    _NOISY_LOGGERS,
     _cell,
     _https,
     _size,
     geofetch_available,
+    quiet_geofetch,
 )
 
 
@@ -99,3 +101,45 @@ def test_resolved_by_is_recorded(monkeypatch):
     monkeypatch.setitem(rv._RESOLVERS, rv.Archive.GEO, fake)
     dataset = rv.resolve("GSE1")
     assert dataset.metadata.resolved_by == "native"
+
+
+def test_quiet_geofetch_suppresses_info_and_restores_state():
+    """geofetch logs resolution progress at INFO; omixfetch output must stay clean."""
+    import logging
+
+    logger = logging.getLogger("geofetch")
+    logger.setLevel(logging.INFO)
+    original = logger.level
+
+    with quiet_geofetch():
+        assert logger.level == logging.WARNING
+        assert not logger.isEnabledFor(logging.INFO)
+
+    assert logger.level == original
+
+
+def test_quiet_geofetch_removes_handlers_added_during_the_call():
+    """Each Geofetcher() attaches a handler, which duplicates every message."""
+    import logging
+
+    logger = logging.getLogger("geofetch")
+    before = len(logger.handlers)
+
+    with quiet_geofetch():
+        logger.addHandler(logging.NullHandler())
+
+    assert len(logger.handlers) == before
+
+
+def test_quiet_geofetch_disabled_is_a_no_op():
+    import logging
+
+    logger = logging.getLogger("geofetch")
+    logger.setLevel(logging.INFO)
+    with quiet_geofetch(enabled=False):
+        assert logger.level == logging.INFO
+
+
+def test_noisy_logger_list_covers_the_pepkit_stack():
+    assert "geofetch" in _NOISY_LOGGERS
+    assert "peppy" in _NOISY_LOGGERS

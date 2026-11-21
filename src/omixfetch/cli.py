@@ -33,6 +33,11 @@ RESOLVER = typer.Option(
     help="Metadata resolver: 'auto' (geofetch for series when installed), "
     "'native' or 'geofetch'.",
 )
+VERBOSE = typer.Option(
+    False,
+    "--verbose",
+    help="Show the resolver's own progress logging (geofetch is quiet by default).",
+)
 PREFER = typer.Option(
     "fastq",
     "--prefer",
@@ -75,10 +80,18 @@ def main(
 
 
 @app.command("info")
-def info(accessions: list[str] = ACCESSIONS, resolver: str = RESOLVER) -> None:
+def info(
+    accessions: list[str] = ACCESSIONS,
+    resolver: str = RESOLVER,
+    verbose: bool = VERBOSE,
+) -> None:
     """Print study-level metadata for each accession."""
     for dataset in _resolve_all(
-        accessions, resolver=resolver, include_samples=True, fetch_sizes=False
+        accessions,
+        resolver=resolver,
+        verbose=verbose,
+        include_samples=True,
+        fetch_sizes=False,
     ):
         m = dataset.metadata
         table = Table(title=f"{m.accession}  ({m.archive})", show_header=False, box=None)
@@ -136,12 +149,14 @@ def list_files(
         help="Keep _RAW.tar even when its member files are listed separately.",
     ),
     resolver: str = RESOLVER,
+    verbose: bool = VERBOSE,
 ) -> None:
     """List the files an accession resolves to, without downloading."""
     limit = parse_size(max_size) if max_size else None
     for dataset in _resolve_all(
         accessions,
         resolver=resolver,
+        verbose=verbose,
         include_samples=samples,
         fetch_sizes=sizes,
         include_reads=reads,
@@ -176,11 +191,13 @@ def metadata_only(
         False, "--pep", help="Additionally export PEP (config YAML + sample CSV)."
     ),
     resolver: str = RESOLVER,
+    verbose: bool = VERBOSE,
 ) -> None:
     """Fetch and write metadata only, downloading no data files."""
     for dataset in _resolve_all(
         accessions,
         resolver=resolver,
+        verbose=verbose,
         include_samples=samples,
         fetch_sizes=False,
         include_reads=reads,
@@ -299,6 +316,7 @@ def get(
     quiet: bool = typer.Option(
         False, "--quiet", "-q", help="Suppress transfer progress output."
     ),
+    verbose: bool = VERBOSE,
 ) -> None:
     """Download data files and metadata for each accession."""
     limit = parse_size(max_size) if max_size else None
@@ -306,6 +324,7 @@ def get(
     datasets = _resolve_all(
         accessions,
         resolver=resolver,
+        verbose=verbose,
         include_samples=samples,
         include_matrix=matrix,
         include_reads=want_reads,

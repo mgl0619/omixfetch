@@ -13,6 +13,8 @@ path shells out to the SRA Toolkit, which pip does not install.
 
 from __future__ import annotations
 
+import contextlib
+import logging
 from typing import Any
 
 import requests
@@ -25,6 +27,41 @@ from .filelist import fetch_filelist
 URL_COLUMN = "file_url"
 SIZE_COLUMN = "file_size"
 ACCESSION_COLUMN = "sample_geo_accession"
+
+
+#: Loggers geofetch and its dependencies write progress chatter to.
+_NOISY_LOGGERS = ("geofetch", "peppy", "ubiquerg", "pipestat", "eido", "yacman")
+
+
+@contextlib.contextmanager
+def quiet_geofetch(enabled: bool = True):
+    """Keep geofetch's internal logging out of omixfetch's output.
+
+    geofetch logs resolution progress at INFO on a logger with
+    ``propagate=False`` and its own handler, and attaches a fresh handler each
+    time a ``Geofetcher`` is constructed -- so without this the user sees a
+    dozen unexplained lines before any omixfetch output, duplicated once per
+    call. Levels and handlers are restored afterwards so importing omixfetch
+    never changes logging for the host application.
+    """
+    if not enabled:
+        yield
+        return
+
+    saved = []
+    for name in _NOISY_LOGGERS:
+        logger = logging.getLogger(name)
+        saved.append((logger, logger.level, list(logger.handlers)))
+        logger.setLevel(logging.WARNING)
+    try:
+        yield
+    finally:
+        for logger, level, handlers in saved:
+            logger.setLevel(level)
+            # Drop handlers geofetch added during the call.
+            for handler in list(logger.handlers):
+                if handler not in handlers:
+                    logger.removeHandler(handler)
 
 
 def geofetch_available() -> bool:
@@ -41,8 +78,10 @@ def _require_geofetch():
         from geofetch import Geofetcher
     except ImportError as exc:
         raise ResolveError(
-            "The geofetch resolver was requested but geofetch is not installed. "
-            'Install it with: pip install "omixfetch[geofetch]"'
+            "The geofetch resolver was requested but geofetch is not importable. "
+            "It is a required dependency, so this usually means a broken "
+            "environment -- reinstall with: pip install --force-reinstall geofetch. "
+            "To proceed without it, use --resolver native."
         ) from exc
     return Geofetcher
 
@@ -125,6 +164,7 @@ def resolve_geo_via_geofetch(
     include_samples: bool = True,
     include_reads: bool = False,
     prefer: str = "fastq",
+    verbose: bool = False,
     **_: Any,
 ) -> Dataset:
     """Resolve *accession* using geofetch, returning omixfetch's Dataset.
@@ -134,6 +174,7 @@ def resolve_geo_via_geofetch(
             accessions are not supported by this backend.
         session: HTTP session, used for the ENA step when reads are requested.
         include_samples: include per-sample files and annotation.
+        verbose: let geofetch's own progress logging through.
         include_reads: additionally resolve raw reads through ENA.
 
     Raises:
@@ -147,16 +188,17 @@ def resolve_geo_via_geofetch(
             f"Use --resolver native for GSM and GPL accessions."
         )
 
-    fetcher = Geofetcher(
-        processed=True,
-        just_metadata=True,
-        data_source="all",
-        disable_progressbar=True,
-    )
     try:
-        projects = fetcher.get_projects(
-            accession, just_metadata=True, discard_soft=True
-        )
+        with quiet_geofetch(not verbose):
+            fetcher = Geofetcher(
+                processed=True,
+                just_metadata=True,
+                data_source="all",
+                disable_progressbar=True,
+            )
+            projects = fetcher.get_projects(
+                accession, just_metadata=True, discard_soft=True
+            )
     except Exception as exc:  # geofetch raises a variety of types
         raise ResolveError(f"geofetch failed to resolve {accession}: {exc}") from exc
 

@@ -17,6 +17,9 @@ _RESOLVERS = {
 #: Arguments the geofetch backend does not accept.
 _NATIVE_ONLY_KWARGS = ("fetch_sizes", "include_archives", "include_matrix", "size_workers")
 
+#: Arguments only the geofetch backend accepts.
+_GEOFETCH_ONLY_KWARGS = ("verbose",)
+
 VALID_RESOLVERS = ("auto", "native", "geofetch")
 
 
@@ -77,7 +80,10 @@ def resolve(
         }
         dataset = resolve_geo_via_geofetch(normalised, http, **geofetch_kwargs)
     else:
-        dataset = _RESOLVERS[archive](normalised, http, **kwargs)
+        native_kwargs = {
+            k: v for k, v in kwargs.items() if k not in _GEOFETCH_ONLY_KWARGS
+        }
+        dataset = _RESOLVERS[archive](normalised, http, **native_kwargs)
 
     dataset.metadata.resolved_by = chosen
     return dataset
