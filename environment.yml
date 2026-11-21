@@ -4,20 +4,32 @@
 #   mamba activate omixfetch
 #   pip install -e ".[dev]"
 #
-# aria2 is included here deliberately: it is the download engine, not an
-# optional extra, and installing it through conda-forge avoids depending on a
-# system package manager.
+# aria2 is included deliberately: it is the download engine, not an optional
+# extra, and installing it through conda-forge avoids depending on a system
+# package manager.
+#
+# NOT included, and not needed: the SRA Toolkit (prefetch / fasterq-dump).
+# omixfetch fetches raw reads from ENA as plain HTTPS files. You only need the
+# toolkit if you use geofetch's own raw-data path -- `pip install geofetch`
+# does NOT provide those binaries. To add them:
+#     mamba install -c bioconda sra-tools
 name: omixfetch
 channels:
   - conda-forge
+  - bioconda
 dependencies:
   - python=3.13
   - requests>=2.28
   - rich>=13.0
   - typer>=0.9
+  - pyyaml>=6.0
   - aria2>=1.36
   # Development tooling; drop these for a runtime-only environment.
   - pytest>=7.0
   - pytest-cov>=4.0
   - ruff>=0.4
   - pip
+  # Optional: the geofetch resolver (--resolver geofetch). Pulls in the pepkit
+  # stack (peppy, pandas, pipestat, yacman), so it is commented out by default.
+  # - pip:
+  #     - geofetch>=0.12

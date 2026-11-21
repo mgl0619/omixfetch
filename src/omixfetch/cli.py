@@ -15,6 +15,7 @@ from .filters import apply_filters, parse_size
 from .http import make_session
 from .manifest import human_bytes, total_size, write_metadata
 from .models import Dataset
+from .pep import write_pep
 from .resolve import resolve
 
 app = typer.Typer(
@@ -26,6 +27,11 @@ console = Console()
 error_console = Console(stderr=True)
 
 ACCESSIONS = typer.Argument(..., help="GEO accessions (GSE, GSM or GPL).")
+RESOLVER = typer.Option(
+    "native",
+    "--resolver",
+    help="Metadata resolver: 'native' (built-in) or 'geofetch' (optional extra).",
+)
 
 
 def _resolve_all(accessions: list[str], **kwargs) -> list[Dataset]:
@@ -62,9 +68,11 @@ def main(
 
 
 @app.command("info")
-def info(accessions: list[str] = ACCESSIONS) -> None:
+def info(accessions: list[str] = ACCESSIONS, resolver: str = RESOLVER) -> None:
     """Print study-level metadata for each accession."""
-    for dataset in _resolve_all(accessions, include_samples=True, fetch_sizes=False):
+    for dataset in _resolve_all(
+        accessions, resolver=resolver, include_samples=True, fetch_sizes=False
+    ):
         m = dataset.metadata
         table = Table(title=f"{m.accession}  ({m.archive})", show_header=False, box=None)
         table.add_column(style="bold cyan", no_wrap=True)
@@ -113,11 +121,22 @@ def list_files(
     reads: bool = typer.Option(
         False, "--reads", help="Also resolve raw sequencing reads via ENA."
     ),
+    include_archives: bool = typer.Option(
+        False,
+        "--include-archives",
+        help="Keep _RAW.tar even when its member files are listed separately.",
+    ),
+    resolver: str = RESOLVER,
 ) -> None:
     """List the files an accession resolves to, without downloading."""
     limit = parse_size(max_size) if max_size else None
     for dataset in _resolve_all(
-        accessions, include_samples=samples, fetch_sizes=sizes, include_reads=reads
+        accessions,
+        resolver=resolver,
+        include_samples=samples,
+        fetch_sizes=sizes,
+        include_reads=reads,
+        include_archives=include_archives,
     ):
         selected = apply_filters(
             dataset.files, include=include, exclude=exclude, kinds=kind, max_size=limit
@@ -143,13 +162,23 @@ def metadata_only(
     reads: bool = typer.Option(
         False, "--reads", help="Also resolve ENA run metadata."
     ),
+    pep: bool = typer.Option(
+        False, "--pep", help="Additionally export PEP (config YAML + sample CSV)."
+    ),
+    resolver: str = RESOLVER,
 ) -> None:
     """Fetch and write metadata only, downloading no data files."""
     for dataset in _resolve_all(
-        accessions, include_samples=samples, fetch_sizes=False, include_reads=reads
+        accessions,
+        resolver=resolver,
+        include_samples=samples,
+        fetch_sizes=False,
+        include_reads=reads,
     ):
         directory = outdir / dataset.accession / "metadata"
         written = write_metadata(dataset, directory)
+        if pep:
+            written.update(write_pep(dataset, directory / "pep"))
         console.print(
             f"[green]{dataset.accession}[/green]: "
             f"{dataset.metadata.n_samples} sample(s), "
@@ -243,6 +272,15 @@ def get(
     reads_only: bool = typer.Option(
         False, "--reads-only", help="Fetch only raw reads, no processed files."
     ),
+    include_archives: bool = typer.Option(
+        False,
+        "--include-archives",
+        help="Keep _RAW.tar even when its member files are listed separately.",
+    ),
+    pep: bool = typer.Option(
+        False, "--pep", help="Also export PEP metadata (config YAML + sample CSV)."
+    ),
+    resolver: str = RESOLVER,
     dry_run: bool = typer.Option(
         False, "--dry-run", help="Resolve and report, but download nothing."
     ),
@@ -255,9 +293,11 @@ def get(
     want_reads = reads or reads_only
     datasets = _resolve_all(
         accessions,
+        resolver=resolver,
         include_samples=samples,
         include_matrix=matrix,
         include_reads=want_reads,
+        include_archives=include_archives,
     )
     if reads_only:
         kind = list(kind) + ["raw"] if kind else ["raw"]
@@ -300,6 +340,8 @@ def get(
 
         if metadata:
             write_metadata(dataset, destination / "metadata")
+            if pep:
+                write_pep(dataset, destination / "metadata" / "pep")
 
         if dry_run:
             for f in selected:

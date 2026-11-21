@@ -27,6 +27,9 @@ Downloading a GEO series is nominally easy and repeatedly annoying:
 - Getting raw reads usually means a second toolchain (SRA Toolkit) and an
   `.sra` → FASTQ conversion step, even though ENA mirrors the same reads as
   plain, range-capable HTTPS files.
+- `<GSE>_RAW.tar` is a bundle of the same per-sample supplementary files GEO
+  also serves individually. Fetch both and you transfer the data twice — for
+  GSE164378 that is 2.94 GB for 1.47 GB of unique data.
 
 ## Install
 
@@ -118,6 +121,49 @@ omixfetch get GSE164378 --dry-run          # resolve and report, download nothin
 omixfetch metadata GSE164378 -o ./data     # metadata only, no data files
 ```
 
+### Metadata output and PEP
+
+Every download writes metadata beside the data. Add `--pep` to additionally
+export a [PEP](https://pep.databio.org/) project — a `config.yaml` plus a
+sample CSV — which `peppy`, `looper` and `eido` read directly:
+
+```bash
+omixfetch metadata GSE164378 -o ./data --pep
+```
+
+```yaml
+pep_version: 2.1.0
+name: GSE164378
+sample_table: GSE164378_samples.csv
+experiment_metadata:
+  title: Integrated analysis of multimodal single-cell data
+  organisms: [Homo sapiens]
+```
+
+PEP is written natively, so this costs one small dependency (`pyyaml`) rather
+than the full pepkit stack.
+
+### Choosing a resolver
+
+By default omixfetch parses GEO's SOFT records itself. With the optional extra
+it can instead delegate metadata resolution to
+[geofetch](https://pep.databio.org/geofetch/):
+
+```bash
+pip install "omixfetch[geofetch]"
+omixfetch get GSE164378 -o ./data --resolver geofetch
+```
+
+Both resolvers agree on GSE164378 (27 files, 1.47 GB). geofetch brings its own
+maintained parsing and the pepkit ecosystem; the native resolver keeps the
+install at four dependencies. Transfers go through aria2c either way.
+
+**The SRA Toolkit is not required by either path.** `pip install geofetch`
+installs Python packages only — `prefetch` and `fasterq-dump` are separate
+binaries that geofetch shells out to for its own raw-data path. omixfetch
+fetches reads from ENA instead, so you never need them. If you do want them:
+`mamba install -c bioconda sra-tools`.
+
 ### Raw reads
 
 `--reads` additionally resolves FASTQ files through the ENA portal, which
@@ -168,6 +214,9 @@ data/GSE164378/
     ├── GSE164378.samples.tsv        # one row per sample, characteristics as columns
     ├── GSE164378.files.tsv          # file manifest with sizes and URLs
     ├── GSE164378.runs.tsv           # sequencing runs, with --reads
+    └── pep/                         # with --pep
+        ├── GSE164378_config.yaml
+        └── GSE164378_samples.csv
     ├── GSE164378.soft.txt           # unmodified series SOFT record
     └── GSE164378.samples.soft.txt   # unmodified sample SOFT records
 ```
@@ -199,7 +248,12 @@ characteristics.
 **0.2 — Raw reads.** FASTQ via the ENA portal, with md5 verification and runs
 mapped back to GEO samples. Controlled-access projects reported explicitly.
 
-**0.3 — ArrayExpress.** E-* accessions via the EBI BioStudies API, with
+**0.3 — Resolver choice and PEP.** Optional geofetch resolver, native PEP
+export, file sizes read from GEO's `filelist.txt` instead of one HEAD request
+per file, and redundant `_RAW.tar` archives dropped when their members are
+listed separately.
+
+**0.4 — ArrayExpress.** E-* accessions via the EBI BioStudies API, with
 per-sample annotation parsed from MAGE-TAB SDRF files. Work in progress on the
 `arrayexpress-support` branch.
 
@@ -230,8 +284,9 @@ ruff check src tests
 ```
 
 The test suite runs entirely offline against recorded archive records, so it
-needs no network and no credentials. Locally verified on CPython 3.11 and 3.13;
-CI additionally exercises 3.10 and 3.12.
+needs no network and no credentials. 82 tests; locally verified on CPython 3.11
+and 3.13, both with and without geofetch installed. CI additionally exercises
+3.10 and 3.12.
 
 ## License
 

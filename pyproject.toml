@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "omixfetch"
-version = "0.2.0"
+version = "0.3.0"
 description = "Parallel, resumable downloads of public genomics datasets from NCBI GEO"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -22,10 +22,15 @@ dependencies = [
     "requests>=2.28",
     "typer>=0.9",
     "rich>=13.0",
+    "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=7.0", "pytest-cov>=4.0", "ruff>=0.4"]
+# Use geofetch as the metadata resolver instead of the built-in SOFT parser.
+# Note: geofetch's own raw-data path shells out to the SRA Toolkit, which pip
+# does not install; omixfetch fetches reads from ENA and needs no toolkit.
+geofetch = ["geofetch>=0.12"]
 
 [project.scripts]
 omixfetch = "omixfetch.cli:app"

@@ -17,6 +17,7 @@ from ..accession import geo_ftp_stub, geo_kind
 from ..errors import ResolveError
 from ..http import get_text, head_size
 from ..models import Dataset, DatasetMetadata, RemoteFile, SampleMetadata
+from .filelist import archive_members, fetch_filelist
 
 ACC_CGI = "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi"
 FTP_HTTPS = "https://ftp.ncbi.nlm.nih.gov"
@@ -100,6 +101,12 @@ def _supplementary_files(
     return files
 
 
+def suppl_base_url(accession: str, kind: str = "series") -> str:
+    """Return the supplementary directory URL for a GEO accession."""
+    stub = geo_ftp_stub(accession)
+    return f"{FTP_HTTPS}/geo/{kind}/{stub}/{accession}/suppl"
+
+
 def series_matrix_url(accession: str) -> str:
     """Return the canonical series-matrix URL for a GSE accession."""
     stub = geo_ftp_stub(accession)
@@ -162,6 +169,7 @@ def resolve_geo(
     include_samples: bool = True,
     include_matrix: bool = False,
     include_reads: bool = False,
+    include_archives: bool = False,
     fetch_sizes: bool = True,
     size_workers: int = 8,
 ) -> Dataset:
@@ -175,6 +183,9 @@ def resolve_geo(
             not one per sample.
         include_matrix: add the series-matrix file to the download list.
         include_reads: additionally resolve raw sequencing reads through ENA.
+        include_archives: keep ``<GSE>_RAW.tar`` even when its member files are
+            already listed individually. By default the archive is dropped,
+            because downloading both transfers the same data twice.
         fetch_sizes: issue HEAD requests to learn file sizes, which GEO does
             not publish in SOFT.
         size_workers: concurrency for those HEAD requests.
@@ -244,8 +255,25 @@ def resolve_geo(
             metadata.n_samples = 1
 
     files = _dedupe(files)
-    if fetch_sizes and files:
-        _fill_sizes(session, files, size_workers)
+
+    # One request gives sizes for every file and reveals what the RAW archive
+    # contains, which avoids both a HEAD per file and a redundant download.
+    entries = fetch_filelist(session, suppl_base_url(accession, kind)) if files else []
+    if entries:
+        sizes = {e.name: e.size for e in entries if e.size is not None}
+        for f in files:
+            if f.size is None and f.filename in sizes:
+                f.size = sizes[f.filename]
+
+        if not include_archives:
+            present = {f.filename for f in files}
+            for archive, members in archive_members(entries).items():
+                # Drop the tar only when its members are actually in the manifest.
+                if archive in present and members and members <= present:
+                    files = [f for f in files if f.filename != archive]
+
+    if fetch_sizes and any(f.size is None for f in files):
+        _fill_sizes(session, [f for f in files if f.size is None], size_workers)
 
     dataset = Dataset(
         metadata=metadata, samples=samples, files=files, raw_documents=raw_documents
