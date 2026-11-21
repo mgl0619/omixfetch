@@ -120,16 +120,31 @@ def _as_url(path: str) -> str:
     return "https://" + path
 
 
-def _row_files(row: dict[str, str], run_accession: str) -> list[RemoteFile]:
-    """Build file records from a portal row, preferring FASTQ over submitted files.
+#: Column groups for each file flavour the portal serves.
+FASTQ_COLUMNS = ("fastq_ftp", "fastq_bytes", "fastq_md5")
+SUBMITTED_COLUMNS = ("submitted_ftp", "submitted_bytes", "submitted_md5")
+
+
+def _row_files(
+    row: dict[str, str], run_accession: str, prefer: str = "fastq"
+) -> list[RemoteFile]:
+    """Build file records from a portal row.
+
+    Args:
+        prefer: ``"fastq"`` for ENA-generated FASTQ, or ``"submitted"`` for the
+            files the submitter uploaded (often BAM or CRAM). Either way the
+            other flavour is used when the preferred one is absent, so a run
+            with only BAMs still resolves.
 
     The portal packs multi-file runs into semicolon-separated lists that run
     in parallel across the URL, size and md5 columns.
     """
-    for url_key, size_key, md5_key in (
-        ("fastq_ftp", "fastq_bytes", "fastq_md5"),
-        ("submitted_ftp", "submitted_bytes", "submitted_md5"),
-    ):
+    order = (
+        (SUBMITTED_COLUMNS, FASTQ_COLUMNS)
+        if prefer == "submitted"
+        else (FASTQ_COLUMNS, SUBMITTED_COLUMNS)
+    )
+    for url_key, size_key, md5_key in order:
         raw_urls = [u for u in (row.get(url_key) or "").split(";") if u.strip()]
         if not raw_urls:
             continue
@@ -157,8 +172,12 @@ def _row_files(row: dict[str, str], run_accession: str) -> list[RemoteFile]:
     return []
 
 
-def parse_filereport(text: str) -> list[RunMetadata]:
-    """Parse a TSV filereport response into run records."""
+def parse_filereport(text: str, prefer: str = "fastq") -> list[RunMetadata]:
+    """Parse a TSV filereport response into run records.
+
+    Args:
+        prefer: ``"fastq"`` or ``"submitted"`` -- see :func:`_row_files`.
+    """
     rows = list(csv.DictReader(io.StringIO(text), delimiter="\t"))
     runs: list[RunMetadata] = []
     for row in rows:
@@ -178,14 +197,16 @@ def parse_filereport(text: str) -> list[RunMetadata]:
                 instrument_model=row.get("instrument_model") or None,
                 read_count=_as_int(row.get("read_count")),
                 base_count=_as_int(row.get("base_count")),
-                files=_row_files(row, accession),
+                files=_row_files(row, accession, prefer=prefer),
                 raw={k: v for k, v in row.items() if v},
             )
         )
     return runs
 
 
-def fetch_runs(session: requests.Session, accession: str) -> list[RunMetadata]:
+def fetch_runs(
+    session: requests.Session, accession: str, prefer: str = "fastq"
+) -> list[RunMetadata]:
     """Query the ENA portal for every public run under *accession*.
 
     Args:
@@ -205,7 +226,7 @@ def fetch_runs(session: requests.Session, accession: str) -> list[RunMetadata]:
             "format": "tsv",
         },
     )
-    return parse_filereport(text)
+    return parse_filereport(text, prefer=prefer)
 
 
 def _biosample_to_sample(samples: list[SampleMetadata]) -> dict[str, str]:
@@ -218,7 +239,9 @@ def _biosample_to_sample(samples: list[SampleMetadata]) -> dict[str, str]:
     return mapping
 
 
-def attach_reads(dataset: Dataset, session: requests.Session) -> list[RunMetadata]:
+def attach_reads(
+    dataset: Dataset, session: requests.Session, prefer: str = "fastq"
+) -> list[RunMetadata]:
     """Resolve raw reads for *dataset* and attach them in place.
 
     Returns:
@@ -238,7 +261,7 @@ def attach_reads(dataset: Dataset, session: requests.Session) -> list[RunMetadat
 
     runs: list[RunMetadata] = []
     for accession in accessions:
-        runs = fetch_runs(session, accession)
+        runs = fetch_runs(session, accession, prefer=prefer)
         if runs:
             break
 

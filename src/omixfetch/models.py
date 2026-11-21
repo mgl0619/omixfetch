@@ -75,6 +75,9 @@ class DatasetMetadata:
     contact: dict[str, str] = field(default_factory=dict)
     protocols: dict[str, str] = field(default_factory=dict)
     n_samples: int = 0
+    #: Which resolver produced this record ("native" or "geofetch"), so a bug
+    #: report says which code path ran.
+    resolved_by: str = "native"
     raw: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:

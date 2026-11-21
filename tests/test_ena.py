@@ -6,6 +6,7 @@ from omixfetch.errors import ResolveError
 from omixfetch.models import Dataset, DatasetMetadata, SampleMetadata
 from omixfetch.sources.ena import (
     _as_url,
+    _row_files,
     attach_reads,
     parse_filereport,
     project_accessions,
@@ -89,7 +90,8 @@ def test_attach_reads_maps_runs_to_geo_samples(monkeypatch):
         ],
     )
     monkeypatch.setattr(
-        "omixfetch.sources.ena.fetch_runs", lambda session, acc: parse_filereport(FILEREPORT)
+        "omixfetch.sources.ena.fetch_runs",
+        lambda session, acc, **kwargs: parse_filereport(FILEREPORT),
     )
 
     runs = attach_reads(dataset, session=None)
@@ -116,6 +118,58 @@ def test_attach_reads_tolerates_a_project_with_no_public_runs(monkeypatch):
             relations={"BioProject": "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA690251"},
         )
     )
-    monkeypatch.setattr("omixfetch.sources.ena.fetch_runs", lambda session, acc: [])
+    monkeypatch.setattr(
+        "omixfetch.sources.ena.fetch_runs", lambda session, acc, **kwargs: []
+    )
     assert attach_reads(dataset, session=None) == []
     assert dataset.files == []
+
+
+SUBMITTED_ONLY = (
+    "run_accession\tfastq_ftp\tfastq_bytes\tfastq_md5\t"
+    "submitted_ftp\tsubmitted_bytes\tsubmitted_md5\n"
+    "SRR14871864\t\t\t\t"
+    "ftp.sra.ebi.ac.uk/vol1/run/SRR148/SRR14871864/a.subreads.bam\t"
+    "12586057849\t923c51af1f4a51f406b0994526912e7f\n"
+)
+
+BOTH = (
+    "run_accession\tfastq_ftp\tfastq_bytes\tfastq_md5\t"
+    "submitted_ftp\tsubmitted_bytes\tsubmitted_md5\n"
+    "SRR1\tftp.x/a_1.fastq.gz\t10\taaa\tftp.x/a.bam\t20\tbbb\n"
+)
+
+
+def test_submitted_bam_is_used_when_no_fastq_exists():
+    """Long-read submissions often have BAM only."""
+    runs = parse_filereport(SUBMITTED_ONLY)
+    files = runs[0].files
+    assert len(files) == 1
+    assert files[0].filename == "a.subreads.bam"
+    assert files[0].size == 12586057849
+    assert files[0].md5 == "923c51af1f4a51f406b0994526912e7f"
+    assert files[0].kind == "raw"
+
+
+def test_prefer_fastq_is_the_default_when_both_exist():
+    header, values = BOTH.split("\n")[0].split("\t"), BOTH.split("\n")[1].split("\t")
+    files = _row_files(dict(zip(header, values, strict=True)), "SRR1")
+    assert [f.filename for f in files] == ["a_1.fastq.gz"]
+
+
+def test_prefer_submitted_selects_the_bam():
+    header, values = BOTH.split("\n")[0].split("\t"), BOTH.split("\n")[1].split("\t")
+    row = dict(zip(header, values, strict=True))
+    files = _row_files(row, "SRR1", prefer="submitted")
+    assert [f.filename for f in files] == ["a.bam"]
+    assert files[0].md5 == "bbb"
+
+
+def test_prefer_submitted_falls_back_to_fastq_when_absent():
+    text = (
+        "run_accession\tfastq_ftp\tfastq_bytes\tfastq_md5\t"
+        "submitted_ftp\tsubmitted_bytes\tsubmitted_md5\n"
+        "SRR2\tftp.x/b_1.fastq.gz\t10\taaa\t\t\t\n"
+    )
+    runs = parse_filereport(text, prefer="submitted")
+    assert [f.filename for f in runs[0].files] == ["b_1.fastq.gz"]

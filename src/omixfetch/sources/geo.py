@@ -169,6 +169,7 @@ def resolve_geo(
     include_samples: bool = True,
     include_matrix: bool = False,
     include_reads: bool = False,
+    prefer: str = "fastq",
     include_archives: bool = False,
     fetch_sizes: bool = True,
     size_workers: int = 8,
@@ -183,6 +184,8 @@ def resolve_geo(
             not one per sample.
         include_matrix: add the series-matrix file to the download list.
         include_reads: additionally resolve raw sequencing reads through ENA.
+        prefer: ``"fastq"`` for ENA-generated FASTQ, or ``"submitted"`` for the
+            submitter's own files, which are often BAM or CRAM.
         include_archives: keep ``<GSE>_RAW.tar`` even when its member files are
             already listed individually. By default the archive is dropped,
             because downloading both transfers the same data twice.
@@ -283,7 +286,7 @@ def resolve_geo(
         # Imported here to keep the ENA dependency off the processed-file path.
         from .ena import attach_reads
 
-        attach_reads(dataset, session)
+        attach_reads(dataset, session, prefer=prefer)
 
     return dataset
 

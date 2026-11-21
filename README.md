@@ -145,18 +145,29 @@ than the full pepkit stack.
 
 ### Choosing a resolver
 
-By default omixfetch parses GEO's SOFT records itself. With the optional extra
-it can instead delegate metadata resolution to
-[geofetch](https://pep.databio.org/geofetch/):
+Metadata resolution has two backends, selected by `--resolver`:
+
+| Value | Behaviour |
+|---|---|
+| `auto` (default) | geofetch for GSE series when it is installed, otherwise native |
+| `native` | the built-in SOFT parser, always |
+| `geofetch` | geofetch, always (GSE only) |
+
+`auto` prefers [geofetch](https://pep.databio.org/geofetch/) because it is the
+more mature and widely exercised GEO parser:
 
 ```bash
-pip install "omixfetch[geofetch]"
-omixfetch get GSE164378 -o ./data --resolver geofetch
+pip install "omixfetch[geofetch]"     # auto then uses it for GSE
+omixfetch info GSE164378              # the Resolver row shows which one ran
 ```
 
-Both resolvers agree on GSE164378 (27 files, 1.47 GB). geofetch brings its own
-maintained parsing and the pepkit ecosystem; the native resolver keeps the
-install at four dependencies. Transfers go through aria2c either way.
+It applies to series only. geofetch's project API returns an empty result for
+GSM accessions and raises on GPL, so those always use the native resolver —
+which handles all three. Both agree on GSE164378: 27 files, 1.47 GB.
+
+**Transfers go through aria2c either way.** geofetch is called with
+`just_metadata=True` and never downloads anything; it resolves URLs, and
+omixfetch moves the bytes.
 
 **The SRA Toolkit is not required by either path.** `pip install geofetch`
 installs Python packages only — `prefetch` and `fasterq-dump` are separate
@@ -180,6 +191,21 @@ ENA publishes a **per-file md5**, so raw reads are verified end to end — both
 backends check the checksum and refuse a corrupt file rather than leaving it on
 disk. GEO publishes no checksums for supplementary files, so those are verified
 on declared size only.
+
+#### FASTQ, BAM and CRAM
+
+ENA serves whatever the submitter deposited. `--prefer` chooses between
+ENA-generated FASTQ and the submitter's own files, which for long-read data are
+usually BAM:
+
+```bash
+omixfetch get GSE52778 -o ./data --reads                      # FASTQ (default)
+omixfetch get GSE52778 -o ./data --reads --prefer submitted   # BAM/CRAM if present
+```
+
+Either flavour falls back to the other when absent, so a run with only BAMs
+still resolves. Format is irrelevant to the transfer — aria2c splits a 12.6 GB
+BAM across connections exactly as it does a 2.4 GB FASTQ, and both carry an md5.
 
 Runs are matched back to their GEO samples through the BioSample accession and
 written to `<ACC>.runs.tsv`.
@@ -284,7 +310,7 @@ ruff check src tests
 ```
 
 The test suite runs entirely offline against recorded archive records, so it
-needs no network and no credentials. 82 tests; locally verified on CPython 3.11
+needs no network and no credentials. 91 tests; locally verified on CPython 3.11
 and 3.13, both with and without geofetch installed. CI additionally exercises
 3.10 and 3.12.
 

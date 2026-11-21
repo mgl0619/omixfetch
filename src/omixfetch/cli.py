@@ -28,9 +28,16 @@ error_console = Console(stderr=True)
 
 ACCESSIONS = typer.Argument(..., help="GEO accessions (GSE, GSM or GPL).")
 RESOLVER = typer.Option(
-    "native",
+    "auto",
     "--resolver",
-    help="Metadata resolver: 'native' (built-in) or 'geofetch' (optional extra).",
+    help="Metadata resolver: 'auto' (geofetch for series when installed), "
+    "'native' or 'geofetch'.",
+)
+PREFER = typer.Option(
+    "fastq",
+    "--prefer",
+    help="For raw reads: 'fastq' (ENA-generated) or 'submitted' (the "
+    "submitter's own files, often BAM/CRAM).",
 )
 
 
@@ -85,6 +92,7 @@ def info(accessions: list[str] = ACCESSIONS, resolver: str = RESOLVER) -> None:
             ("Samples", str(m.n_samples)),
             ("Files", str(len(dataset.files))),
             ("Runs (ENA)", str(len(dataset.runs)) if dataset.runs else ""),
+            ("Resolver", m.resolved_by),
             ("Total size", human_bytes(total_size(dataset.files))),
             ("Released", m.release_date),
             ("PubMed", ", ".join(m.pubmed_ids)),
@@ -121,6 +129,7 @@ def list_files(
     reads: bool = typer.Option(
         False, "--reads", help="Also resolve raw sequencing reads via ENA."
     ),
+    prefer: str = PREFER,
     include_archives: bool = typer.Option(
         False,
         "--include-archives",
@@ -137,6 +146,7 @@ def list_files(
         fetch_sizes=sizes,
         include_reads=reads,
         include_archives=include_archives,
+        prefer=prefer,
     ):
         selected = apply_filters(
             dataset.files, include=include, exclude=exclude, kinds=kind, max_size=limit
@@ -199,6 +209,7 @@ def manifest(
     include: list[str] = typer.Option([], "--include", "-i"),
     exclude: list[str] = typer.Option([], "--exclude", "-e"),
     max_size: str | None = typer.Option(None, "--max-size"),
+    resolver: str = RESOLVER,
 ) -> None:
     """Write a download manifest without downloading.
 
@@ -212,7 +223,7 @@ def manifest(
 
     limit = parse_size(max_size) if max_size else None
     all_files = []
-    for dataset in _resolve_all(accessions, include_samples=True):
+    for dataset in _resolve_all(accessions, resolver=resolver, include_samples=True):
         all_files += [
             (dataset, f)
             for f in apply_filters(
@@ -272,6 +283,7 @@ def get(
     reads_only: bool = typer.Option(
         False, "--reads-only", help="Fetch only raw reads, no processed files."
     ),
+    prefer: str = PREFER,
     include_archives: bool = typer.Option(
         False,
         "--include-archives",
@@ -298,6 +310,7 @@ def get(
         include_matrix=matrix,
         include_reads=want_reads,
         include_archives=include_archives,
+        prefer=prefer,
     )
     if reads_only:
         kind = list(kind) + ["raw"] if kind else ["raw"]

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import requests
 
-from .accession import Archive, parse_accession
+from .accession import GEO_RE, Archive, parse_accession
 from .errors import AccessionError
 from .http import make_session
 from .models import Dataset
@@ -14,11 +14,37 @@ _RESOLVERS = {
     Archive.GEO: resolve_geo,
 }
 
+#: Arguments the geofetch backend does not accept.
+_NATIVE_ONLY_KWARGS = ("fetch_sizes", "include_archives", "include_matrix", "size_workers")
+
+VALID_RESOLVERS = ("auto", "native", "geofetch")
+
+
+def choose_resolver(accession: str, requested: str = "auto") -> str:
+    """Decide which resolver to use for *accession*.
+
+    ``auto`` prefers geofetch when it is installed, because it is the more
+    mature and widely exercised GEO parser. It applies only to GSE series:
+    geofetch's project API returns nothing for GSM accessions and raises on
+    GPL, so those always use the built-in resolver.
+    """
+    if requested != "auto":
+        return requested
+
+    match = GEO_RE.match(accession)
+    is_series = bool(match) and match.group(1).upper() == "GSE"
+    if not is_series:
+        return "native"
+
+    from .sources.geofetch_resolver import geofetch_available
+
+    return "geofetch" if geofetch_available() else "native"
+
 
 def resolve(
     accession: str,
     session: requests.Session | None = None,
-    resolver: str = "native",
+    resolver: str = "auto",
     **kwargs,
 ) -> Dataset:
     """Resolve a supported accession into a :class:`Dataset`.
@@ -26,28 +52,32 @@ def resolve(
     Args:
         accession: a GEO accession (GSE, GSM or GPL).
         session: optional shared HTTP session; one is created if omitted.
-        resolver: ``"native"`` for the built-in SOFT parser, or ``"geofetch"``
-            to delegate metadata resolution to geofetch (optional extra).
+        resolver: ``"auto"`` (geofetch for series when installed, else
+            built-in), ``"native"`` or ``"geofetch"``.
         **kwargs: forwarded to the archive-specific resolver.
 
     Raises:
-        AccessionError: if the accession belongs to an unsupported archive.
+        AccessionError: for an unsupported archive or unknown resolver.
         ResolveError: if the archive cannot be queried.
     """
-    archive, normalised = parse_accession(accession)
-    http = session or make_session()
-
-    if resolver == "geofetch":
-        from .sources.geofetch_resolver import resolve_geo_via_geofetch
-
-        kwargs.pop("fetch_sizes", None)
-        kwargs.pop("include_archives", None)
-        kwargs.pop("include_matrix", None)
-        kwargs.pop("size_workers", None)
-        return resolve_geo_via_geofetch(normalised, http, **kwargs)
-    if resolver != "native":
+    if resolver not in VALID_RESOLVERS:
         raise AccessionError(
-            f"Unknown resolver {resolver!r}. Use 'native' or 'geofetch'."
+            f"Unknown resolver {resolver!r}. Use one of: {', '.join(VALID_RESOLVERS)}."
         )
 
-    return _RESOLVERS[archive](normalised, http, **kwargs)
+    archive, normalised = parse_accession(accession)
+    http = session or make_session()
+    chosen = choose_resolver(normalised, resolver)
+
+    if chosen == "geofetch":
+        from .sources.geofetch_resolver import resolve_geo_via_geofetch
+
+        geofetch_kwargs = {
+            k: v for k, v in kwargs.items() if k not in _NATIVE_ONLY_KWARGS
+        }
+        dataset = resolve_geo_via_geofetch(normalised, http, **geofetch_kwargs)
+    else:
+        dataset = _RESOLVERS[archive](normalised, http, **kwargs)
+
+    dataset.metadata.resolved_by = chosen
+    return dataset

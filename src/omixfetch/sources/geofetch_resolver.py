@@ -19,6 +19,7 @@ import requests
 
 from ..errors import ResolveError
 from ..models import Dataset, DatasetMetadata, RemoteFile, SampleMetadata
+from .filelist import fetch_filelist
 
 #: Columns geofetch uses for the download URL and size.
 URL_COLUMN = "file_url"
@@ -123,6 +124,7 @@ def resolve_geo_via_geofetch(
     *,
     include_samples: bool = True,
     include_reads: bool = False,
+    prefer: str = "fastq",
     **_: Any,
 ) -> Dataset:
     """Resolve *accession* using geofetch, returning omixfetch's Dataset.
@@ -228,11 +230,31 @@ def resolve_geo_via_geofetch(
             files.extend(sample_files)
 
     metadata.n_samples = len(samples)
+
+    # geofetch does not report a size for series-level files; GEO's own
+    # filelist.txt does, and it is one request.
+    if any(f.size is None for f in files):
+        from .geo import suppl_base_url
+
+        entries = fetch_filelist(session, suppl_base_url(accession, "series"))
+        sizes = {e.name: e.size for e in entries if e.size is not None}
+        for f in files:
+            if f.size is None and f.filename in sizes:
+                f.size = sizes[f.filename]
+
+        # filelist.txt covers the RAW archive's members, not necessarily the
+        # series-level files, so anything still unknown falls back to a HEAD.
+        missing = [f for f in files if f.size is None]
+        if missing:
+            from .geo import _fill_sizes
+
+            _fill_sizes(session, missing, 8)
+
     dataset = Dataset(metadata=metadata, samples=samples, files=files)
 
     if include_reads:
         from .ena import attach_reads
 
-        attach_reads(dataset, session)
+        attach_reads(dataset, session, prefer=prefer)
 
     return dataset
