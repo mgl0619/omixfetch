@@ -92,3 +92,18 @@ def test_dataset_total_bytes_is_none_when_unknown():
         files=[RemoteFile(url="u", filename="a", size=None)],
     )
     assert dataset.total_bytes is None
+
+
+def test_runs_table_written_when_reads_present(tmp_path):
+    from omixfetch.sources.ena import parse_filereport
+    from tests.test_ena import FILEREPORT
+
+    dataset = _dataset()
+    dataset.runs = parse_filereport(FILEREPORT)
+    written = write_metadata(dataset, tmp_path)
+    assert "runs" in written
+
+    rows = list(csv.DictReader(open(tmp_path / "GSE000001.runs.tsv"), delimiter="\t"))
+    assert rows[0]["run_accession"] == "SRR1039514"
+    assert rows[0]["n_files"] == "2"
+    assert "ae35fe0ce13badacc48c65717e811528" in rows[0]["md5s"]

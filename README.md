@@ -1,7 +1,8 @@
 # omixfetch
 
-Parallel, resumable downloads of public genomics datasets from **NCBI GEO**, with
-full study and sample metadata extracted alongside the data.
+Parallel, resumable downloads of public genomics datasets from **NCBI GEO** --
+processed files and raw sequencing reads -- with full study and sample metadata
+extracted alongside the data.
 
 `omixfetch` resolves an accession into a file manifest plus harmonised metadata,
 then hands the transfer to [aria2c](https://aria2.github.io/) — which already
@@ -23,6 +24,9 @@ Downloading a GEO series is nominally easy and repeatedly annoying:
   so it does not have to be.
 - Metadata and data are fetched by different tools, so the characteristics
   table that makes the matrix interpretable often never gets saved at all.
+- Getting raw reads usually means a second toolchain (SRA Toolkit) and an
+  `.sra` → FASTQ conversion step, even though ENA mirrors the same reads as
+  plain, range-capable HTTPS files.
 
 ## Install
 
@@ -72,6 +76,37 @@ omixfetch get GSE164378 --dry-run          # resolve and report, download nothin
 omixfetch metadata GSE164378 -o ./data     # metadata only, no data files
 ```
 
+### Raw reads
+
+`--reads` additionally resolves FASTQ files through the ENA portal, which
+mirrors SRA and serves reads as ordinary HTTPS objects. No SRA Toolkit, and no
+`.sra` conversion:
+
+```bash
+omixfetch get GSE52778 -o ./data --reads          # processed files and FASTQ
+omixfetch get GSE52778 -o ./data --reads-only     # FASTQ only
+omixfetch list GSE52778 --reads                   # 39 files, 46.9 GB
+```
+
+ENA publishes a **per-file md5**, so raw reads are verified end to end — both
+backends check the checksum and refuse a corrupt file rather than leaving it on
+disk. GEO publishes no checksums for supplementary files, so those are verified
+on declared size only.
+
+Runs are matched back to their GEO samples through the BioSample accession and
+written to `<ACC>.runs.tsv`.
+
+**Controlled access.** Many human series have a BioProject but no public runs,
+because the reads are restricted through dbGaP. omixfetch says so explicitly
+rather than reporting an empty download:
+
+```
+GSE164378: ENA serves no public runs for this project. Human data under
+controlled access (dbGaP) is the usual reason ...
+```
+
+No tool can retrieve those without authorised access.
+
 Emit a manifest and run the transfer yourself:
 
 ```bash
@@ -90,6 +125,7 @@ data/GSE164378/
     ├── GSE164378.metadata.json      # complete parsed record
     ├── GSE164378.samples.tsv        # one row per sample, characteristics as columns
     ├── GSE164378.files.tsv          # file manifest with sizes and URLs
+    ├── GSE164378.runs.tsv           # sequencing runs, with --reads
     ├── GSE164378.soft.txt           # unmodified series SOFT record
     └── GSE164378.samples.soft.txt   # unmodified sample SOFT records
 ```
@@ -114,25 +150,33 @@ Aria2Backend(connections=16, concurrent=4).download(big, "./data")
 
 ## Scope and roadmap
 
-**0.1 — GEO.** Series (GSE), samples (GSM) and platforms (GPL): supplementary
-files, series matrix files, study metadata, per-sample characteristics.
+**0.1 — GEO processed files.** Series (GSE), samples (GSM) and platforms (GPL):
+supplementary files, series matrix files, study metadata, per-sample
+characteristics.
 
-**0.2 — ArrayExpress.** E-* accessions via the EBI BioStudies API, with
+**0.2 — Raw reads.** FASTQ via the ENA portal, with md5 verification and runs
+mapped back to GEO samples. Controlled-access projects reported explicitly.
+
+**0.3 — ArrayExpress.** E-* accessions via the EBI BioStudies API, with
 per-sample annotation parsed from MAGE-TAB SDRF files. Work in progress on the
 `arrayexpress-support` branch.
 
-Not in scope: downloading raw reads from SRA/ENA. Use
-[SRA Toolkit](https://github.com/ncbi/sra-tools) or
-[fastq-dl](https://github.com/rpetit3/fastq-dl); omixfetch records the SRA and
-BioProject identifiers in its metadata so you can hand them straight over.
+Reads are fetched from ENA rather than through
+[SRA Toolkit](https://github.com/ncbi/sra-tools). Where a submitter deposited
+files SRA serves but ENA does not mirror, the toolkit remains the right tool;
+omixfetch records the SRA and BioProject identifiers in its metadata so you can
+hand them straight over.
 
 ## Related tools
 
 [GEOfetch](https://pep.databio.org/geofetch/) (GEO + SRA, PEP metadata output),
 [GEOquery](https://bioconductor.org/packages/GEOquery/) (R, the most complete
 GEO client), [GEOparse](https://geoparse.readthedocs.io/) (Python, SOFT
-parsing) and [ffq](https://github.com/pachterlab/ffq) (metadata and links only).
-omixfetch differs in treating the transfer itself as the problem worth solving.
+parsing), [ffq](https://github.com/pachterlab/ffq) (metadata and links only) and
+[fastq-dl](https://github.com/rpetit3/fastq-dl) (ENA/SRA reads).
+omixfetch differs in covering processed files, raw reads and metadata behind one
+accession-driven interface, and in treating the transfer itself as the problem
+worth solving.
 
 ## Development
 

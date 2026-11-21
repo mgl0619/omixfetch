@@ -91,6 +91,9 @@ class Dataset:
     #: Raw metadata documents (SOFT, IDF, SDRF) keyed by filename, kept so the
     #: exact archive record can be written to disk alongside the parsed form.
     raw_documents: dict[str, str] = field(default_factory=dict)
+    #: Sequencing runs resolved from ENA. Typed as Any to avoid a circular
+    #: import; entries are omixfetch.sources.ena.RunMetadata.
+    runs: list[Any] = field(default_factory=list)
 
     @property
     def accession(self) -> str:
@@ -107,4 +110,5 @@ class Dataset:
             "metadata": self.metadata.to_dict(),
             "samples": [s.to_dict() for s in self.samples],
             "files": [f.to_dict() for f in self.files],
+            "runs": [r.to_dict() for r in self.runs],
         }

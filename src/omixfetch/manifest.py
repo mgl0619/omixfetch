@@ -94,6 +94,52 @@ def write_files_table(files: Sequence[RemoteFile], path: Path) -> Path:
     return path
 
 
+def write_runs_table(dataset: Dataset, path: Path) -> Path:
+    """Write one row per sequencing run resolved from ENA."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    header = [
+        "run_accession",
+        "geo_sample",
+        "experiment_accession",
+        "sample_accession",
+        "study_accession",
+        "library_strategy",
+        "library_source",
+        "library_selection",
+        "instrument_model",
+        "read_count",
+        "base_count",
+        "n_files",
+        "total_bytes",
+        "urls",
+        "md5s",
+    ]
+    with open(path, "w", newline="") as handle:
+        writer = csv.writer(handle, delimiter="\t")
+        writer.writerow(header)
+        for run in dataset.runs:
+            writer.writerow(
+                [
+                    run.accession,
+                    run.sample or "",
+                    run.experiment_accession or "",
+                    run.sample_accession or "",
+                    run.study_accession or "",
+                    run.library_strategy or "",
+                    run.library_source or "",
+                    run.library_selection or "",
+                    run.instrument_model or "",
+                    run.read_count if run.read_count is not None else "",
+                    run.base_count if run.base_count is not None else "",
+                    len(run.files),
+                    sum(f.size or 0 for f in run.files),
+                    ";".join(f.url for f in run.files),
+                    ";".join(f.md5 or "" for f in run.files),
+                ]
+            )
+    return path
+
+
 def write_raw_documents(dataset: Dataset, directory: Path) -> list[Path]:
     """Write the unmodified archive records (SOFT, IDF, SDRF)."""
     directory.mkdir(parents=True, exist_ok=True)
@@ -121,6 +167,8 @@ def write_metadata(dataset: Dataset, directory: Path) -> dict[str, Path]:
         written["samples"] = write_samples_table(
             dataset, directory / f"{acc}.samples.tsv"
         )
+    if dataset.runs:
+        written["runs"] = write_runs_table(dataset, directory / f"{acc}.runs.tsv")
     write_raw_documents(dataset, directory)
     return written
 

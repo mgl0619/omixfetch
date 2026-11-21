@@ -161,6 +161,7 @@ def resolve_geo(
     *,
     include_samples: bool = True,
     include_matrix: bool = False,
+    include_reads: bool = False,
     fetch_sizes: bool = True,
     size_workers: int = 8,
 ) -> Dataset:
@@ -173,6 +174,7 @@ def resolve_geo(
             per-sample supplementary files. This is one extra request total,
             not one per sample.
         include_matrix: add the series-matrix file to the download list.
+        include_reads: additionally resolve raw sequencing reads through ENA.
         fetch_sizes: issue HEAD requests to learn file sizes, which GEO does
             not publish in SOFT.
         size_workers: concurrency for those HEAD requests.
@@ -245,9 +247,17 @@ def resolve_geo(
     if fetch_sizes and files:
         _fill_sizes(session, files, size_workers)
 
-    return Dataset(
+    dataset = Dataset(
         metadata=metadata, samples=samples, files=files, raw_documents=raw_documents
     )
+
+    if include_reads:
+        # Imported here to keep the ENA dependency off the processed-file path.
+        from .ena import attach_reads
+
+        attach_reads(dataset, session)
+
+    return dataset
 
 
 def _dedupe(files: list[RemoteFile]) -> list[RemoteFile]:

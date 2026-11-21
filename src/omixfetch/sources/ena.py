@@ -1,0 +1,249 @@
+"""Resolve raw sequencing reads through the EBI ENA portal API.
+
+ENA mirrors SRA and serves FASTQ files as ordinary HTTPS objects with range
+support, so raw reads can be fetched with the same aria2c machinery as
+processed files -- no SRA Toolkit, and no ``.sra`` to convert. ENA also
+publishes a per-file md5, which makes checksum verification real rather than
+nominal: GEO publishes no checksums at all.
+
+Not every GEO series has reads here. Human data under controlled access
+(dbGaP) has a BioProject but no public runs, and ENA then returns an empty
+result. That is a permissions boundary, not an error to retry.
+"""
+
+from __future__ import annotations
+
+import csv
+import dataclasses
+import io
+import re
+from dataclasses import dataclass, field
+from typing import Any
+
+import requests
+
+from ..errors import ResolveError
+from ..http import get_text
+from ..models import Dataset, RemoteFile, SampleMetadata
+
+PORTAL = "https://www.ebi.ac.uk/ena/portal/api/filereport"
+
+#: Fields requested from the portal, in the order they are returned.
+RUN_FIELDS = [
+    "run_accession",
+    "experiment_accession",
+    "sample_accession",
+    "secondary_sample_accession",
+    "study_accession",
+    "library_strategy",
+    "library_source",
+    "library_selection",
+    "instrument_model",
+    "read_count",
+    "base_count",
+    "fastq_ftp",
+    "fastq_bytes",
+    "fastq_md5",
+    "submitted_ftp",
+    "submitted_bytes",
+    "submitted_md5",
+]
+
+#: Study-level accessions ENA accepts for a read_run query.
+PROJECT_RE = re.compile(r"\b(PRJ[A-Z]{2}\d+)\b")
+STUDY_RE = re.compile(r"\b([SED]RP\d+)\b")
+BIOSAMPLE_RE = re.compile(r"\b(SAM[ND][A-Z]?\d+|SAME[A]?\d+)\b")
+
+
+@dataclass
+class RunMetadata:
+    """One sequencing run as described by ENA."""
+
+    accession: str
+    experiment_accession: str | None = None
+    sample_accession: str | None = None
+    secondary_sample_accession: str | None = None
+    study_accession: str | None = None
+    library_strategy: str | None = None
+    library_source: str | None = None
+    library_selection: str | None = None
+    instrument_model: str | None = None
+    read_count: int | None = None
+    base_count: int | None = None
+    #: GEO sample this run belongs to, when it could be matched.
+    sample: str | None = None
+    files: list[RemoteFile] = field(default_factory=list)
+    raw: dict[str, str] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return dataclasses.asdict(self)
+
+
+def project_accessions(relations: dict[str, str]) -> list[str]:
+    """Extract ENA-queryable study accessions from GEO relation fields.
+
+    GEO records these as URLs -- ``BioProject: https://.../PRJNA229998`` and
+    ``SRA: https://...?term=SRP033351``. Both forms are accepted by the
+    portal; BioProject accessions are listed first because they are present
+    more often.
+    """
+    projects: list[str] = []
+    studies: list[str] = []
+    for value in relations.values():
+        projects += PROJECT_RE.findall(value or "")
+        studies += STUDY_RE.findall(value or "")
+
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for acc in projects + studies:
+        if acc not in seen:
+            seen.add(acc)
+            ordered.append(acc)
+    return ordered
+
+
+def _as_url(path: str) -> str:
+    """ENA returns bare host paths; make them absolute HTTPS URLs."""
+    path = path.strip()
+    if not path:
+        return ""
+    if path.startswith(("http://", "https://")):
+        return path
+    if path.startswith("ftp://"):
+        return "https://" + path[len("ftp://") :]
+    return "https://" + path
+
+
+def _row_files(row: dict[str, str], run_accession: str) -> list[RemoteFile]:
+    """Build file records from a portal row, preferring FASTQ over submitted files.
+
+    The portal packs multi-file runs into semicolon-separated lists that run
+    in parallel across the URL, size and md5 columns.
+    """
+    for url_key, size_key, md5_key in (
+        ("fastq_ftp", "fastq_bytes", "fastq_md5"),
+        ("submitted_ftp", "submitted_bytes", "submitted_md5"),
+    ):
+        raw_urls = [u for u in (row.get(url_key) or "").split(";") if u.strip()]
+        if not raw_urls:
+            continue
+        sizes = (row.get(size_key) or "").split(";")
+        md5s = (row.get(md5_key) or "").split(";")
+        files: list[RemoteFile] = []
+        for index, raw_url in enumerate(raw_urls):
+            url = _as_url(raw_url)
+            size: int | None = None
+            if index < len(sizes) and sizes[index].strip().isdigit():
+                size = int(sizes[index].strip())
+            md5 = md5s[index].strip() if index < len(md5s) and md5s[index].strip() else None
+            files.append(
+                RemoteFile(
+                    url=url,
+                    filename=url.rsplit("/", 1)[-1],
+                    size=size,
+                    kind="raw",
+                    accession=run_accession,
+                    md5=md5,
+                )
+            )
+        return files
+    return []
+
+
+def parse_filereport(text: str) -> list[RunMetadata]:
+    """Parse a TSV filereport response into run records."""
+    rows = list(csv.DictReader(io.StringIO(text), delimiter="\t"))
+    runs: list[RunMetadata] = []
+    for row in rows:
+        accession = (row.get("run_accession") or "").strip()
+        if not accession:
+            continue
+        runs.append(
+            RunMetadata(
+                accession=accession,
+                experiment_accession=row.get("experiment_accession") or None,
+                sample_accession=row.get("sample_accession") or None,
+                secondary_sample_accession=row.get("secondary_sample_accession") or None,
+                study_accession=row.get("study_accession") or None,
+                library_strategy=row.get("library_strategy") or None,
+                library_source=row.get("library_source") or None,
+                library_selection=row.get("library_selection") or None,
+                instrument_model=row.get("instrument_model") or None,
+                read_count=int(row["read_count"]) if (row.get("read_count") or "").isdigit() else None,
+                base_count=int(row["base_count"]) if (row.get("base_count") or "").isdigit() else None,
+                files=_row_files(row, accession),
+                raw={k: v for k, v in row.items() if v},
+            )
+        )
+    return runs
+
+
+def fetch_runs(session: requests.Session, accession: str) -> list[RunMetadata]:
+    """Query the ENA portal for every public run under *accession*.
+
+    Args:
+        accession: a BioProject (``PRJNA...``) or study (``SRP...``) accession.
+
+    Returns:
+        Run records, which may be empty when the data is not public in ENA.
+    """
+    text = get_text(
+        session,
+        PORTAL,
+        expect_text=False,
+        params={
+            "accession": accession,
+            "result": "read_run",
+            "fields": ",".join(RUN_FIELDS),
+            "format": "tsv",
+        },
+    )
+    return parse_filereport(text)
+
+
+def _biosample_to_sample(samples: list[SampleMetadata]) -> dict[str, str]:
+    """Map BioSample accessions mentioned in GEO relations to GEO sample ids."""
+    mapping: dict[str, str] = {}
+    for sample in samples:
+        for value in sample.relations.values():
+            for match in BIOSAMPLE_RE.findall(value or ""):
+                mapping[match] = sample.accession
+    return mapping
+
+
+def attach_reads(dataset: Dataset, session: requests.Session) -> list[RunMetadata]:
+    """Resolve raw reads for *dataset* and attach them in place.
+
+    Returns:
+        The runs found. An empty list means the series links to a project but
+        ENA serves no public runs for it -- usually controlled access.
+
+    Raises:
+        ResolveError: if the dataset carries no project accession at all.
+    """
+    accessions = project_accessions(dataset.metadata.relations)
+    if not accessions:
+        raise ResolveError(
+            f"{dataset.accession} records no BioProject or SRA study accession, so "
+            f"there is no raw-read project to look up. Series with processed data "
+            f"only are the usual reason."
+        )
+
+    runs: list[RunMetadata] = []
+    for accession in accessions:
+        runs = fetch_runs(session, accession)
+        if runs:
+            break
+
+    by_biosample = _biosample_to_sample(dataset.samples)
+    for run in runs:
+        for key in (run.sample_accession, run.secondary_sample_accession):
+            if key and key in by_biosample:
+                run.sample = by_biosample[key]
+                break
+        for f in run.files:
+            f.accession = run.sample or run.accession
+
+    dataset.runs = runs
+    dataset.files.extend(f for run in runs for f in run.files)
+    return runs

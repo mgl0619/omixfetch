@@ -77,6 +77,7 @@ def info(accessions: list[str] = ACCESSIONS) -> None:
             ("Platforms", ", ".join(m.platforms)),
             ("Samples", str(m.n_samples)),
             ("Files", str(len(dataset.files))),
+            ("Runs (ENA)", str(len(dataset.runs)) if dataset.runs else ""),
             ("Total size", human_bytes(total_size(dataset.files))),
             ("Released", m.release_date),
             ("PubMed", ", ".join(m.pubmed_ids)),
@@ -98,10 +99,13 @@ def list_files(
     max_size: Optional[str] = typer.Option(None, "--max-size", help="Drop files larger than this, e.g. 500MB."),
     samples: bool = typer.Option(True, "--samples/--no-samples", help="Include per-sample files."),
     sizes: bool = typer.Option(True, "--sizes/--no-sizes", help="Query file sizes (GEO needs one HEAD per file)."),
+    reads: bool = typer.Option(False, "--reads", help="Also resolve raw sequencing reads via ENA."),
 ) -> None:
     """List the files an accession resolves to, without downloading."""
     limit = parse_size(max_size) if max_size else None
-    for dataset in _resolve_all(accessions, include_samples=samples, fetch_sizes=sizes):
+    for dataset in _resolve_all(
+        accessions, include_samples=samples, fetch_sizes=sizes, include_reads=reads
+    ):
         selected = apply_filters(
             dataset.files, include=include, exclude=exclude, kinds=kind, max_size=limit
         )
@@ -121,9 +125,12 @@ def metadata_only(
     accessions: list[str] = ACCESSIONS,
     outdir: Path = typer.Option(Path("."), "--outdir", "-o", help="Destination directory."),
     samples: bool = typer.Option(True, "--samples/--no-samples", help="Include per-sample annotation."),
+    reads: bool = typer.Option(False, "--reads", help="Also resolve ENA run metadata."),
 ) -> None:
     """Fetch and write metadata only, downloading no data files."""
-    for dataset in _resolve_all(accessions, include_samples=samples, fetch_sizes=False):
+    for dataset in _resolve_all(
+        accessions, include_samples=samples, fetch_sizes=False, include_reads=reads
+    ):
         directory = outdir / dataset.accession / "metadata"
         written = write_metadata(dataset, directory)
         console.print(
@@ -197,12 +204,22 @@ def get(
     samples: bool = typer.Option(True, "--samples/--no-samples", help="Include per-sample files."),
     metadata: bool = typer.Option(True, "--metadata/--no-metadata", help="Write metadata alongside the data."),
     matrix: bool = typer.Option(False, "--matrix", help="Also fetch the GEO series matrix file."),
+    reads: bool = typer.Option(False, "--reads", help="Also fetch raw sequencing reads (FASTQ) via ENA."),
+    reads_only: bool = typer.Option(False, "--reads-only", help="Fetch only raw reads, no processed files."),
     dry_run: bool = typer.Option(False, "--dry-run", help="Resolve and report, but download nothing."),
     quiet: bool = typer.Option(False, "--quiet", "-q", help="Suppress transfer progress output."),
 ) -> None:
     """Download data files and metadata for each accession."""
     limit = parse_size(max_size) if max_size else None
-    datasets = _resolve_all(accessions, include_samples=samples, include_matrix=matrix)
+    want_reads = reads or reads_only
+    datasets = _resolve_all(
+        accessions,
+        include_samples=samples,
+        include_matrix=matrix,
+        include_reads=want_reads,
+    )
+    if reads_only:
+        kind = list(kind) + ["raw"] if kind else ["raw"]
 
     engine: object
     if backend == "auto":
@@ -224,6 +241,13 @@ def get(
 
     for dataset in datasets:
         destination = outdir / dataset.accession
+        if want_reads and not dataset.runs:
+            error_console.print(
+                f"[yellow]{dataset.accession}: ENA serves no public runs for this "
+                f"project. Human data under controlled access (dbGaP) is the usual "
+                f"reason; such reads need authorised access and cannot be fetched "
+                f"here.[/yellow]"
+            )
         selected = apply_filters(
             dataset.files, include=include, exclude=exclude, kinds=kind, max_size=limit
         )

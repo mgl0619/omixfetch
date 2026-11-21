@@ -7,17 +7,27 @@ across connections -- for large files aria2c is substantially faster.
 
 from __future__ import annotations
 
+import hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Sequence
 
 import requests
 
-from ..errors import BackendError
+from ..errors import BackendError, ChecksumError
 from ..http import make_session
 from ..models import RemoteFile
 
 CHUNK = 1 << 20
+
+
+def file_md5(path: Path) -> str:
+    """Return the md5 of *path*, read in chunks so large files stay out of RAM."""
+    digest = hashlib.md5()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(CHUNK), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 class RequestsBackend:
@@ -68,6 +78,14 @@ class RequestsBackend:
             raise BackendError(
                 f"{f.filename}: expected {f.size} bytes, got {part.stat().st_size}."
             )
+        if f.md5:
+            actual = file_md5(part)
+            if actual != f.md5.lower():
+                part.unlink(missing_ok=True)
+                raise ChecksumError(
+                    f"{f.filename}: md5 mismatch (expected {f.md5}, got {actual}). "
+                    f"The partial file was removed so the next run starts clean."
+                )
         part.replace(target)
         return target
 
@@ -103,6 +121,10 @@ class RequestsBackend:
         for _ in range(self.max_tries):
             try:
                 return self._download_one(f, dest_dir)
+            except ChecksumError:
+                # A bad checksum is a corrupt transfer, not a flaky one; the
+                # server will return the same bytes again.
+                raise
             except Exception as exc:
                 last = exc
         raise BackendError(str(last))
