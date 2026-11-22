@@ -16,8 +16,9 @@ from omixfetch.errors import BackendError
 
 
 @pytest.fixture
-def clean(monkeypatch):
-    """No toolkit anywhere, no configuration."""
+def clean(monkeypatch, tmp_path):
+    """No toolkit anywhere, no configuration -- including no bundled copy."""
+    monkeypatch.setenv("OMIXFETCH_HOME", str(tmp_path / "empty-home"))
     monkeypatch.delenv(PATH_ENV_VAR, raising=False)
     monkeypatch.delenv(ENV_NAME_VAR, raising=False)
     monkeypatch.setattr(convert.shutil, "which", lambda name: None)
