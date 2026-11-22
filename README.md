@@ -422,18 +422,129 @@ troubleshooting). If that is blocked, use route 4.
 
 ### What has been verified
 
-| Route | Status |
+Everything below was run against the live archives, not mocked. Offline unit
+tests (203) cover the logic; the live tiers are described in
+[TESTING.md](TESTING.md).
+
+| Piece | Status | Evidence |
+|---|---|---|
+| GEO processed files | ✓ verified | real downloads; sizes and gzip integrity checked |
+| ENA FASTQ route | ✓ verified | GSE204978, 2 runs: file sizes match ENA to the byte, md5 checked |
+| `.sra` route + `fasterq-dump` | ✓ verified | GSE204978, 2 runs: 23,959 and 26,554 reads in both mates, matching NCBI's spot counts |
+| Decision tree, FASTQ branch | ✓ verified | GSE204978: measured NCBI 11.9 vs ENA 0.5 MiB/s, so it picked `.sra` over ENA's ready-made FASTQ |
+| Decision tree, 10x BAM branch | ✓ planned correctly | GSE184708 dry run: all 20 runs routed AWS BAM → `bamtofastq` |
+| Resume after interruption | ✓ verified | rerun skipped both finished runs; nothing re-downloaded |
+| Controlled-access series | ✓ verified | GSE164378 reported as having no public runs; exit code 1 |
+| ENA submitted file | ✓ verified | one `.bai` from GSE184708; md5 matched ENA |
+| BAM header probe | ✓ verified | GSE184708 header read with a 4 MB range request; `10x_bam_to_fastq` lines found |
+| Bundled converters | ✓ verified | SRA Toolkit 3.4.1 and `bamtofastq` 1.4.1 installed in 6 s on macOS arm64 |
+| HTML report | ✓ verified | written for a completed run and for a dry-run plan |
+| `bamtofastq` on a real BAM | **not yet run** | medium live tier: GSE220167 / SRR22543607, 8.3 GB |
+| `samtools fastq` on a real BAM | **not yet run** | needs `samtools` (`conda install -c bioconda samtools`); not bundled |
+| Aspera (`ascp`) | **not yet run** | endpoints exist for all 20 runs of GSE184708 |
+| `s5cmd` backend | **unit-tested only** | not yet run against S3 |
+| Aligned `.sra` conversion | ✗ failed in test | SRR390728 needs NCBI's reference service at conversion time (see below) |
+
+Throughput figures quoted anywhere in this README were measured from one
+machine and **do not transfer to yours**. That is why the pipeline measures
+on every run, and why `omixfetch benchmark` exists.
+
+### Why the original BAM, not the `.sra`, for 10x submissions
+
+This is the most consequential decision the tool makes, so the evidence is
+recorded here. GSE184708 was submitted as 10x Cell Ranger BAMs.
+
+**The `.sra` lost the barcode read.** NCBI's RunInfo for SRR16036138:
+
+| Field | Value | Meaning |
+|---|---|---|
+| `LibraryLayout` | PAIRED | the library has two reads per fragment |
+| `spots_with_mates` | **0** | none of them have a mate in the `.sra` |
+| `avgLength` | **98** | 98 bases per spot: the cDNA read only |
+
+A 10x library is R1 (cell barcode + UMI, 26–28 bp) plus R2 (cDNA). The
+barcode and UMI were stored as BAM *tags*, not as a read, and SRA's loader
+did not keep them. Converting that `.sra` produces FASTQ with no cell
+barcodes, which Cell Ranger, STARsolo and kallisto|bustools cannot use. ENA's
+FASTQ for BAM submissions is generated from the same data and has the same
+gap.
+
+**The BAM still has everything.** Its header, read with a 4 MB range request:
+
+```
+@CO  10x_bam_to_fastq:R1(CR:CY,UR:UY)   barcode + UMI, from tags
+@CO  10x_bam_to_fastq:R2(SEQ:QUAL)      cDNA
+@CO  10x_bam_to_fastq:I1(BC:QT)         sample index
+@PG  ID:STAR  VN:STAR_2.5.1b  CL:... --outSAMunmapped Within ...
+```
+
+`CR`/`UR` are the *uncorrected* barcode and UMI, so the rebuilt R1 matches
+what was sequenced. `--outSAMunmapped Within` means unmapped reads were kept.
+The STAR input path (`.../SC_RNA_COUNTER_CS/...`) identifies Cell Ranger's
+own pipeline. So `bamtofastq` can recover the complete original FASTQ, at
+the cost of a larger transfer: 1.7 TiB of BAM against 709 GiB of `.sra`.
+
+**NCBI's labels are not enough on their own.** For GSE184708, NCBI's
+`LibrarySource` says `TRANSCRIPTOMIC`, not single-cell, and only the original
+file is tagged `TenX`. Conversely, GSE217662's originals are tagged `TenX`
+but their BAM headers have no `10x_bam_to_fastq` lines, so `bamtofastq`
+would fail on them after a 280 GB download. The header probe catches both
+cases before anything large is fetched.
+
+**The general rule** used by the decision tree: a BAM converts back to the
+FASTQ that was sequenced only if it kept the unmapped reads and, for
+single-cell data, the barcode and UMI. Most Cell Ranger BAMs do. STAR with
+default settings, or HISAT2/Bowtie2 with `--no-unal`, drop unmapped reads,
+and converting them gives back only what mapped.
+
+### Before downloading terabytes, check what GEO already has
+
+GSE184708 also ships its processed data on GEO, 1.2 GiB in total:
+
+| File | Size |
 |---|---|
-| 1 GEO processed | real downloads, sizes and gzip integrity checked |
-| 2 ENA FASTQ | resolved and range-capable; long transfers were cut off in the test environment |
-| 3 ENA submitted | one `.bai` from GSE184708 downloaded, md5 matched ENA |
-| 3 via Aspera | endpoints published for all 20 runs of GSE184708; `ascp` not yet run |
-| 4 NCBI original | range requests and throughput sampled; no full BAM downloaded |
-| 5 NCBI `.sra` | SRR390728 downloaded, md5 matched; its conversion failed on a reference fetch |
-| `s5cmd` backend | unit-tested only; not yet run against S3 |
-| `fastq` pipeline | unit-tested offline; plans GSE184708 correctly (all 20 runs to `original`); full runs pending |
-| bundled tools | SRA Toolkit 3.4.1 and bamtofastq 1.4.1 installed and run on macOS arm64 |
-| 10x header probe | GSE184708 BAM header read with a 4 MB range request; `10x_bam_to_fastq` lines found |
+| `GSE184708_raw_counts_gonad_all_samples_XX_XY_E10_to_E16.mtx.gz` | 1.2 GiB |
+| `GSE184708_mayere_barcodes.tsv.gz` | 431 KiB |
+| `GSE184708_mayere_genes.tsv.gz` | 106 KiB |
+| `GSE184708_mayere_meta_data.csv.gz` | 7.0 MiB |
+
+If you'll analyse the authors' counts as they are, `omixfetch get GSE184708`
+fetches those in minutes. Raw FASTQ (`omixfetch fastq`) is worth its 1.7 TiB
+only for reprocessing: a new reference, a different aligner, ambient-RNA
+correction from raw droplets. For tools that read the alignment directly
+(velocyto, genotype demultiplexing), the BAMs alone suffice and conversion
+can be skipped.
+
+### Known issues and caveats
+
+- **Aligned `.sra` needs NCBI's reference service.** An `.sra` loaded from an
+  aligned submission stores reads as differences against a reference genome;
+  `fasterq-dump` fetches those references at conversion time. Installing
+  sra-tools locally does not change this. SRR390728 failed this way in
+  testing. References are cached, so it is a one-time cost per study; point
+  the cache at scratch with `vdb-config --interactive`. The decision tree
+  avoids this case for 10x data anyway.
+- **sra-tools and aria2 cannot share a conda environment on osx-arm64**: a
+  combined solve fails on a `libxml2`/`icu` conflict. The bundled prebuilt
+  toolkit (`omixfetch setup`) sidesteps conda entirely.
+- **`bamtofastq` on Apple Silicon** is an x86_64 binary and needs Rosetta 2.
+  It runs natively on Linux.
+- **Fixed in 0.8.0:** single-cell `.sra` conversions ran with
+  `--skip-technical`, which would silently drop barcode and index reads that
+  SRA flags as technical. They now use `--split-files --include-technical`.
+- **Fixed in 0.7.0:** expected spot counts came from ENA, which reports 0 for
+  submissions it never processed into reads, so every BAM-submitted run would
+  have failed verification. Counts now come from NCBI RunInfo.
+
+### Example reports
+
+[A completed two-run download of GSE204978](docs/examples/GSE204978_download_report.html)
+and [the 20-run plan for GSE184708](docs/examples/GSE184708_plan_report.html)
+show what `download_report.html` looks like in practice (download the file
+and open it in a browser; GitHub shows HTML as source): one row
+per run with submission type, decision branch, routes not used and why,
+estimate, outcome, spot counts expected against written, size, time and
+throughput.
 
 ## What you get
 

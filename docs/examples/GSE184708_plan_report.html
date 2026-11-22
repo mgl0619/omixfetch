@@ -1,0 +1,63 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>GSE184708 &ndash; omixfetch plan (dry run)</title><style>
+body{font:14px/1.45 -apple-system,Segoe UI,Helvetica,Arial,sans-serif;margin:2rem auto;
+     max-width:1200px;color:#1d2327;padding:0 1rem}
+h1{font-size:1.5rem;margin:0 0 .2rem}h2{font-size:1.1rem;margin:2rem 0 .6rem;
+   border-bottom:1px solid #dcdcde;padding-bottom:.3rem}
+.sub{color:#646970;margin:0 0 1.2rem}
+.cards{display:flex;gap:.8rem;flex-wrap:wrap}
+.card{border:1px solid #dcdcde;border-radius:6px;padding:.6rem 1rem;min-width:120px}
+.card b{display:block;font-size:1.3rem}.card span{color:#646970;font-size:.85rem}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{border-bottom:1px solid #eee;padding:.35rem .5rem;text-align:left;vertical-align:top}
+th{background:#f6f7f7;font-weight:600}td.num{text-align:right;font-variant-numeric:tabular-nums}
+.done{color:#007017;font-weight:600}.failed{color:#b32d2e;font-weight:600}
+.skipped,.pending{color:#996800;font-weight:600}
+.small{color:#646970;font-size:.8rem}
+pre{background:#f6f7f7;padding:.8rem 1rem;border-radius:6px;font-size:.82rem;overflow-x:auto}
+code{font-size:.85em}
+</style></head><body>
+<h1>GSE184708 &ndash; Plan (dry run)</h1>
+<p class="sub">Single Cell transcriptomic atlas of mouse sex determination and gonadal differentiation<br>omixfetch 0.7.0 &middot;
+generated 2026-11-22 09:31:55 EST</p>
+
+<div class="cards">
+<div class="card"><b>20</b><span>runs</span></div>
+<div class="card"><b class="done">0</b><span>complete</span></div>
+<div class="card"><b class="failed">0</b><span>failed</span></div>
+<div class="card"><b class="skipped">0</b><span>skipped</span></div>
+<div class="card"><b class="pending">20</b><span>pending</span></div>
+<div class="card"><b>0</b><span>transferred</span></div>
+<div class="card"><b>&ndash;</b><span>wall time</span></div>
+<div class="card"><b>0s</b><span>run time (summed)</span></div>
+</div>
+
+<h2>Per-run decisions and outcomes</h2>
+<table><thead><tr><th>Run</th><th>Sample</th><th>Submitted</th><th>Decision</th>
+<th>Route</th><th>Not used, and why</th><th>Est.</th><th>Status</th>
+<th>Spots expected / written</th><th>Size</th><th>Time</th><th>MiB/s</th><th>FASTQ</th>
+</tr></thead><tbody><tr><td>SRR16036141</td><td>GSM5595985</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>15.3 h</td><td class='pending'>pending</td><td class='num'>962,180,233 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036145</td><td>GSM5595989</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>19.6 h</td><td class='pending'>pending</td><td class='num'>1,275,201,075 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036153</td><td>GSM5595997</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>9.1 h</td><td class='pending'>pending</td><td class='num'>627,705,414 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036136</td><td>GSM5595980</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>11.1 h</td><td class='pending'>pending</td><td class='num'>678,865,912 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036137</td><td>GSM5595981</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>7.9 h</td><td class='pending'>pending</td><td class='num'>467,660,400 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036139</td><td>GSM5595983</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>22.3 h</td><td class='pending'>pending</td><td class='num'>1,518,610,066 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036140</td><td>GSM5595984</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>13.3 h</td><td class='pending'>pending</td><td class='num'>829,443,863 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036143</td><td>GSM5595987</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>18.3 h</td><td class='pending'>pending</td><td class='num'>1,251,139,847 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036144</td><td>GSM5595988</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>9.5 h</td><td class='pending'>pending</td><td class='num'>577,180,011 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036148</td><td>GSM5595992</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>15.8 h</td><td class='pending'>pending</td><td class='num'>994,131,385 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036149</td><td>GSM5595993</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>11.5 h</td><td class='pending'>pending</td><td class='num'>711,632,580 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036150</td><td>GSM5595994</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>9.0 h</td><td class='pending'>pending</td><td class='num'>560,389,463 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036154</td><td>GSM5595998</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>5.9 h</td><td class='pending'>pending</td><td class='num'>371,066,546 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036138</td><td>GSM5595982</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>16.6 h</td><td class='pending'>pending</td><td class='num'>1,091,833,030 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036151</td><td>GSM5595995</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>12.4 h</td><td class='pending'>pending</td><td class='num'>769,643,540 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036142</td><td>GSM5595986</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>13.0 h</td><td class='pending'>pending</td><td class='num'>887,451,563 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036152</td><td>GSM5595996</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>12.3 h</td><td class='pending'>pending</td><td class='num'>804,921,333 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036155</td><td>GSM5595999</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>12.5 h</td><td class='pending'>pending</td><td class='num'>780,080,170 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036146</td><td>GSM5595990</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>8.3 h</td><td class='pending'>pending</td><td class='num'>496,856,175 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr><tr><td>SRR16036147</td><td>GSM5595991</td><td>bam</td><td>BAM submission, 10x: AWS BAM -&gt; bamtofastq</td><td><code>original</code></td><td class='small'><code>sra</code>: derived from the submitted BAM; lost the barcode/UMI read (R1)</td><td class='num'>16.2 h</td><td class='pending'>pending</td><td class='num'>998,565,145 / &ndash;</td><td class='num'></td><td class='num'></td><td class='num'></td><td class='small'></td></tr></tbody></table>
+
+<h2>Problems</h2>
+<p>None.</p>
+
+<h2>Decision tree</h2>
+<pre>run
+|-- no public files ........................ skip (controlled access)
+|-- submitted as BAM/CRAM  (header read with a 4 MB range request)
+|   |-- 10x_bam_to_fastq lines ............. AWS BAM -&gt; bamtofastq
+|   |-- single-cell, no 10x lines .......... no faithful route
+|   |-- aligner kept unmapped reads ........ AWS BAM -&gt; samtools fastq
+|   `-- dropped unmapped / unknown ......... no faithful route
+`-- submitted as FASTQ
+    `-- ENA FASTQ or AWS .sra -&gt; fasterq-dump, fastest by measured throughput</pre>
+<p class="small">Routes derived from a submitted BAM (the .sra and ENA's FASTQ) carry
+whatever the BAM lost; for 10x data that is the barcode/UMI read. Spot counts are
+checked against NCBI RunInfo where the converter reports them.</p>
+
+<h2>Measured throughput</h2>
+<table><tbody><tr><td>NCBI</td><td class='num'>3.8 MiB/s</td></tr></tbody></table>
+
+<h2>Tools</h2>
+<table><tbody><tr><td>fasterq-dump</td><td>~/.omixfetch/tools/bin/fasterq-dump</td></tr><tr><td>bamtofastq</td><td>~</td></tr><tr><td>samtools</td><td>not found</td></tr><tr><td>aria2c</td><td>not found</td></tr><tr><td>s5cmd</td><td>not found</td></tr></tbody></table>
+</body></html>

@@ -1,0 +1,63 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>GSE204978 &ndash; omixfetch download report</title><style>
+body{font:14px/1.45 -apple-system,Segoe UI,Helvetica,Arial,sans-serif;margin:2rem auto;
+     max-width:1200px;color:#1d2327;padding:0 1rem}
+h1{font-size:1.5rem;margin:0 0 .2rem}h2{font-size:1.1rem;margin:2rem 0 .6rem;
+   border-bottom:1px solid #dcdcde;padding-bottom:.3rem}
+.sub{color:#646970;margin:0 0 1.2rem}
+.cards{display:flex;gap:.8rem;flex-wrap:wrap}
+.card{border:1px solid #dcdcde;border-radius:6px;padding:.6rem 1rem;min-width:120px}
+.card b{display:block;font-size:1.3rem}.card span{color:#646970;font-size:.85rem}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{border-bottom:1px solid #eee;padding:.35rem .5rem;text-align:left;vertical-align:top}
+th{background:#f6f7f7;font-weight:600}td.num{text-align:right;font-variant-numeric:tabular-nums}
+.done{color:#007017;font-weight:600}.failed{color:#b32d2e;font-weight:600}
+.skipped,.pending{color:#996800;font-weight:600}
+.small{color:#646970;font-size:.8rem}
+pre{background:#f6f7f7;padding:.8rem 1rem;border-radius:6px;font-size:.82rem;overflow-x:auto}
+code{font-size:.85em}
+</style></head><body>
+<h1>GSE204978 &ndash; Download report</h1>
+<p class="sub">Leukaemia Exposure Alters the Transcriptional Profile and Function of BCR-ABL Negative Macrophages in the Bone Marrow Niche<br>omixfetch 0.7.0 &middot;
+generated 2026-11-22 09:35:37 EST</p>
+
+<div class="cards">
+<div class="card"><b>2</b><span>runs</span></div>
+<div class="card"><b class="done">2</b><span>complete</span></div>
+<div class="card"><b class="failed">0</b><span>failed</span></div>
+<div class="card"><b class="skipped">0</b><span>skipped</span></div>
+<div class="card"><b class="pending">0</b><span>pending</span></div>
+<div class="card"><b>3.4 MiB</b><span>transferred</span></div>
+<div class="card"><b>29s</b><span>wall time</span></div>
+<div class="card"><b>12s</b><span>run time (summed)</span></div>
+</div>
+
+<h2>Per-run decisions and outcomes</h2>
+<table><thead><tr><th>Run</th><th>Sample</th><th>Submitted</th><th>Decision</th>
+<th>Route</th><th>Not used, and why</th><th>Est.</th><th>Status</th>
+<th>Spots expected / written</th><th>Size</th><th>Time</th><th>MiB/s</th><th>FASTQ</th>
+</tr></thead><tbody><tr><td>SRR19429286</td><td>GSM6203352</td><td>fastq</td><td>FASTQ submission: fastest faithful route</td><td><code>sra</code></td><td class='small'></td><td class='num'>0.0 h</td><td class='done'>done</td><td class='num'>23,959 / 23,959 &#10003;</td><td class='num'>1.6 MiB</td><td class='num'>6s</td><td class='num'>0.3</td><td class='small'>SRR19429286_1.fastq.gz<br>SRR19429286_2.fastq.gz</td></tr><tr><td>SRR19429291</td><td>GSM6203352</td><td>fastq</td><td>FASTQ submission: fastest faithful route</td><td><code>sra</code></td><td class='small'></td><td class='num'>0.0 h</td><td class='done'>done</td><td class='num'>26,554 / 26,554 &#10003;</td><td class='num'>1.8 MiB</td><td class='num'>6s</td><td class='num'>0.3</td><td class='small'>SRR19429291_1.fastq.gz<br>SRR19429291_2.fastq.gz</td></tr></tbody></table>
+
+<h2>Problems</h2>
+<p>None.</p>
+
+<h2>Decision tree</h2>
+<pre>run
+|-- no public files ........................ skip (controlled access)
+|-- submitted as BAM/CRAM  (header read with a 4 MB range request)
+|   |-- 10x_bam_to_fastq lines ............. AWS BAM -&gt; bamtofastq
+|   |-- single-cell, no 10x lines .......... no faithful route
+|   |-- aligner kept unmapped reads ........ AWS BAM -&gt; samtools fastq
+|   `-- dropped unmapped / unknown ......... no faithful route
+`-- submitted as FASTQ
+    `-- ENA FASTQ or AWS .sra -&gt; fasterq-dump, fastest by measured throughput</pre>
+<p class="small">Routes derived from a submitted BAM (the .sra and ENA's FASTQ) carry
+whatever the BAM lost; for 10x data that is the barcode/UMI read. Spot counts are
+checked against NCBI RunInfo where the converter reports them.</p>
+
+<h2>Measured throughput</h2>
+<table><tbody><tr><td>ENA</td><td class='num'>0.5 MiB/s</td></tr><tr><td>NCBI</td><td class='num'>11.9 MiB/s</td></tr></tbody></table>
+
+<h2>Tools</h2>
+<table><tbody><tr><td>fasterq-dump</td><td>~/.omixfetch/tools/bin/fasterq-dump</td></tr><tr><td>bamtofastq</td><td>~</td></tr><tr><td>samtools</td><td>not found</td></tr><tr><td>aria2c</td><td>not found</td></tr><tr><td>s5cmd</td><td>not found</td></tr></tbody></table>
+</body></html>
