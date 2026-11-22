@@ -164,6 +164,8 @@ def resolve_geo_via_geofetch(
     include_samples: bool = True,
     include_reads: bool = False,
     prefer: str = "fastq",
+    source: str = "ena",
+    sra_flavour: str = "sra",
     verbose: bool = False,
     **_: Any,
 ) -> Dataset:
@@ -297,6 +299,8 @@ def resolve_geo_via_geofetch(
     if include_reads:
         from .ena import attach_reads
 
-        attach_reads(dataset, session, prefer=prefer)
+        attach_reads(
+            dataset, session, prefer=prefer, source=source, sra_flavour=sra_flavour
+        )
 
     return dataset

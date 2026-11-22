@@ -42,9 +42,11 @@ RUN_FIELDS = [
     "read_count",
     "base_count",
     "fastq_ftp",
+    "fastq_aspera",
     "fastq_bytes",
     "fastq_md5",
     "submitted_ftp",
+    "submitted_aspera",
     "submitted_bytes",
     "submitted_md5",
 ]
@@ -121,8 +123,13 @@ def _as_url(path: str) -> str:
 
 
 #: Column groups for each file flavour the portal serves.
-FASTQ_COLUMNS = ("fastq_ftp", "fastq_bytes", "fastq_md5")
-SUBMITTED_COLUMNS = ("submitted_ftp", "submitted_bytes", "submitted_md5")
+FASTQ_COLUMNS = ("fastq_ftp", "fastq_bytes", "fastq_md5", "fastq_aspera")
+SUBMITTED_COLUMNS = (
+    "submitted_ftp",
+    "submitted_bytes",
+    "submitted_md5",
+    "submitted_aspera",
+)
 
 
 def _row_files(
@@ -144,12 +151,13 @@ def _row_files(
         if prefer == "submitted"
         else (FASTQ_COLUMNS, SUBMITTED_COLUMNS)
     )
-    for url_key, size_key, md5_key in order:
+    for url_key, size_key, md5_key, aspera_key in order:
         raw_urls = [u for u in (row.get(url_key) or "").split(";") if u.strip()]
         if not raw_urls:
             continue
         sizes = (row.get(size_key) or "").split(";")
         md5s = (row.get(md5_key) or "").split(";")
+        aspera = [a for a in (row.get(aspera_key) or "").split(";") if a.strip()]
         files: list[RemoteFile] = []
         for index, raw_url in enumerate(raw_urls):
             url = _as_url(raw_url)
@@ -166,6 +174,7 @@ def _row_files(
                     kind="raw",
                     accession=run_accession,
                     md5=md5,
+                    aspera=aspera[index].strip() if index < len(aspera) else None,
                 )
             )
         return files
@@ -240,9 +249,23 @@ def _biosample_to_sample(samples: list[SampleMetadata]) -> dict[str, str]:
 
 
 def attach_reads(
-    dataset: Dataset, session: requests.Session, prefer: str = "fastq"
+    dataset: Dataset,
+    session: requests.Session,
+    prefer: str = "fastq",
+    source: str = "ena",
+    sra_flavour: str = "sra",
 ) -> list[RunMetadata]:
     """Resolve raw reads for *dataset* and attach them in place.
+
+    Args:
+        prefer: for the ENA source, ``"fastq"`` or ``"submitted"``.
+        source: where the bytes come from. ``"ena"`` uses ENA's own file
+            locations; ``"ncbi"`` keeps ENA for run discovery and sample
+            mapping but takes download locations from NCBI's SDL service,
+            which is often considerably faster and can serve the smaller
+            ``.sra`` archive instead of a large submitted BAM.
+        sra_flavour: with ``source="ncbi"``, ``"sra"`` for the normalised
+            archive or ``"original"`` for the submitter's upload.
 
     Returns:
         The runs found. An empty list means the series links to a project but
@@ -271,9 +294,42 @@ def attach_reads(
             if key and key in by_biosample:
                 run.sample = by_biosample[key]
                 break
+
+    if source == "ncbi":
+        _use_ncbi_locations(runs, session, sra_flavour)
+
+    for run in runs:
         for f in run.files:
             f.accession = run.sample or run.accession
 
     dataset.runs = runs
     dataset.files.extend(f for run in runs for f in run.files)
     return runs
+
+
+def _use_ncbi_locations(
+    runs: list[RunMetadata], session: requests.Session, flavour: str
+) -> None:
+    """Replace each run's files with NCBI SDL locations, in place.
+
+    Runs SDL has nothing for keep their ENA files, so a partial SDL answer
+    degrades to the ENA route rather than losing data.
+    """
+    from .ncbi import fetch_sdl, objects_to_files
+
+    objects = fetch_sdl(session, [r.accession for r in runs])
+    sample_by_run = {r.accession: r.sample for r in runs if r.sample}
+    replacements = objects_to_files(objects, flavour=flavour, sample_by_run=sample_by_run)
+
+    by_run: dict[str, list] = {}
+    for f in replacements:
+        owner = next(
+            (o.accession for o in objects if f.url in o.links),
+            None,
+        )
+        if owner:
+            by_run.setdefault(owner, []).append(f)
+
+    for run in runs:
+        if by_run.get(run.accession):
+            run.files = by_run[run.accession]

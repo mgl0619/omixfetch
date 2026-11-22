@@ -184,12 +184,17 @@ def total_size(files: Sequence[RemoteFile]) -> int | None:
 
 
 def human_bytes(n: int | None) -> str:
-    """Format a byte count for display."""
+    """Format a byte count for display using binary units.
+
+    Labels are KiB/MiB/GiB/TiB rather than KB/MB/GB because the divisor is
+    1024: calling 1.7 TiB "1.7 TB" understates the figure by 10% and makes
+    sizes disagree with what the archives publish in decimal bytes.
+    """
     if n is None:
         return "unknown"
     size = float(n)
-    for unit in ("B", "KB", "MB", "GB", "TB"):
-        if size < 1024 or unit == "TB":
+    for unit in ("B", "KiB", "MiB", "GiB", "TiB"):
+        if size < 1024 or unit == "TiB":
             return f"{size:.1f} {unit}" if unit != "B" else f"{int(size)} B"
         size /= 1024
-    return f"{size:.1f} TB"
+    return f"{size:.1f} TiB"
