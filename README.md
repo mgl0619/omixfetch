@@ -182,6 +182,68 @@ backends check the checksum and refuse a corrupt file rather than leaving it on
 disk. GEO publishes no checksums for supplementary files, so those are verified
 on declared size only.
 
+#### Choosing where the bytes come from
+
+The same reads are served by EBI and by NCBI, and which is faster depends
+entirely on your network path. `--source` selects:
+
+```bash
+omixfetch get GSE184708 -o ./data --reads-only --source ena    # EBI (default)
+omixfetch get GSE184708 -o ./data --reads-only --source ncbi   # NCBI SDL / S3
+```
+
+`--source ncbi` resolves locations through NCBI's SDL service — the same one
+the SRA Toolkit queries, but plain HTTP, so no toolkit is needed to download.
+It exposes two objects per run:
+
+| `--sra-flavour` | What you get |
+|---|---|
+| `sra` (default) | the normalised `.sra` archive — smaller, convert with `fasterq-dump` |
+| `original` | the file the submitter uploaded, often a BAM |
+
+For GSE184708 the `.sra` set is 709 GiB against 1.7 TiB of submitted BAMs.
+
+#### Download and convert in one step
+
+If you want FASTQ, ask for it directly:
+
+```bash
+omixfetch get GSE184708 -o ./data --reads-only --source ncbi --convert fastq -t 8
+```
+
+This downloads each `.sra`, runs `fasterq-dump`, gzips the result and removes
+the archive (`--keep-sra` to retain it). Conversion needs the SRA Toolkit,
+which pip does not install:
+
+```bash
+mamba install -c bioconda sra-tools
+```
+
+#### Measuring which source is fastest
+
+Published throughput figures do not transfer between networks. Measure yours:
+
+```bash
+omixfetch benchmark GSE184708 --sample 100MB
+```
+
+It samples a fixed byte range from each source and reports MiB/s plus the
+projected time for the whole dataset, costing a few hundred MB rather than
+terabytes.
+
+#### Aspera
+
+ENA publishes an Aspera endpoint for most runs. `ascp` often beats HTTPS
+substantially over long paths:
+
+```bash
+conda install -c hcc aspera-cli
+omixfetch get GSE184708 -o ./data --reads-only --backend aspera
+```
+
+Aspera needs outbound **UDP port 33001**, which many institutional firewalls
+block; the backend says so rather than hanging.
+
 #### FASTQ, BAM and CRAM
 
 ENA serves whatever the submitter deposited. `--prefer` chooses between
@@ -323,7 +385,7 @@ ruff check src tests
 ```
 
 The test suite runs entirely offline against recorded archive records, so it
-needs no network and no credentials. 114 tests; locally verified on CPython 3.11
+needs no network and no credentials. 122 tests; locally verified on CPython 3.11
 and 3.13, both with and without geofetch installed. CI additionally exercises
 3.10 and 3.12.
 

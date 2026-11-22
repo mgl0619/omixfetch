@@ -185,6 +185,48 @@ For long-read studies where the submitter deposited BAM rather than FASTQ:
 omixfetch get <GSE> -o ./data --reads-only --prefer submitted
 ```
 
+### Going faster
+
+Reads are served by both EBI and NCBI, and which is quicker depends on your
+network. Measure before committing to a large transfer:
+
+```bash
+omixfetch benchmark GSE184708 --sample 100MB
+```
+
+```
+NCBI S3 (original)        55.0 MiB/s   -> 9.0 h for the full set
+NCBI S3 (.sra)            46.6 MiB/s   -> 4.3 h for the full set
+ENA HTTPS                  0.9 MiB/s   -> 544.9 h for the full set
+```
+
+Those numbers are from one particular machine and are **not** transferable —
+run it yourself on the node that will do the downloading.
+
+Then pick a source:
+
+```bash
+omixfetch get GSE184708 -o ./data --reads-only --source ncbi
+```
+
+If you want FASTQ, the `.sra` route is both the smallest transfer and the
+direct path to it — one command downloads and converts:
+
+```bash
+omixfetch get GSE184708 -o ./data --reads-only \
+    --source ncbi --sra-flavour sra --convert fastq -t 8
+```
+
+That needs the SRA Toolkit for the conversion step only
+(`mamba install -c bioconda sra-tools`); the download itself does not use it.
+
+Aspera is worth trying if your site permits outbound UDP 33001:
+
+```bash
+conda install -c hcc aspera-cli
+omixfetch get GSE184708 -o ./data --reads-only --backend aspera
+```
+
 ### When no reads come back
 
 ```
