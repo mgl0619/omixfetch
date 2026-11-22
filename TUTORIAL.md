@@ -64,7 +64,7 @@ omixfetch --version
 ```
 
 ```
-omixfetch 0.8.0
+omixfetch 0.8.1
 aria2c: aria2 version 1.37.0
 s5cmd:  not installed
 ```
