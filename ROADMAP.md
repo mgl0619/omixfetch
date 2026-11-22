@@ -76,6 +76,82 @@ Verified against the live API:
 
 ---
 
+---
+
+## Decision: conversion moves to a separate tool
+
+omixfetch's job is **downloading**: finding the right files for an accession
+(processed data, raw reads as published, metadata) and fetching them fast and
+verified. Converting between formats (`.sra` → FASTQ, BAM → FASTQ,
+`.sra` → BAM) belongs in a separate tool with its own dependencies.
+
+Why: conversion drags in external binaries (SRA Toolkit, `bamtofastq`,
+`samtools`), platform quirks (the osx-arm64 sra-tools/aria2 conda conflict,
+Rosetta for `bamtofastq`, NCBI's reference service for aligned `.sra`) and a
+different failure surface from downloading. Keeping them apart lets each be
+installed, versioned and tested on its own.
+
+Until the split, the existing conversion code stays as it is, so nothing that
+works breaks: `--convert fastq`, `omixfetch fastq` and `omixfetch setup`.
+New work goes into downloading. When the split happens:
+
+- **omixfetch keeps:** resolution (GEO, ENA, NCBI SDL), the route knowledge
+  of *which files* to fetch, including the BAM-header probe that tells a
+  user whether a BAM can later be converted back, plus transfer backends,
+  layout, metadata, manifests and the HTML report.
+- **The conversion tool takes:** `convert.py`, `bundled.py`, the `fastq`
+  pipeline's convert steps, and the conversion half of the decision tree.
+  It reads omixfetch's manifest as input, so the two compose.
+
+## Deferred: raw-read conversion
+
+The raw-read side (`omixfetch fastq`) works for the cases tested and makes
+the safe choice by default, but these items were put on hold as lower
+priority than processed data. Recorded so the findings are not lost.
+
+### Needs a real run on an unsandboxed machine
+
+The development sandbox blocks NCBI's reference service, which every
+aligned-`.sra` operation contacts first (`fasterq-dump`, `sam-dump`,
+`align-info`, even `vdb-dump` on a local file all hung waiting for it).
+
+| Item | How to test | Status |
+|---|---|---|
+| 10x BAM → `bamtofastq` | `OMIXFETCH_LIVE=medium python -m pytest tests/live` (GSE220167 / SRR22543607, 8.3 GB) | not run |
+| Aligned `.sra` → FASTQ | `fasterq-dump --split-3 SRR390728.sra` (195 MB) | failed in sandbox only |
+| Aligned `.sra` → BAM | `sam-dump -r -u SRR390728.sra \| samtools view -b -o out.bam -` | hung in sandbox |
+| Non-10x BAM → `samtools fastq` | any bulk BAM submission whose aligner kept unmapped reads | not run |
+| Aspera (`--backend aspera`) | needs `ascp` and outbound UDP 33001 | not run |
+| `s5cmd` backend | `--backend s5cmd` against an NCBI S3 route | unit-tested only |
+
+### Possible additions
+
+- **`.sra` → BAM route** via `sam-dump`, for bulk aligned submissions where
+  NCBI kept no original BAM (older runs such as SRR390728). Not useful for
+  single-cell: a BAM rebuilt from `.sra` lacks the submitter's tags, so a 10x
+  run would still have no barcodes. Needs reference access at conversion.
+- **SRA Lite** (`.lite`), which NCBI serves at about half the size of the
+  normalised `.sra` (22.2 GB against 48.1 GB for SRR16036138) with quality
+  scores reduced to pass/fail. Reasonable as an opt-in for bulk
+  quantification. Wrong as a default for single-cell, where Cell Ranger and
+  STARsolo use quality scores for barcode correction. Served from NCBI rather
+  than S3.
+- **Bundling `samtools`**, which has no official prebuilt binaries;
+  currently it must be installed separately.
+
+### Findings to keep
+
+- NCBI serves three file types per run: the normalised `.sra` (S3), SRA Lite
+  (NCBI servers), and the original submission (S3, only for non-FASTQ
+  submissions). Confirmed with SDL `filetype=sra|sralite`.
+- For a 10x BAM submission, the `.sra`, SRA Lite and ENA's FASTQ all lack the
+  barcode read; only the original BAM can be converted back to complete
+  FASTQ. GSE184708 is the documented example (see README).
+- Before fetching raw data, check GEO's processed files. GSE184708 ships a
+  1.2 GiB count matrix against 1.7 TiB of BAMs.
+
+---
+
 ## Cross-cutting work these imply
 
 1. **Generalise checksums.** `RemoteFile.md5` assumes one algorithm. PRIDE

@@ -295,6 +295,14 @@ omixfetch manifest GSE164378 -o files.txt --format aria2
 aria2c -i files.txt -j 8 -x 16
 ```
 
+## Scope: downloading
+
+omixfetch's job is downloading: the right files for an accession, fetched
+fast and verified. Format conversion (`.sra` or BAM to FASTQ) is currently
+included through `--convert fastq`, `omixfetch fastq` and `omixfetch setup`,
+but is slated to move into a separate tool; see [ROADMAP.md](ROADMAP.md).
+New features go into downloading.
+
 ## Download routes
 
 Every way to fetch one GEO series, in one place. The examples use GSE184708, a
