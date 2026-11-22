@@ -3,7 +3,8 @@
 **Fast, verified downloads of public genomics data, with the metadata that
 makes it usable.**
 
-Give omixfetch a GEO accession and it works out every file behind it:
+Give omixfetch a GEO accession, or a BioProject or SRA accession for data
+that never went through GEO, and it works out every file behind it:
 processed matrices, raw reads in whatever form they were deposited, and the
 study and sample annotation. It picks the fastest source from your machine,
 moves the bytes in parallel, checks them against the archive's own sizes and
@@ -13,6 +14,7 @@ checksums, and lays them out ready for analysis.
 omixfetch info GSE184708                 # what is this study, and how big?
 omixfetch list GSE184708                 # which files would I get?
 omixfetch get  GSE184708 -o ./data       # fetch processed files + metadata
+omixfetch get  PRJNA672658 -o ./data     # a BioProject with no GEO series: its FASTQ
 ```
 
 omixfetch **downloads**. It doesn't convert between formats; see
@@ -26,6 +28,7 @@ omixfetch **downloads**. It doesn't convert between formats; see
 - [Install](#install)
 - [Downloading processed data](#downloading-processed-data)
 - [Downloading raw data](#downloading-raw-data)
+- [Projects without a GEO series](#projects-without-a-geo-series)
 - [Know what you are downloading](#know-what-you-are-downloading)
 - [Speed: sources and transfer engines](#speed-sources-and-transfer-engines)
 - [What you get on disk](#what-you-get-on-disk)
@@ -40,7 +43,7 @@ omixfetch **downloads**. It doesn't convert between formats; see
 
 | | |
 |---|---|
-| **Resolves** | a GEO series, sample or platform into its complete file list: processed supplementary files, series matrices, and raw reads from ENA and NCBI |
+| **Resolves** | a GEO series, sample or platform into its complete file list: processed supplementary files, series matrices, and raw reads from ENA and NCBI. Also BioProjects, studies, experiments, runs and BioSamples directly (PRJNA/PRJEB/PRJDB, SRP/ERP/DRP, SRX, SRR/ERR/DRR, SAMN/SAMEA/SAMD) |
 | **Chooses sources** | the same raw data is served by EBI (ENA) and by NCBI's AWS mirror; omixfetch measures both from your machine and uses the faster |
 | **Transfers** | in parallel: many files at once, and many connections per file (`aria2c`), S3-native (`s5cmd`) or UDP (`ascp`) |
 | **Verifies** | every file against the archive's published size, and md5 where one is published (ENA and NCBI publish md5 for raw files) |
@@ -49,7 +52,8 @@ omixfetch **downloads**. It doesn't convert between formats; see
 | **Records** | study and sample metadata as JSON, TSV and PEP, plus the unmodified archive records |
 | **Avoids waste** | drops `_RAW.tar` when its contents are listed individually, can read a BAM's header (4 MB) before you commit to a 100 GB download, and reports controlled-access data instead of failing on it |
 
-Supported today: **NCBI GEO**, with raw reads via **ENA** and **NCBI SRA**.
+Supported today: **NCBI GEO**, and the **SRA/ENA/DDBJ read archives** directly,
+with raw reads from **ENA** or **NCBI**.
 Planned: ArrayExpress/E-MTAB, PRIDE, MetaboLights (see [ROADMAP.md](ROADMAP.md)).
 
 ---
@@ -168,6 +172,58 @@ controlled access (dbGaP) is the usual reason ...
 
 No tool can fetch those without an approved data access request. The SRA and
 BioProject accessions are recorded in the metadata for that request.
+
+---
+
+## Projects without a GEO series
+
+Many sequencing datasets are deposited straight to SRA, ENA or DDBJ with no
+GEO record, so GEO-based tools can't reach them. omixfetch takes their
+accessions directly:
+
+```bash
+omixfetch info PRJNA672658                        # study title, samples, total size
+omixfetch get  PRJNA672658 -o ./data --dry-run
+omixfetch get  PRJNA672658 -o ./data              # every run's FASTQ
+omixfetch get  SRR12921178 -o ./data              # or one run
+```
+
+| Accession | Level | Example |
+|---|---|---|
+| `PRJNA`, `PRJEB`, `PRJDB` | BioProject | PRJNA672658 |
+| `SRP`, `ERP`, `DRP` | study | SRP289408 |
+| `SRX`, `ERX`, `DRX` | experiment | SRX9385726 |
+| `SRR`, `ERR`, `DRR` | run | SRR12921178 |
+| `SAMN`, `SAMEA`, `SAMD` | BioSample | SAMN16565585 |
+
+These datasets are reads only, so `--reads` is implied. Everything in
+[Downloading raw data](#downloading-raw-data) applies unchanged: `--prefer
+submitted`, `--source ncbi`, `--sra-flavour`, md5 checks and the engines.
+
+Runs are filed under their **BioSample** accession, which is unique and
+stable where submitter names often are not. `samples.tsv` maps each one to
+its submitter name, title and BioSample characteristics (tissue, sex, age,
+…) taken from EBI BioSamples:
+
+```
+data/PRJNA672658/
+├── data/
+│   ├── SAMN16565585/                      sample "RSA_5"
+│   │   ├── SRR12921178_1.fastq.gz
+│   │   └── SRR12921178_2.fastq.gz
+│   └── ...
+└── metadata/
+    ├── PRJNA672658.samples.tsv            BioSample -> name, title, characteristics
+    ├── PRJNA672658.runs.tsv               run -> sample, read count, md5
+    ├── PRJNA672658.files.tsv
+    ├── PRJNA672658.metadata.json
+    ├── PRJNA672658.ena_study.json         unmodified ENA records
+    └── PRJNA672658.ena_runs.tsv
+```
+
+PRJNA672658 is 11 runs of human decidua scRNA-seq, 877 GiB of FASTQ, or
+681 GiB as NCBI `.sra`. Its R1 reads are 150 bp and include the cell barcode
+and UMI, so here the FASTQ is complete for single-cell use.
 
 ---
 
@@ -321,6 +377,7 @@ logic; [TESTING.md](TESTING.md) describes the live test tiers.
 |---|---|---|
 | GEO processed files | ✓ | real downloads; sizes and gzip integrity checked |
 | ENA FASTQ | ✓ | GSE204978, 2 runs; sizes match ENA to the byte, md5 checked |
+| BioProject / SRA accessions | ✓ | PRJNA842938 run SRR19429286 downloaded by project accession; md5s match ENA, 23,959 reads per mate as NCBI reports. PRJNA672658, SRP289408, SRR12921178, SAMN16565585 resolved |
 | NCBI `.sra` from AWS | ✓ | SRR390728 and GSE204978 runs; md5 matched |
 | ENA submitted file | ✓ | a `.bai` from GSE184708; md5 matched |
 | Source measurement | ✓ | GSE204978: ENA 0.5 vs NCBI 11.9 MiB/s; NCBI chosen |

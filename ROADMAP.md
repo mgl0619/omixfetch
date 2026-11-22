@@ -80,6 +80,8 @@ Verified against the live API:
 
 ## Download work next
 
+- ~~Read-archive accessions without a GEO series (PRJNA/SRP/SRR/SAMN …).~~
+  Done: resolved from ENA, grouped by BioSample.
 - Run the BAM-header check (`probe.assess_bam`) from `get` and `list`, not only
   from the `fastq` planner, so users can see what a raw submission contains
   without touching conversion code.

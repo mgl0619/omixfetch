@@ -1,7 +1,8 @@
 """Decide where each file lands under the destination directory.
 
 The flat layout writes every file into one directory, matching the manifest
-exactly. The by-sample layout groups files under their GEO sample accession
+exactly. The by-sample layout groups files under their sample accession (GSM, or
+BioSample for read-archive projects)
 and, for recognised 10x Cell Ranger triplets, restores the canonical
 ``barcodes.tsv.gz`` / ``features.tsv.gz`` / ``matrix.mtx.gz`` names -- which
 is what ``scanpy.read_10x_mtx()`` and Seurat's ``Read10X()`` expect.
@@ -25,8 +26,9 @@ TENX_RE = re.compile(
     re.IGNORECASE,
 )
 
-#: Accessions that identify an individual sample rather than a series.
-SAMPLE_RE = re.compile(r"^GSM\d+$", re.IGNORECASE)
+#: Accessions that identify an individual sample rather than a series: GEO
+#: samples, and the BioSamples that read-archive runs belong to.
+SAMPLE_RE = re.compile(r"^(GSM|SAMN|SAMEA|SAMD)\d+$", re.IGNORECASE)
 
 
 def canonical_tenx_name(filename: str) -> str | None:

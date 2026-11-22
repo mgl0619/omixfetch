@@ -51,7 +51,11 @@ app = typer.Typer(
 console = Console()
 error_console = Console(stderr=True)
 
-ACCESSIONS = typer.Argument(..., help="GEO accessions (GSE, GSM or GPL).")
+ACCESSIONS = typer.Argument(
+    ...,
+    help="GEO accessions (GSE, GSM, GPL) or read-archive accessions "
+    "(PRJNA/PRJEB/PRJDB, SRP/ERP/DRP, SRX, SRR/ERR/DRR, SAMN/SAMEA/SAMD).",
+)
 RESOLVER = typer.Option(
     "auto",
     "--resolver",
@@ -489,7 +493,8 @@ def get(
 
     for dataset in datasets:
         destination = outdir / dataset.accession
-        if want_reads and not dataset.runs:
+        is_project = dataset.metadata.archive == "sra"
+        if (want_reads or is_project) and not dataset.runs:
             error_console.print(
                 f"[yellow]{dataset.accession}: ENA serves no public runs for this "
                 f"project. Human data under controlled access (dbGaP) is the usual "
@@ -934,7 +939,9 @@ def _setup_conda(env_name: str, dry_run: bool) -> None:
 
 @app.command("benchmark")
 def benchmark(
-    accession: str = typer.Argument(..., help="A GEO accession to benchmark against."),
+    accession: str = typer.Argument(
+        ..., help="A GEO series or read-archive project to benchmark against."
+    ),
     sample: str = typer.Option(
         "100MB", "--sample", help="Bytes to sample from each source."
     ),

@@ -99,7 +99,8 @@ def write_runs_table(dataset: Dataset, path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     header = [
         "run_accession",
-        "geo_sample",
+        # GEO series map runs to GSM samples; projects group them by BioSample.
+        "geo_sample" if dataset.metadata.archive == "geo" else "sample",
         "experiment_accession",
         "sample_accession",
         "study_accession",

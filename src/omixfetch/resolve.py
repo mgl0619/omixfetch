@@ -9,9 +9,11 @@ from .errors import AccessionError
 from .http import make_session
 from .models import Dataset
 from .sources.geo import resolve_geo
+from .sources.project import resolve_project
 
 _RESOLVERS = {
     Archive.GEO: resolve_geo,
+    Archive.SRA: resolve_project,
 }
 
 #: Arguments the geofetch backend does not accept.
@@ -40,6 +42,11 @@ def choose_resolver(
       left ungrouped. It also returns no sample table at all for series that
       have no processed files, which is common for reads-only submissions.
     """
+    if not GEO_RE.match(accession):
+        # Only GEO has a choice of parser; read-archive projects are always
+        # resolved from ENA.
+        return "native"
+
     if requested != "auto":
         return requested
 
@@ -65,7 +72,9 @@ def resolve(
     """Resolve a supported accession into a :class:`Dataset`.
 
     Args:
-        accession: a GEO accession (GSE, GSM or GPL).
+        accession: a GEO accession (GSE, GSM or GPL), or a read-archive
+            accession (PRJNA..., SRP..., SRR..., SAMN... and their ENA/DDBJ
+            equivalents).
         session: optional shared HTTP session; one is created if omitted.
         resolver: ``"auto"`` (geofetch for series when installed, else
             built-in), ``"native"`` or ``"geofetch"``.

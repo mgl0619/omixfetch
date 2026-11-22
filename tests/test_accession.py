@@ -19,7 +19,16 @@ def test_parse_accession(raw, archive, normalised):
     assert parse_accession(raw) == (archive, normalised)
 
 
-@pytest.mark.parametrize("raw", ["", "   ", "SRP000001", "PRJNA123", "E-MTAB", "GSE", "12345"])
+@pytest.mark.parametrize(
+    "raw",
+    ["PRJNA672658", "prjeb1234", "PRJDB5", "SRP289408", "ERP1", "DRP2", "SRX9385726",
+     "SRR12921178", "ERR1", "DRR2", "SAMN16565585", "SAMEA123", "SAMD9"],
+)
+def test_read_archive_accessions_route_to_sra(raw):
+    assert parse_accession(raw) == (Archive.SRA, raw.upper())
+
+
+@pytest.mark.parametrize("raw", ["", "   ", "PRJXX1", "SRZ123", "E-MTAB", "GSE", "12345"])
 def test_parse_accession_rejects_unsupported(raw):
     with pytest.raises(AccessionError):
         parse_accession(raw)

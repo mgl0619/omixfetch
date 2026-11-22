@@ -269,7 +269,31 @@ omixfetch get GSE184708 -o ./data --reads-only --source ncbi --sra-flavour origi
     --backend s5cmd -j 8 -x 16
 ```
 
-### 4.5 When no reads come back
+### 4.5 Projects with no GEO series
+
+Data deposited straight to SRA, ENA or DDBJ has no GSE. Give omixfetch the
+BioProject, study, run or BioSample accession instead:
+
+```bash
+omixfetch info PRJNA672658
+omixfetch get  PRJNA672658 -o ./data --dry-run
+```
+
+```
+PRJNA672658  22 file(s), 877.4 GiB  ->  ./data/PRJNA672658
+    would fetch  SAMN16565580/SRR12921183_1.fastq.gz  (40.8 GiB)
+    would fetch  SAMN16565580/SRR12921183_2.fastq.gz  (33.6 GiB)
+```
+
+Runs are grouped under their BioSample accession; `samples.tsv` gives each
+one's submitter name (here `Normal_5`, `RSA_5`, …) and characteristics. All
+the options in 4.2–4.4 work the same way. To try a single run first:
+
+```bash
+omixfetch get SRR12921178 -o ./data
+```
+
+### 4.6 When no reads come back
 
 ```
 GSE164378: ENA serves no public runs for this project. Human data under
