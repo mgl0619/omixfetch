@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import subprocess
+import time
 from pathlib import Path
 
 import typer
@@ -9,17 +11,30 @@ from rich.console import Console
 from rich.table import Table
 
 from . import __version__
-from .backends import (
+from .backends import (  # noqa: I001
     Aria2Backend,
     AsperaBackend,
     RequestsBackend,
+    S5cmdBackend,
     aria2_available,
     aria2_version,
     ascp_available,
+    s3_uri,
+    s5cmd_available,
+    s5cmd_version,
 )
 from .benchmark import benchmark_source, format_table
-from .convert import PATH_ENV_VAR, fasterq_dump_available, sra_to_fastq
-from .errors import OmixfetchError
+from .convert import (
+    DEFAULT_CONVERT_ENV,
+    ENV_NAME_VAR,
+    PATH_ENV_VAR,
+    create_convert_env,
+    discover,
+    fasterq_dump_available,
+    fasterq_dump_version,
+    sra_to_fastq,
+)
+from .errors import BackendError, OmixfetchError
 from .filters import apply_filters, parse_size
 from .http import make_session
 from .layout import LAYOUTS, apply_layout
@@ -81,6 +96,12 @@ KEEP_SRA = typer.Option(
 THREADS = typer.Option(
     4, "--threads", "-t", help="Threads for conversion."
 )
+CONVERT_ENV = typer.Option(
+    None,
+    "--convert-env",
+    help="Conda environment holding sra-tools. Found automatically if "
+    f"'omixfetch setup' built it; also read from ${ENV_NAME_VAR}.",
+)
 FASTERQ_DUMP_PATH = typer.Option(
     None,
     "--fasterq-dump",
@@ -113,8 +134,8 @@ def _resolve_all(accessions: list[str], **kwargs) -> list[Dataset]:
 def _version_callback(value: bool) -> None:
     if value:
         console.print(f"omixfetch {__version__}")
-        engine = aria2_version() or "not installed"
-        console.print(f"aria2c: {engine}")
+        console.print(f"aria2c: {aria2_version() or 'not installed'}")
+        console.print(f"s5cmd:  {s5cmd_version() or 'not installed'}")
         raise typer.Exit()
 
 
@@ -328,7 +349,11 @@ def get(
         8, "--connections", "-x", help="Connections per file."
     ),
     backend: str = typer.Option(
-        "auto", "--backend", "-b", help="auto, aria2, aspera or python."
+        "auto",
+        "--backend",
+        "-b",
+        help="auto, aria2, s5cmd, aspera or python. 'auto' prefers s5cmd for "
+        "NCBI S3 sources when installed, then aria2.",
     ),
     include: list[str] = typer.Option(
         [], "--include", "-i", help="Keep files matching this glob."
@@ -362,6 +387,7 @@ def get(
     keep_sra: bool = KEEP_SRA,
     threads: int = THREADS,
     fasterq_dump: str | None = FASTERQ_DUMP_PATH,
+    convert_env: str | None = CONVERT_ENV,
     include_archives: bool = typer.Option(
         False,
         "--include-archives",
@@ -387,17 +413,20 @@ def get(
             f"'fastq' is supported.[/red]"
         )
         raise typer.Exit(code=2)
-    if convert == "fastq" and not fasterq_dump_available(fasterq_dump):
-        error_console.print(
-            "[red]--convert fastq needs fasterq-dump, which could not be "
-            "located.[/red]\n"
-            "  Downloading .sra archives works without it; only conversion "
-            "needs the SRA Toolkit.\n"
-            "  Install separately:  mamba env create -f environment-convert.yml\n"
-            f"  Or point at it:      export {PATH_ENV_VAR}=/path/to/fasterq-dump\n"
-            "  Or pass:             --fasterq-dump /path/to/fasterq-dump"
-        )
-        raise typer.Exit(code=2)
+    if convert == "fastq":
+        # Resolve once, up front, so a missing toolkit fails before any
+        # download starts rather than after hours of transfer.
+        fasterq_dump, convert_env = discover(fasterq_dump, convert_env)
+        if not fasterq_dump_available(fasterq_dump, convert_env):
+            error_console.print(
+                "[red]--convert fastq needs fasterq-dump, which could not be "
+                "located.[/red]\n"
+                "  Build it once with:  omixfetch setup\n"
+                f"  Or point at a binary: export {PATH_ENV_VAR}=/path/to/fasterq-dump"
+            )
+            raise typer.Exit(code=2)
+        where = f"environment {convert_env}" if convert_env else fasterq_dump
+        console.print(f"[dim]fasterq-dump: {where}[/dim]")
 
     if layout not in LAYOUTS:
         error_console.print(
@@ -424,10 +453,23 @@ def get(
 
     engine: object
     if backend == "auto":
-        engine_name = "aria2" if aria2_available() else "python"
+        # s5cmd talks the S3 API directly and is usually faster against NCBI's
+        # buckets, but only serves S3 URLs, so it is chosen only when every
+        # selected file is there.
+        on_s3 = bool(datasets) and all(
+            s3_uri(f.url) for d in datasets for f in d.files
+        )
+        if on_s3 and s5cmd_available():
+            engine_name = "s5cmd"
+        elif aria2_available():
+            engine_name = "aria2"
+        else:
+            engine_name = "python"
     else:
         engine_name = backend
-    if engine_name == "aspera":
+    if engine_name == "s5cmd":
+        engine = S5cmdBackend(concurrent=jobs, connections=connections, quiet=quiet)
+    elif engine_name == "aspera":
         engine = AsperaBackend(quiet=quiet)
     elif engine_name == "aria2":
         engine = Aria2Backend(connections=connections, concurrent=jobs, quiet=quiet)
@@ -440,7 +482,8 @@ def get(
         engine = RequestsBackend(concurrent=jobs, quiet=quiet)
     else:
         error_console.print(
-            f"[red]Unknown backend {backend!r}. Use auto, aria2, aspera or python.[/red]"
+            f"[red]Unknown backend {backend!r}. Use auto, aria2, s5cmd, "
+            f"aspera or python.[/red]"
         )
         raise typer.Exit(code=2)
 
@@ -508,10 +551,350 @@ def get(
                 raise typer.Exit(code=1) from exc
         if convert == "fastq":
             _convert_downloaded(
-                destination / "data", threads, keep_sra, fasterq_dump
+                destination / "data", threads, keep_sra, fasterq_dump, convert_env
             )
 
         console.print(f"    [green]complete[/green] -> {destination / 'data'}")
+
+
+@app.command("fastq")
+def fastq(
+    accession: str = typer.Argument(..., help="A GEO series, e.g. GSE184708."),
+    outdir: Path = typer.Option(Path("."), "--outdir", "-o", help="Destination directory."),
+    route_order: str = typer.Option(
+        "ena-fastq,sra,original",
+        "--routes",
+        help="Routes to try per run, in order. ena-fastq: ENA's own FASTQ; "
+        "sra: NCBI .sra + fasterq-dump; original: submitted BAM + bamtofastq.",
+    ),
+    parallel_runs: int = typer.Option(
+        2, "--parallel-runs", "-p", help="Runs processed at once."
+    ),
+    jobs: int = typer.Option(4, "--jobs", "-j", help="Files downloaded at once per run."),
+    connections: int = typer.Option(8, "--connections", "-x", help="Connections per file."),
+    threads: int = THREADS,
+    include: list[str] = typer.Option(
+        [], "--include", "-i", help="Only runs matching this glob, e.g. 'SRR160361*'."
+    ),
+    keep_intermediate: bool = typer.Option(
+        False, "--keep-intermediate", help="Keep .sra/BAM files after conversion."
+    ),
+    disk_check: bool = typer.Option(
+        True, "--disk-check/--no-disk-check", help="Refuse a run if free space looks short."
+    ),
+    fasterq_dump: str | None = FASTERQ_DUMP_PATH,
+    convert_env: str | None = CONVERT_ENV,
+    install: bool = typer.Option(
+        True, "--install/--no-install",
+        help="Install missing converters (SRA Toolkit, bamtofastq) automatically.",
+    ),
+    allow_incomplete: bool = typer.Option(
+        False, "--allow-incomplete-sra",
+        help="Use the .sra route even where it loses a read (10x R1). Rarely wanted.",
+    ),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Plan only; download nothing."),
+) -> None:
+    """Fetch every run of a GEO series as verified FASTQ, autonomously.
+
+    For each run the first working route is used, falling through on failure:
+    ENA's own FASTQ, then NCBI's .sra converted with fasterq-dump, then the
+    original submission converted with bamtofastq. Spot counts are checked
+    against ENA's metadata. Progress is recorded, so rerunning the same
+    command after an interruption resumes and skips finished runs.
+    """
+    import fnmatch
+    import subprocess as _subprocess
+    from concurrent.futures import ThreadPoolExecutor
+
+    from .bundled import find_tool, install_bamtofastq, install_sra_toolkit
+    from .convert import convert_sra as _convert_sra
+    from .pipeline import (
+        DONE,
+        ROUTES,
+        StateStore,
+        Tools,
+        is_complete,
+        plan_runs,
+        process_run,
+        write_manifest,
+    )
+    from .probe import bam_header, is_tenx_bam
+
+    order = tuple(r.strip() for r in route_order.split(",") if r.strip())
+    unknown = [r for r in order if r not in ROUTES]
+    if unknown:
+        error_console.print(f"[red]Unknown route(s): {', '.join(unknown)}. "
+                            f"Use: {', '.join(ROUTES)}.[/red]")
+        raise typer.Exit(code=2)
+
+    session = make_session()
+    with console.status(f"Planning {accession} ..."):
+        try:
+            _dataset, plans = plan_runs(accession, session)
+        except OmixfetchError as exc:
+            error_console.print(f"[red]error[/red] {accession}: {exc}")
+            raise typer.Exit(code=1) from exc
+
+    if include:
+        plans = [p for p in plans if any(fnmatch.fnmatch(p.run, g) for g in include)]
+    if not plans:
+        error_console.print(
+            f"[yellow]{accession}: no public runs to fetch. Controlled-access "
+            f"(dbGaP) data is the usual reason.[/yellow]"
+        )
+        raise typer.Exit(code=1)
+
+    base = outdir / accession
+    store = StateStore(base / ".omixfetch" / "state.json")
+
+    # Converters: resolved once, up front, and installed if the plan needs them.
+    binary, env_name = discover(fasterq_dump, convert_env)
+    have_sra = fasterq_dump_available(binary, env_name)
+    bamtofastq = find_tool("bamtofastq")
+
+    def needs(route: str) -> bool:
+        return any(
+            route in p.available(order)
+            and not (route == "sra" and p.incomplete_sra() and not allow_incomplete)
+            for p in plans
+        )
+
+    if install and not dry_run:
+        if needs("sra") and not have_sra:
+            with console.status("Installing NCBI SRA Toolkit ..."):
+                try:
+                    binary, env_name = str(install_sra_toolkit(session)), None
+                    have_sra = fasterq_dump_available(binary, None)
+                except (OmixfetchError, OSError) as exc:
+                    error_console.print(f"[yellow]SRA Toolkit install failed: {exc}[/yellow]")
+        if needs("original") and not bamtofastq:
+            with console.status("Installing 10x bamtofastq ..."):
+                try:
+                    bamtofastq = str(install_bamtofastq(session))
+                except (OmixfetchError, OSError) as exc:
+                    error_console.print(f"[yellow]bamtofastq install failed: {exc}[/yellow]")
+    have_bam = bamtofastq is not None
+
+    table = Table(title=f"{accession}: {len(plans)} run(s)")
+    for col in ("Run", "Sample", "Spots", "Routes available", "Plan", "Status"):
+        table.add_column(col)
+    for plan in plans:
+        usable = [r for r in plan.available(order)
+                  if (r != "sra" or have_sra) and (r != "original" or have_bam)
+                  and not (r == "sra" and plan.incomplete_sra() and not allow_incomplete)]
+        sizes = ", ".join(
+            f"{r} {human_bytes(sum(f.size or 0 for f in plan.routes[r]))}"
+            for r in plan.available(order)
+        )
+        state = store.get(plan.run)
+        table.add_row(
+            plan.run, plan.sample or "",
+            f"{plan.expected_spots:,}" if plan.expected_spots else "?",
+            sizes or "none", usable[0] if usable else "[red]none usable[/red]",
+            "done" if is_complete(state) else state.status,
+        )
+    console.print(table)
+    console.print(
+        f"[dim]fasterq-dump: {'environment ' + env_name if env_name else binary or 'not found'}"
+        f" | bamtofastq: {bamtofastq or 'not found'}[/dim]"
+    )
+    flagged = [p for p in plans if p.incomplete_sra()]
+    if flagged and not allow_incomplete:
+        console.print(
+            f"[yellow]{len(flagged)} run(s) skip the .sra route: "
+            f"{flagged[0].incomplete_sra()}. Using the original submission.[/yellow]"
+        )
+    if dry_run:
+        return
+
+    log_path = base / ".omixfetch" / "pipeline.log"
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    log_lock = __import__("threading").Lock()
+
+    def log(message: str) -> None:
+        console.print(message)
+        with log_lock, open(log_path, "a") as handle:
+            handle.write(time.strftime("%Y-%m-%d %H:%M:%S ") + message + "\n")
+
+    def download(files, dest):
+        # Prefer s5cmd for S3 objects, aria2 otherwise, Python as last resort.
+        if all(s3_uri(f.url) for f in files) and s5cmd_available():
+            S5cmdBackend(
+                concurrent=jobs, connections=connections, quiet=True
+            ).download(files, dest)
+            return
+        if aria2_available():
+            try:
+                Aria2Backend(
+                    connections=connections, concurrent=jobs, quiet=True
+                ).download(files, dest)
+                return
+            except OmixfetchError as exc:
+                log(f"  aria2c failed ({str(exc)[:80]}); retrying with built-in downloader")
+        RequestsBackend(concurrent=jobs, quiet=True).download(files, dest)
+
+    def convert_bam(bam: Path, out: Path) -> list[Path]:
+        target = out / "bamtofastq_out"
+        proc = _subprocess.run(
+            [bamtofastq, f"--nthreads={threads}", str(bam), str(target)],
+            capture_output=True, text=True,
+        )
+        if proc.returncode != 0:
+            raise BackendError(f"bamtofastq failed: {(proc.stderr or '')[-300:]}")
+        produced = []
+        for path in sorted(target.rglob("*.fastq.gz")):
+            # bamtofastq repeats filenames across flowcell folders; make unique.
+            unique = path.with_name(f"{bam.stem}_{path.parent.name}_{path.name}")
+            path.rename(unique)
+            produced.append(unique)
+        return produced
+
+    def check_bam(url: str) -> None:
+        # A few MB, read before committing to a ~100 GB download.
+        try:
+            header = bam_header(session, url)
+        except (ValueError, OSError) as exc:
+            raise BackendError(f"could not read the BAM header: {exc}") from exc
+        if not is_tenx_bam(header):
+            raise BackendError(
+                "BAM has no 10x_bam_to_fastq header lines, so bamtofastq cannot "
+                "rebuild reads from it (not a Cell Ranger BAM)"
+            )
+
+    tools = Tools(
+        download=download,
+        check_bam=check_bam,
+        convert_sra=(
+            (lambda sra, out: _convert_sra(sra, out, threads=threads,
+                                           binary=binary, env_name=env_name))
+            if have_sra else None
+        ),
+        convert_bam=convert_bam if have_bam else None,
+        log=log,
+    )
+
+    log(f"{accession}: starting {len(plans)} run(s), {parallel_runs} at a time")
+    with ThreadPoolExecutor(max_workers=max(1, parallel_runs)) as pool:
+        list(pool.map(
+            lambda plan: process_run(plan, base, store, tools, order=order,
+                                     keep_intermediate=keep_intermediate,
+                                     check_space=disk_check,
+                                     allow_incomplete=allow_incomplete),
+            plans,
+        ))
+
+    manifest = write_manifest(store, base / "fastq_manifest.tsv")
+    states = [store.get(p.run) for p in plans]
+    done = sum(1 for s in states if s.status == DONE)
+    failed = [s for s in states if s.status != DONE]
+    log(f"{accession}: {done}/{len(plans)} run(s) complete -> {base / 'fastq'}")
+    console.print(f"manifest: {manifest}")
+    for s in failed:
+        error_console.print(f"  [red]{s.run}[/red] {s.status}: {(s.error or '')[:160]}")
+    if failed:
+        console.print("Rerun the same command to retry; finished runs are skipped.")
+        raise typer.Exit(code=1)
+
+
+@app.command("setup")
+def setup(
+    conda: bool = typer.Option(
+        False, "--conda",
+        help="Build a conda environment for sra-tools instead of using NCBI's "
+        "prebuilt binaries.",
+    ),
+    env_name: str = typer.Option(
+        DEFAULT_CONVERT_ENV, "--env-name", help="Name for the conda environment."
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Show what would be run, change nothing."
+    ),
+) -> None:
+    """Install the converters: NCBI SRA Toolkit and 10x bamtofastq.
+
+    By default both are fetched as prebuilt binaries into ~/.omixfetch/tools
+    (override with OMIXFETCH_HOME), so no conda is involved -- which also
+    avoids the osx-arm64 conflict between sra-tools and aria2. With --conda,
+    sra-tools goes into its own conda environment instead.
+    """
+    from .bundled import (
+        bamtofastq_asset,
+        bin_dir,
+        find_tool,
+        install_bamtofastq,
+        install_sra_toolkit,
+        sra_toolkit_build,
+    )
+
+    if not conda:
+        session = make_session()
+        binary, _env = discover(None, None)
+        if binary:
+            console.print(f"fasterq-dump: {binary} (version {fasterq_dump_version(binary)})")
+        else:
+            console.print(f"Installing SRA Toolkit ({sra_toolkit_build()}) into {bin_dir()}")
+            if not dry_run:
+                path = install_sra_toolkit(session)
+                console.print(f"  fasterq-dump {fasterq_dump_version(str(path))}: {path}")
+        existing = find_tool("bamtofastq")
+        if existing:
+            console.print(f"bamtofastq: {existing}")
+        else:
+            console.print(f"Installing 10x bamtofastq ({bamtofastq_asset()}) into {bin_dir()}")
+            if not dry_run:
+                console.print(f"  bamtofastq: {install_bamtofastq(session)}")
+        if not dry_run:
+            console.print("[green]Done.[/green] fastq and --convert fastq will find these.")
+        return
+
+    _setup_conda(env_name, dry_run)
+
+
+def _setup_conda(env_name: str, dry_run: bool) -> None:
+    """Build the conversion environment that --convert fastq uses.
+
+    sra-tools and aria2 cannot be solved into one conda environment on
+    osx-arm64, so the toolkit lives in its own. This builds it once; after
+    that --convert fastq finds it automatically, with no flags or exports.
+    On Linux, where they coexist, an sra-tools already on PATH is used and
+    this step is unnecessary.
+    """
+    binary, existing = discover(None, None)
+    if binary:
+        console.print(f"fasterq-dump already available: {binary}")
+        console.print(f"  version {fasterq_dump_version(binary) or 'unknown'}")
+        console.print("Nothing to do.")
+        return
+    if existing == env_name:
+        console.print(f"Environment {env_name!r} already exists; verifying ...")
+        ok = fasterq_dump_available(None, env_name)
+        console.print("  [green]fasterq-dump works[/green]" if ok
+                      else "  [red]fasterq-dump not runnable there[/red]")
+        raise typer.Exit(code=0 if ok else 1)
+
+    command = create_convert_env(env_name)
+    console.print("Building the conversion environment:")
+    console.print("  " + " ".join(command))
+    if dry_run:
+        return
+
+    proc = subprocess.run(command)
+    if proc.returncode != 0:
+        error_console.print(
+            f"[red]Environment creation failed (exit {proc.returncode}).[/red] "
+            "NCBI also ships dependency-free binaries: "
+            "https://github.com/ncbi/sra-tools/releases"
+        )
+        raise typer.Exit(code=1)
+
+    if fasterq_dump_available(None, env_name):
+        console.print(f"[green]Done.[/green] --convert fastq will use {env_name!r}.")
+    else:
+        error_console.print(
+            f"[red]{env_name!r} was created but fasterq-dump does not run "
+            "inside it.[/red]"
+        )
+        raise typer.Exit(code=1)
 
 
 @app.command("benchmark")
@@ -593,7 +976,11 @@ def benchmark(
 
 
 def _convert_downloaded(
-    data_dir: Path, threads: int, keep_sra: bool, binary: str | None = None
+    data_dir: Path,
+    threads: int,
+    keep_sra: bool,
+    binary: str | None = None,
+    env_name: str | None = None,
 ) -> None:
     """Convert every .sra archive under *data_dir* to FASTQ, in place.
 
@@ -615,6 +1002,7 @@ def _convert_downloaded(
                 gzip_output=True,
                 keep_sra=keep_sra,
                 binary=binary,
+                env_name=env_name,
             )
         except OmixfetchError as exc:
             error_console.print(f"[red]    conversion failed[/red]: {exc}")

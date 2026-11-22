@@ -1,0 +1,3925 @@
+{
+  "metadata": {
+    "accession": "GSE184708",
+    "archive": "geo",
+    "title": "Single Cell transcriptomic atlas of mouse sex determination and gonadal differentiation",
+    "summary": "Gonadal sex determination represents a unique model for studying cell fate decisions. However, a complete understanding of the different cell lineages forming the developing testis and ovary remains elusive. Here, we investigated the origin, specification, and subsequent sex-specific differentiation of a previously uncharacterized population of supporting-like cells (SLCs) in the developing mouse gonads. The SLC lineage is closely related to the coelomic epithelium and specified as early as E10.5, making it the first somatic lineage to be specified in the bipotential gonad. SLC progenitors are localized within the genital ridge at the interface with the mesonephros and initially coexpress Wnt4 and Sox9. SLCs become sexually dimorphic around E12.5, progressively acquire a more Sertoli- or pregranulosa-like identity and contribute to the formation of the rete testis and rete ovarii. Last, we found that WNT4 is a crucial regulator of the SLC lineage and is required for normal development of the rete testis.  In the present study, we built a transcriptomic atlas of the entire cell population of the developing female and male gonads during the process of mouse sex determination. We identified a previously uncharacterized population of supporting-like cells (SLC) and shed light on the origin and the developmental trajectory of this important cell lineage during the process of testis and ovary development.",
+    "design": "20 10X single cell captures in duplicates at 5 stages (E10.5, E11.5, E12.5, E13.5 and E16.5) of gonadal ridges (E10.5, E11.5) and gonads in XX and XY CD1 mouse embryos",
+    "study_type": [
+      "Expression profiling by high throughput sequencing"
+    ],
+    "organisms": [
+      "Mus musculus"
+    ],
+    "platforms": [
+      "GPL21103"
+    ],
+    "contributors": [
+      "Chlo\u00e9,,May\u00e8re",
+      "Violaine,,Regard",
+      "Yasmine,,Neirijnck",
+      "Pauline,,Sararols",
+      "Isabelle,,St\u00e9vant",
+      "Fran\u00e7oise,,K\u00fchne",
+      "Serge,,Nef"
+    ],
+    "submission_date": "Sep 23 2021",
+    "release_date": "May 27 2022",
+    "last_update_date": "Feb 18 2026",
+    "pubmed_ids": [
+      "35613264",
+      "41281759"
+    ],
+    "relations": {
+      "BioProject": "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA765715",
+      "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRP338484"
+    },
+    "contact": {
+      "name": "Chloe,,MAYERE",
+      "email": "chloe.mayere@unige.ch",
+      "institute": "UNIGE",
+      "address": "Michel Servet, 1",
+      "city": "Geneve",
+      "country": "Switzerland"
+    },
+    "protocols": {},
+    "n_samples": 20,
+    "resolved_by": "native",
+    "raw": {
+      "Series_title": [
+        "Single Cell transcriptomic atlas of mouse sex determination and gonadal differentiation"
+      ],
+      "Series_geo_accession": [
+        "GSE184708"
+      ],
+      "Series_status": [
+        "Public on May 27 2022"
+      ],
+      "Series_submission_date": [
+        "Sep 23 2021"
+      ],
+      "Series_last_update_date": [
+        "Feb 18 2026"
+      ],
+      "Series_pubmed_id": [
+        "35613264",
+        "41281759"
+      ],
+      "Series_summary": [
+        "Gonadal sex determination represents a unique model for studying cell fate decisions. However, a complete understanding of the different cell lineages forming the developing testis and ovary remains elusive. Here, we investigated the origin, specification, and subsequent sex-specific differentiation of a previously uncharacterized population of supporting-like cells (SLCs) in the developing mouse gonads. The SLC lineage is closely related to the coelomic epithelium and specified as early as E10.5, making it the first somatic lineage to be specified in the bipotential gonad. SLC progenitors are localized within the genital ridge at the interface with the mesonephros and initially coexpress Wnt4 and Sox9. SLCs become sexually dimorphic around E12.5, progressively acquire a more Sertoli- or pregranulosa-like identity and contribute to the formation of the rete testis and rete ovarii. Last, we found that WNT4 is a crucial regulator of the SLC lineage and is required for normal development of the rete testis.",
+        "",
+        "In the present study, we built a transcriptomic atlas of the entire cell population of the developing female and male gonads during the process of mouse sex determination. We identified a previously uncharacterized population of supporting-like cells (SLC) and shed light on the origin and the developmental trajectory of this important cell lineage during the process of testis and ovary development."
+      ],
+      "Series_overall_design": [
+        "20 10X single cell captures in duplicates at 5 stages (E10.5, E11.5, E12.5, E13.5 and E16.5) of gonadal ridges (E10.5, E11.5) and gonads in XX and XY CD1 mouse embryos"
+      ],
+      "Series_type": [
+        "Expression profiling by high throughput sequencing"
+      ],
+      "Series_contributor": [
+        "Chlo\u00e9,,May\u00e8re",
+        "Violaine,,Regard",
+        "Yasmine,,Neirijnck",
+        "Pauline,,Sararols",
+        "Isabelle,,St\u00e9vant",
+        "Fran\u00e7oise,,K\u00fchne",
+        "Serge,,Nef"
+      ],
+      "Series_sample_id": [
+        "GSM5595980",
+        "GSM5595981",
+        "GSM5595982",
+        "GSM5595983",
+        "GSM5595984",
+        "GSM5595985",
+        "GSM5595986",
+        "GSM5595987",
+        "GSM5595988",
+        "GSM5595989",
+        "GSM5595990",
+        "GSM5595991",
+        "GSM5595992",
+        "GSM5595993",
+        "GSM5595994",
+        "GSM5595995",
+        "GSM5595996",
+        "GSM5595997",
+        "GSM5595998",
+        "GSM5595999"
+      ],
+      "Series_contact_name": [
+        "Chloe,,MAYERE"
+      ],
+      "Series_contact_email": [
+        "chloe.mayere@unige.ch"
+      ],
+      "Series_contact_institute": [
+        "UNIGE"
+      ],
+      "Series_contact_address": [
+        "Michel Servet, 1"
+      ],
+      "Series_contact_city": [
+        "Geneve"
+      ],
+      "Series_contact_country": [
+        "Switzerland"
+      ],
+      "Series_supplementary_file": [
+        "ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184708/suppl/GSE184708_mayere_barcodes.tsv.gz",
+        "ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184708/suppl/GSE184708_mayere_genes.tsv.gz",
+        "ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184708/suppl/GSE184708_mayere_meta_data.csv.gz",
+        "ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184708/suppl/GSE184708_raw_counts_gonad_all_samples_XX_XY_E10_to_E16.mtx.gz"
+      ],
+      "Series_platform_id": [
+        "GPL21103"
+      ],
+      "Series_platform_organism": [
+        "Mus musculus"
+      ],
+      "Series_platform_taxid": [
+        "10090"
+      ],
+      "Series_sample_organism": [
+        "Mus musculus"
+      ],
+      "Series_sample_taxid": [
+        "10090"
+      ],
+      "Series_relation": [
+        "BioProject: https://www.ncbi.nlm.nih.gov/bioproject/PRJNA765715",
+        "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRP338484"
+      ]
+    }
+  },
+  "samples": [
+    {
+      "accession": "GSM5595980",
+      "title": "170828_AGP_XX_E10",
+      "organism": "Mus musculus",
+      "source_name": "Adreno Gonadal Primordium",
+      "characteristics": {
+        "Stage": "E10.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XX",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582566",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322857"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170828_AGP_XX_E10"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595980"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Adreno Gonadal Primordium"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E10.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XX",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582566",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322857"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595981",
+      "title": "170828_AGP_XY_E10",
+      "organism": "Mus musculus",
+      "source_name": "Adreno Gonadal Primordium",
+      "characteristics": {
+        "Stage": "E10.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XY",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582568",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322858"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170828_AGP_XY_E10"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595981"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Adreno Gonadal Primordium"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E10.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XY",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582568",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322858"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595982",
+      "title": "170830_AGP_XX_E10",
+      "organism": "Mus musculus",
+      "source_name": "Adreno Gonadal Primordium",
+      "characteristics": {
+        "Stage": "E10.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XX",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582570",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322859"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170830_AGP_XX_E10"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595982"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Adreno Gonadal Primordium"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E10.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XX",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582570",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322859"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595983",
+      "title": "170830_AGP_XY_E10",
+      "organism": "Mus musculus",
+      "source_name": "Adreno Gonadal Primordium",
+      "characteristics": {
+        "Stage": "E10.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XY",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582572",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322860"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170830_AGP_XY_E10"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595983"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Adreno Gonadal Primordium"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E10.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XY",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582572",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322860"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595984",
+      "title": "170814_AGP_XX_E11",
+      "organism": "Mus musculus",
+      "source_name": "Adreno Gonadal Primordium",
+      "characteristics": {
+        "Stage": "E11.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XX",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582573",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322861"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170814_AGP_XX_E11"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595984"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Adreno Gonadal Primordium"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E11.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XX",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582573",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322861"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595985",
+      "title": "170814_AGP_XY_E11",
+      "organism": "Mus musculus",
+      "source_name": "Adreno Gonadal Primordium",
+      "characteristics": {
+        "Stage": "E11.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XY",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582575",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322862"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170814_AGP_XY_E11"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595985"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Adreno Gonadal Primordium"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E11.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XY",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582575",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322862"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595986",
+      "title": "170823_AGP_XX_E11",
+      "organism": "Mus musculus",
+      "source_name": "Adreno Gonadal Primordium",
+      "characteristics": {
+        "Stage": "E11.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XX",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582577",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322863"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170823_AGP_XX_E11"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595986"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Adreno Gonadal Primordium"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E11.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XX",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582577",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322863"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595987",
+      "title": "170823_AGP_XY_E11",
+      "organism": "Mus musculus",
+      "source_name": "Adreno Gonadal Primordium",
+      "characteristics": {
+        "Stage": "E11.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XY",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582579",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322864"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170823_AGP_XY_E11"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595987"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Adreno Gonadal Primordium"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E11.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XY",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582579",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322864"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595988",
+      "title": "170724_O_XX_E12",
+      "organism": "Mus musculus",
+      "source_name": "Ovary",
+      "characteristics": {
+        "Stage": "E12.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XX",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582581",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322865"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170724_O_XX_E12"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595988"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Ovary"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E12.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XX",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582581",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322865"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595989",
+      "title": "170724_T_XY_E12",
+      "organism": "Mus musculus",
+      "source_name": "Testis",
+      "characteristics": {
+        "Stage": "E12.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XY",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582583",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322866"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170724_T_XY_E12"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595989"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Testis"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E12.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XY",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582583",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322866"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595990",
+      "title": "170816_O_XX_E12",
+      "organism": "Mus musculus",
+      "source_name": "Ovary",
+      "characteristics": {
+        "Stage": "E12.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XX",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582584",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322867"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170816_O_XX_E12"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595990"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Ovary"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E12.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XX",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582584",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322867"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595991",
+      "title": "170816_T_XY_E12",
+      "organism": "Mus musculus",
+      "source_name": "Testis",
+      "characteristics": {
+        "Stage": "E12.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XY",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582586",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322868"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170816_T_XY_E12"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595991"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Testis"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E12.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XY",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582586",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322868"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595992",
+      "title": "170726_T_XY_E13",
+      "organism": "Mus musculus",
+      "source_name": "Testis",
+      "characteristics": {
+        "Stage": "E13.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XY",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582588",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322869"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170726_T_XY_E13"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595992"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Testis"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E13.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XY",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582588",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322869"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595993",
+      "title": "170802_T_XY_E13",
+      "organism": "Mus musculus",
+      "source_name": "Testis",
+      "characteristics": {
+        "Stage": "E13.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XY",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582590",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322870"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170802_T_XY_E13"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595993"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Testis"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E13.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XY",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582590",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322870"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595994",
+      "title": "180222_O_XX_E13",
+      "organism": "Mus musculus",
+      "source_name": "Ovary",
+      "characteristics": {
+        "Stage": "E13.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XX",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582592",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322871"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "180222_O_XX_E13"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595994"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Ovary"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E13.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XX",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582592",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322871"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595995",
+      "title": "180410_O_XX_E13",
+      "organism": "Mus musculus",
+      "source_name": "Ovary",
+      "characteristics": {
+        "Stage": "E13.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XX",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582593",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322872"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "180410_O_XX_E13"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595995"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Ovary"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E13.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XX",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582593",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322872"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595996",
+      "title": "170313_O_XX_E16",
+      "organism": "Mus musculus",
+      "source_name": "Ovary",
+      "characteristics": {
+        "Stage": "E16.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XX",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582595",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322873"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170313_O_XX_E16"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595996"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Ovary"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E16.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XX",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582595",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322873"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595997",
+      "title": "170316_T_XY_E16",
+      "organism": "Mus musculus",
+      "source_name": "Testis",
+      "characteristics": {
+        "Stage": "E16.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XY",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582596",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322874"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170316_T_XY_E16"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595997"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Testis"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E16.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XY",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582596",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322874"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595998",
+      "title": "170712_O_XX_E16",
+      "organism": "Mus musculus",
+      "source_name": "Ovary",
+      "characteristics": {
+        "Stage": "E16.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XX",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582598",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322875"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170712_O_XX_E16"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595998"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Ovary"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E16.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XX",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582598",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322875"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    },
+    {
+      "accession": "GSM5595999",
+      "title": "170712_T_XY_E16",
+      "organism": "Mus musculus",
+      "source_name": "Testis",
+      "characteristics": {
+        "Stage": "E16.5",
+        "strain": "CD1",
+        "transgene": "Tg(Nr5a1-GFP)",
+        "genetic sex": "XY",
+        "assay type": "Gene expression"
+      },
+      "library_strategy": "RNA-Seq",
+      "library_source": "transcriptomic",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "relations": {
+        "BioSample": "https://www.ncbi.nlm.nih.gov/biosample/SAMN21582600",
+        "SRA": "https://www.ncbi.nlm.nih.gov/sra?term=SRX12322876"
+      },
+      "files": [],
+      "raw": {
+        "Sample_title": [
+          "170712_T_XY_E16"
+        ],
+        "Sample_geo_accession": [
+          "GSM5595999"
+        ],
+        "Sample_status": [
+          "Public on May 27 2022"
+        ],
+        "Sample_submission_date": [
+          "Sep 23 2021"
+        ],
+        "Sample_last_update_date": [
+          "May 27 2022"
+        ],
+        "Sample_type": [
+          "SRA"
+        ],
+        "Sample_channel_count": [
+          "1"
+        ],
+        "Sample_source_name_ch1": [
+          "Testis"
+        ],
+        "Sample_organism_ch1": [
+          "Mus musculus"
+        ],
+        "Sample_taxid_ch1": [
+          "10090"
+        ],
+        "Sample_characteristics_ch1": [
+          "Stage: E16.5",
+          "strain: CD1",
+          "transgene: Tg(Nr5a1-GFP)",
+          "genetic sex: XY",
+          "assay type: Gene expression"
+        ],
+        "Sample_growth_protocol_ch1": [
+          "The day when a vaginal plug was designated as embryonic day E0.5. Embryos were collected at E10.5 (8\u00b12 caudal somites), E11.5 (19\u00b14 ts), E12.5, E13.5, and E16.5 from time-mated pregnant female CD-1 outbred mice (Charles River) and heterozygous Tg(Nr5a1-GFP) transgenic male mice ."
+        ],
+        "Sample_molecule_ch1": [
+          "total RNA"
+        ],
+        "Sample_extract_protocol_ch1": [
+          "he presence of the Nr5a1-GFP transgene was assessed under UV light and genetic sexing was performed by PCR, as described previously . Urogenital ridges (E10.5, E11.5) from both sexes, and testes or ovaries, were isolated at each time point and enzymatically dissociated as described previously . Approximately 5000 single cells were loaded on a 10x Chromium instrument",
+          "cRNA-seq libraries were prepared using the 10X Genomics Chromium Controller and Chromium Single Cell 3\u2032 Library & Gel Bead Kit V2, as per the manufacturer\u2019s instructions. The prepared libraries were sequenced on an Illumina HiSeq4000 using paired-end 26\u2009+\u200998 + 8\u2009bp as the sequencing mode. Libraries were sequenced at a targeted depth of 100 000 to 150 000 total reads per cell. Sequencing was performed at the Health 2030 Genome Center, Geneva."
+        ],
+        "Sample_description": [
+          "all_samples_raw_counts.mtx",
+          "all_samples_lognorm_counts.mtx"
+        ],
+        "Sample_data_processing": [
+          "Demultiplexing, alignment, barcode filtering and UMI counting were performed with the Cell Ranger v2.1 pipeline (10x Genomics). Data was aligned on a personalized Gencode reference genome (GRCM38) including GFP.",
+          "For cell-associated barcode selection, we computed the knee point and the inflection point of the ranked barcodes distribution plot. The local minimum between these points on the density curve (density base R function, bw=500, n=4096) of the UMI number per barcode was detected using the quantmod package. This local minimum was used as a threshold for cell-associated barcode selections. When no local minimum could be detected between the two points, the nearest local minimum was used.",
+          "UMI counts per gene per cell were divided by the total UMI detected in the cell with exclusion of very highly expressed genes (accounting to more than 5% of total counts in cell), multiplied by a scale factor of 10,000 and log transformed.",
+          "Genome_build: Genecode grcm38",
+          "Supplementary_files_format_and_content: mtx, raw counts values",
+          "Supplementary_files_format_and_content: tsv, barcodes identifiers",
+          "Supplementary_files_format_and_content: tsv, genes official symbol",
+          "Supplementary_files_format_and_content: csv, metadata"
+        ],
+        "Sample_platform_id": [
+          "GPL21103"
+        ],
+        "Sample_contact_name": [
+          "Chloe,,MAYERE"
+        ],
+        "Sample_contact_email": [
+          "chloe.mayere@unige.ch"
+        ],
+        "Sample_contact_institute": [
+          "UNIGE"
+        ],
+        "Sample_contact_address": [
+          "Michel Servet, 1"
+        ],
+        "Sample_contact_city": [
+          "Geneve"
+        ],
+        "Sample_contact_country": [
+          "Switzerland"
+        ],
+        "Sample_instrument_model": [
+          "Illumina HiSeq 4000"
+        ],
+        "Sample_library_selection": [
+          "cDNA"
+        ],
+        "Sample_library_source": [
+          "transcriptomic"
+        ],
+        "Sample_library_strategy": [
+          "RNA-Seq"
+        ],
+        "Sample_relation": [
+          "BioSample: https://www.ncbi.nlm.nih.gov/biosample/SAMN21582600",
+          "SRA: https://www.ncbi.nlm.nih.gov/sra?term=SRX12322876"
+        ],
+        "Sample_supplementary_file_1": [
+          "NONE"
+        ],
+        "Sample_series_id": [
+          "GSE184708"
+        ],
+        "Sample_data_row_count": [
+          "0"
+        ]
+      }
+    }
+  ],
+  "files": [
+    {
+      "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184708/suppl/GSE184708_mayere_barcodes.tsv.gz",
+      "filename": "GSE184708_mayere_barcodes.tsv.gz",
+      "size": 440826,
+      "kind": "supplementary",
+      "accession": "GSE184708",
+      "md5": null,
+      "description": null,
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184708/suppl/GSE184708_mayere_genes.tsv.gz",
+      "filename": "GSE184708_mayere_genes.tsv.gz",
+      "size": 108592,
+      "kind": "supplementary",
+      "accession": "GSE184708",
+      "md5": null,
+      "description": null,
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184708/suppl/GSE184708_mayere_meta_data.csv.gz",
+      "filename": "GSE184708_mayere_meta_data.csv.gz",
+      "size": 7392195,
+      "kind": "supplementary",
+      "accession": "GSE184708",
+      "md5": null,
+      "description": null,
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184708/suppl/GSE184708_raw_counts_gonad_all_samples_XX_XY_E10_to_E16.mtx.gz",
+      "filename": "GSE184708_raw_counts_gonad_all_samples_XX_XY_E10_to_E16.mtx.gz",
+      "size": 1252552764,
+      "kind": "supplementary",
+      "accession": "GSE184708",
+      "md5": null,
+      "description": null,
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036142/170823_AGP_XX_E11.bam.1",
+      "filename": "170823_AGP_XX_E11.bam",
+      "size": 93406055939,
+      "kind": "raw",
+      "accession": "GSM5595986",
+      "md5": "5310bc0406071b66786b8d58a405fabc",
+      "description": "NCBI SDL remote|128040092",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036152/170313_O_XX_E16.bam.1",
+      "filename": "170313_O_XX_E16.bam",
+      "size": 88728121546,
+      "kind": "raw",
+      "accession": "GSM5595996",
+      "md5": "e7fd4b1bf6d7ff42d0904d5ef0d4dc40",
+      "description": "NCBI SDL remote|131709052",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036155/170712_T_XY_E16.bam.1",
+      "filename": "170712_T_XY_E16.bam",
+      "size": 89660110557,
+      "kind": "raw",
+      "accession": "GSM5595999",
+      "md5": "059324d3b6e8258249901207c2331493",
+      "description": "NCBI SDL remote|131556970",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036136/170828_AGP_XX_E10.bam.1",
+      "filename": "170828_AGP_XX_E10.bam",
+      "size": 79779086333,
+      "kind": "raw",
+      "accession": "GSM5595980",
+      "md5": "9aa61b9391d470191a79002a364a3489",
+      "description": "NCBI SDL remote|127920310",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036137/170828_AGP_XY_E10.bam.1",
+      "filename": "170828_AGP_XY_E10.bam",
+      "size": 56777038022,
+      "kind": "raw",
+      "accession": "GSM5595981",
+      "md5": "ff21d855824b14ace1eeefba5b35bbfa",
+      "description": "NCBI SDL remote|127916479",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036139/170830_AGP_XY_E10.bam.1",
+      "filename": "170830_AGP_XY_E10.bam",
+      "size": 160375553957,
+      "kind": "raw",
+      "accession": "GSM5595983",
+      "md5": "bd7e09badd5fa15c87accebb9d669734",
+      "description": "NCBI SDL remote|128084089",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036140/170814_AGP_XX_E11.bam.1",
+      "filename": "170814_AGP_XX_E11.bam",
+      "size": 95434647573,
+      "kind": "raw",
+      "accession": "GSM5595984",
+      "md5": "9481c88301d94477851dfa24989155cd",
+      "description": "NCBI SDL remote|128080988",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036143/170823_AGP_XY_E11.bam.1",
+      "filename": "170823_AGP_XY_E11.bam",
+      "size": 131535337375,
+      "kind": "raw",
+      "accession": "GSM5595987",
+      "md5": "a6fb8b40a5d1c5e2938133af6440b886",
+      "description": "NCBI SDL remote|127957275",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036144/170724_O_XX_E12.bam.1",
+      "filename": "170724_O_XX_E12.bam",
+      "size": 68550653371,
+      "kind": "raw",
+      "accession": "GSM5595988",
+      "md5": "2e996788dffccf7de1ad3d3a39e7b1ec",
+      "description": "NCBI SDL remote|128146260",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036148/170726_T_XY_E13.bam.1",
+      "filename": "170726_T_XY_E13.bam",
+      "size": 114017476070,
+      "kind": "raw",
+      "accession": "GSM5595992",
+      "md5": "68737d076bd5b941b4da8d3d466a0fbd",
+      "description": "NCBI SDL remote|131562945",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036149/170802_T_XY_E13.bam.1",
+      "filename": "170802_T_XY_E13.bam",
+      "size": 82821521679,
+      "kind": "raw",
+      "accession": "GSM5595993",
+      "md5": "d112fd647d2ea6abb8bc67722430af45",
+      "description": "NCBI SDL remote|131557071",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036150/180222_O_XX_E13.bam.1",
+      "filename": "180222_O_XX_E13.bam",
+      "size": 64432208795,
+      "kind": "raw",
+      "accession": "GSM5595994",
+      "md5": "44fa3bfce2164838ccedb89aca1ca2b2",
+      "description": "NCBI SDL remote|131629666",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036154/170712_O_XX_E16.bam.1",
+      "filename": "170712_O_XX_E16.bam",
+      "size": 42491884381,
+      "kind": "raw",
+      "accession": "GSM5595998",
+      "md5": "9bc346ae934db92032a85c130bff2317",
+      "description": "NCBI SDL remote|128152371",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036138/170830_AGP_XX_E10.bam.1",
+      "filename": "170830_AGP_XX_E10.bam",
+      "size": 119194087864,
+      "kind": "raw",
+      "accession": "GSM5595982",
+      "md5": "00dbf15405d748340fbbf71240bf6771",
+      "description": "NCBI SDL remote|127955708",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036151/180410_O_XX_E13.bam.1",
+      "filename": "180410_O_XX_E13.bam",
+      "size": 89356425428,
+      "kind": "raw",
+      "accession": "GSM5595995",
+      "md5": "a15cbfbf74256e4305882238ae69b71a",
+      "description": "NCBI SDL remote|128281026",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036141/170814_AGP_XY_E11.bam.1",
+      "filename": "170814_AGP_XY_E11.bam",
+      "size": 110131068636,
+      "kind": "raw",
+      "accession": "GSM5595985",
+      "md5": "08aca5cba3721304e816ea4250ceef21",
+      "description": "NCBI SDL remote|127958447",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036145/170724_T_XY_E12.bam.1",
+      "filename": "170724_T_XY_E12.bam",
+      "size": 140830196941,
+      "kind": "raw",
+      "accession": "GSM5595989",
+      "md5": "1fddad8738ef5d304b3df47ba6e1aeca",
+      "description": "NCBI SDL remote|128008591",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036153/170316_T_XY_E16.bam.1",
+      "filename": "170316_T_XY_E16.bam",
+      "size": 65826516788,
+      "kind": "raw",
+      "accession": "GSM5595997",
+      "md5": "a0b80ff25ff16d989082c3d8155460de",
+      "description": "NCBI SDL remote|62390760",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036146/170816_O_XX_E12.bam.1",
+      "filename": "170816_O_XX_E12.bam",
+      "size": 59847980207,
+      "kind": "raw",
+      "accession": "GSM5595990",
+      "md5": "6fdfdb3bbbc60eac23ea2b206876ee80",
+      "description": "NCBI SDL remote|127927366",
+      "aspera": null,
+      "relpath": null
+    },
+    {
+      "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036147/170816_T_XY_E12.bam.1",
+      "filename": "170816_T_XY_E12.bam",
+      "size": 116546544443,
+      "kind": "raw",
+      "accession": "GSM5595991",
+      "md5": "5f20546cb62aa7065da28afcfa72a366",
+      "description": "NCBI SDL remote|127958890",
+      "aspera": null,
+      "relpath": null
+    }
+  ],
+  "runs": [
+    {
+      "accession": "SRR16036142",
+      "experiment_accession": "SRX12322863",
+      "sample_accession": "SAMN21582577",
+      "secondary_sample_accession": "SRS10296115",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595986",
+      "files": [
+        {
+          "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036142/170823_AGP_XX_E11.bam.1",
+          "filename": "170823_AGP_XX_E11.bam",
+          "size": 93406055939,
+          "kind": "raw",
+          "accession": "GSM5595986",
+          "md5": "5310bc0406071b66786b8d58a405fabc",
+          "description": "NCBI SDL remote|128040092",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036142",
+        "experiment_accession": "SRX12322863",
+        "sample_accession": "SAMN21582577",
+        "secondary_sample_accession": "SRS10296115",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036142/170823_AGP_XX_E11.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036142/170823_AGP_XX_E11.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036142/170823_AGP_XX_E11.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036142/170823_AGP_XX_E11.bam.1.bai",
+        "submitted_bytes": "93406055939;15221640",
+        "submitted_md5": "5310bc0406071b66786b8d58a405fabc;1ceb536ea03c5e2bf421e1b3cf87b4d5"
+      }
+    },
+    {
+      "accession": "SRR16036152",
+      "experiment_accession": "SRX12322873",
+      "sample_accession": "SAMN21582595",
+      "secondary_sample_accession": "SRS10296125",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595996",
+      "files": [
+        {
+          "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036152/170313_O_XX_E16.bam.1",
+          "filename": "170313_O_XX_E16.bam",
+          "size": 88728121546,
+          "kind": "raw",
+          "accession": "GSM5595996",
+          "md5": "e7fd4b1bf6d7ff42d0904d5ef0d4dc40",
+          "description": "NCBI SDL remote|131709052",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036152",
+        "experiment_accession": "SRX12322873",
+        "sample_accession": "SAMN21582595",
+        "secondary_sample_accession": "SRS10296125",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036152/170313_O_XX_E16.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036152/170313_O_XX_E16.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036152/170313_O_XX_E16.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036152/170313_O_XX_E16.bam.1.bai",
+        "submitted_bytes": "88728121546;15084896",
+        "submitted_md5": "e7fd4b1bf6d7ff42d0904d5ef0d4dc40;f51b6f34f7fed46400443f4f36afe356"
+      }
+    },
+    {
+      "accession": "SRR16036155",
+      "experiment_accession": "SRX12322876",
+      "sample_accession": "SAMN21582600",
+      "secondary_sample_accession": "SRS10296128",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595999",
+      "files": [
+        {
+          "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036155/170712_T_XY_E16.bam.1",
+          "filename": "170712_T_XY_E16.bam",
+          "size": 89660110557,
+          "kind": "raw",
+          "accession": "GSM5595999",
+          "md5": "059324d3b6e8258249901207c2331493",
+          "description": "NCBI SDL remote|131556970",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036155",
+        "experiment_accession": "SRX12322876",
+        "sample_accession": "SAMN21582600",
+        "secondary_sample_accession": "SRS10296128",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036155/170712_T_XY_E16.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036155/170712_T_XY_E16.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036155/170712_T_XY_E16.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036155/170712_T_XY_E16.bam.1.bai",
+        "submitted_bytes": "89660110557;16364584",
+        "submitted_md5": "059324d3b6e8258249901207c2331493;5dc2402aa69596ff10e4cc38ed38e806"
+      }
+    },
+    {
+      "accession": "SRR16036136",
+      "experiment_accession": "SRX12322857",
+      "sample_accession": "SAMN21582566",
+      "secondary_sample_accession": "SRS10296110",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595980",
+      "files": [
+        {
+          "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036136/170828_AGP_XX_E10.bam.1",
+          "filename": "170828_AGP_XX_E10.bam",
+          "size": 79779086333,
+          "kind": "raw",
+          "accession": "GSM5595980",
+          "md5": "9aa61b9391d470191a79002a364a3489",
+          "description": "NCBI SDL remote|127920310",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036136",
+        "experiment_accession": "SRX12322857",
+        "sample_accession": "SAMN21582566",
+        "secondary_sample_accession": "SRS10296110",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036136/170828_AGP_XX_E10.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036136/170828_AGP_XX_E10.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036136/170828_AGP_XX_E10.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036136/170828_AGP_XX_E10.bam.1.bai",
+        "submitted_bytes": "79779086333;14107120",
+        "submitted_md5": "9aa61b9391d470191a79002a364a3489;f18710e4dd30828c474a364db1dec64f"
+      }
+    },
+    {
+      "accession": "SRR16036137",
+      "experiment_accession": "SRX12322858",
+      "sample_accession": "SAMN21582568",
+      "secondary_sample_accession": "SRS10296109",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595981",
+      "files": [
+        {
+          "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036137/170828_AGP_XY_E10.bam.1",
+          "filename": "170828_AGP_XY_E10.bam",
+          "size": 56777038022,
+          "kind": "raw",
+          "accession": "GSM5595981",
+          "md5": "ff21d855824b14ace1eeefba5b35bbfa",
+          "description": "NCBI SDL remote|127916479",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036137",
+        "experiment_accession": "SRX12322858",
+        "sample_accession": "SAMN21582568",
+        "secondary_sample_accession": "SRS10296109",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036137/170828_AGP_XY_E10.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036137/170828_AGP_XY_E10.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036137/170828_AGP_XY_E10.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036137/170828_AGP_XY_E10.bam.1.bai",
+        "submitted_bytes": "56777038022;12285272",
+        "submitted_md5": "ff21d855824b14ace1eeefba5b35bbfa;5cd018d3358be042ef00833c4242f78c"
+      }
+    },
+    {
+      "accession": "SRR16036139",
+      "experiment_accession": "SRX12322860",
+      "sample_accession": "SAMN21582572",
+      "secondary_sample_accession": "SRS10296112",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595983",
+      "files": [
+        {
+          "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036139/170830_AGP_XY_E10.bam.1",
+          "filename": "170830_AGP_XY_E10.bam",
+          "size": 160375553957,
+          "kind": "raw",
+          "accession": "GSM5595983",
+          "md5": "bd7e09badd5fa15c87accebb9d669734",
+          "description": "NCBI SDL remote|128084089",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036139",
+        "experiment_accession": "SRX12322860",
+        "sample_accession": "SAMN21582572",
+        "secondary_sample_accession": "SRS10296112",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036139/170830_AGP_XY_E10.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036139/170830_AGP_XY_E10.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036139/170830_AGP_XY_E10.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036139/170830_AGP_XY_E10.bam.1.bai",
+        "submitted_bytes": "160375553957;21369880",
+        "submitted_md5": "bd7e09badd5fa15c87accebb9d669734;5446e24af8ab0e8e37645fdcfe0dbfd9"
+      }
+    },
+    {
+      "accession": "SRR16036140",
+      "experiment_accession": "SRX12322861",
+      "sample_accession": "SAMN21582573",
+      "secondary_sample_accession": "SRS10296113",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595984",
+      "files": [
+        {
+          "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036140/170814_AGP_XX_E11.bam.1",
+          "filename": "170814_AGP_XX_E11.bam",
+          "size": 95434647573,
+          "kind": "raw",
+          "accession": "GSM5595984",
+          "md5": "9481c88301d94477851dfa24989155cd",
+          "description": "NCBI SDL remote|128080988",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036140",
+        "experiment_accession": "SRX12322861",
+        "sample_accession": "SAMN21582573",
+        "secondary_sample_accession": "SRS10296113",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036140/170814_AGP_XX_E11.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036140/170814_AGP_XX_E11.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036140/170814_AGP_XX_E11.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036140/170814_AGP_XX_E11.bam.1.bai",
+        "submitted_bytes": "95434647573;16151968",
+        "submitted_md5": "9481c88301d94477851dfa24989155cd;ad2e2299b32a4aa4715148c1e792abfc"
+      }
+    },
+    {
+      "accession": "SRR16036143",
+      "experiment_accession": "SRX12322864",
+      "sample_accession": "SAMN21582579",
+      "secondary_sample_accession": "SRS10296116",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595987",
+      "files": [
+        {
+          "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036143/170823_AGP_XY_E11.bam.1",
+          "filename": "170823_AGP_XY_E11.bam",
+          "size": 131535337375,
+          "kind": "raw",
+          "accession": "GSM5595987",
+          "md5": "a6fb8b40a5d1c5e2938133af6440b886",
+          "description": "NCBI SDL remote|127957275",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036143",
+        "experiment_accession": "SRX12322864",
+        "sample_accession": "SAMN21582579",
+        "secondary_sample_accession": "SRS10296116",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036143/170823_AGP_XY_E11.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036143/170823_AGP_XY_E11.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036143/170823_AGP_XY_E11.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036143/170823_AGP_XY_E11.bam.1.bai",
+        "submitted_bytes": "131535337375;19242776",
+        "submitted_md5": "a6fb8b40a5d1c5e2938133af6440b886;df5b62415506c654fa9a37fc67c0e571"
+      }
+    },
+    {
+      "accession": "SRR16036144",
+      "experiment_accession": "SRX12322865",
+      "sample_accession": "SAMN21582581",
+      "secondary_sample_accession": "SRS10296117",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595988",
+      "files": [
+        {
+          "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036144/170724_O_XX_E12.bam.1",
+          "filename": "170724_O_XX_E12.bam",
+          "size": 68550653371,
+          "kind": "raw",
+          "accession": "GSM5595988",
+          "md5": "2e996788dffccf7de1ad3d3a39e7b1ec",
+          "description": "NCBI SDL remote|128146260",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036144",
+        "experiment_accession": "SRX12322865",
+        "sample_accession": "SAMN21582581",
+        "secondary_sample_accession": "SRS10296117",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036144/170724_O_XX_E12.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036144/170724_O_XX_E12.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036144/170724_O_XX_E12.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036144/170724_O_XX_E12.bam.1.bai",
+        "submitted_bytes": "68550653371;13672232",
+        "submitted_md5": "2e996788dffccf7de1ad3d3a39e7b1ec;72985545096c9229629c5fae9321f949"
+      }
+    },
+    {
+      "accession": "SRR16036148",
+      "experiment_accession": "SRX12322869",
+      "sample_accession": "SAMN21582588",
+      "secondary_sample_accession": "SRS10296121",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595992",
+      "files": [
+        {
+          "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036148/170726_T_XY_E13.bam.1",
+          "filename": "170726_T_XY_E13.bam",
+          "size": 114017476070,
+          "kind": "raw",
+          "accession": "GSM5595992",
+          "md5": "68737d076bd5b941b4da8d3d466a0fbd",
+          "description": "NCBI SDL remote|131562945",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036148",
+        "experiment_accession": "SRX12322869",
+        "sample_accession": "SAMN21582588",
+        "secondary_sample_accession": "SRS10296121",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036148/170726_T_XY_E13.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036148/170726_T_XY_E13.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036148/170726_T_XY_E13.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036148/170726_T_XY_E13.bam.1.bai",
+        "submitted_bytes": "114017476070;18281568",
+        "submitted_md5": "68737d076bd5b941b4da8d3d466a0fbd;973add514eaefd81082e77f28829a8fa"
+      }
+    },
+    {
+      "accession": "SRR16036149",
+      "experiment_accession": "SRX12322870",
+      "sample_accession": "SAMN21582590",
+      "secondary_sample_accession": "SRS10296122",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595993",
+      "files": [
+        {
+          "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036149/170802_T_XY_E13.bam.1",
+          "filename": "170802_T_XY_E13.bam",
+          "size": 82821521679,
+          "kind": "raw",
+          "accession": "GSM5595993",
+          "md5": "d112fd647d2ea6abb8bc67722430af45",
+          "description": "NCBI SDL remote|131557071",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036149",
+        "experiment_accession": "SRX12322870",
+        "sample_accession": "SAMN21582590",
+        "secondary_sample_accession": "SRS10296122",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036149/170802_T_XY_E13.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036149/170802_T_XY_E13.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036149/170802_T_XY_E13.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036149/170802_T_XY_E13.bam.1.bai",
+        "submitted_bytes": "82821521679;17924248",
+        "submitted_md5": "d112fd647d2ea6abb8bc67722430af45;a2186680ffd7bec82ecb5b4ffa23ca7a"
+      }
+    },
+    {
+      "accession": "SRR16036150",
+      "experiment_accession": "SRX12322871",
+      "sample_accession": "SAMN21582592",
+      "secondary_sample_accession": "SRS10296123",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595994",
+      "files": [
+        {
+          "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036150/180222_O_XX_E13.bam.1",
+          "filename": "180222_O_XX_E13.bam",
+          "size": 64432208795,
+          "kind": "raw",
+          "accession": "GSM5595994",
+          "md5": "44fa3bfce2164838ccedb89aca1ca2b2",
+          "description": "NCBI SDL remote|131629666",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036150",
+        "experiment_accession": "SRX12322871",
+        "sample_accession": "SAMN21582592",
+        "secondary_sample_accession": "SRS10296123",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036150/180222_O_XX_E13.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036150/180222_O_XX_E13.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036150/180222_O_XX_E13.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036150/180222_O_XX_E13.bam.1.bai",
+        "submitted_bytes": "64432208795;13598976",
+        "submitted_md5": "44fa3bfce2164838ccedb89aca1ca2b2;684a229ebb30707fcdb6ea7221f8556b"
+      }
+    },
+    {
+      "accession": "SRR16036154",
+      "experiment_accession": "SRX12322875",
+      "sample_accession": "SAMN21582598",
+      "secondary_sample_accession": "SRS10296126",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595998",
+      "files": [
+        {
+          "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036154/170712_O_XX_E16.bam.1",
+          "filename": "170712_O_XX_E16.bam",
+          "size": 42491884381,
+          "kind": "raw",
+          "accession": "GSM5595998",
+          "md5": "9bc346ae934db92032a85c130bff2317",
+          "description": "NCBI SDL remote|128152371",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036154",
+        "experiment_accession": "SRX12322875",
+        "sample_accession": "SAMN21582598",
+        "secondary_sample_accession": "SRS10296126",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036154/170712_O_XX_E16.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036154/170712_O_XX_E16.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036154/170712_O_XX_E16.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036154/170712_O_XX_E16.bam.1.bai",
+        "submitted_bytes": "42491884381;11068208",
+        "submitted_md5": "9bc346ae934db92032a85c130bff2317;23950940409af90f5c5d426180172822"
+      }
+    },
+    {
+      "accession": "SRR16036138",
+      "experiment_accession": "SRX12322859",
+      "sample_accession": "SAMN21582570",
+      "secondary_sample_accession": "SRS10296111",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595982",
+      "files": [
+        {
+          "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036138/170830_AGP_XX_E10.bam.1",
+          "filename": "170830_AGP_XX_E10.bam",
+          "size": 119194087864,
+          "kind": "raw",
+          "accession": "GSM5595982",
+          "md5": "00dbf15405d748340fbbf71240bf6771",
+          "description": "NCBI SDL remote|127955708",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036138",
+        "experiment_accession": "SRX12322859",
+        "sample_accession": "SAMN21582570",
+        "secondary_sample_accession": "SRS10296111",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036138/170830_AGP_XX_E10.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036138/170830_AGP_XX_E10.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036138/170830_AGP_XX_E10.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036138/170830_AGP_XX_E10.bam.1.bai",
+        "submitted_bytes": "119194087864;18403528",
+        "submitted_md5": "00dbf15405d748340fbbf71240bf6771;e8b7d59c5c0d38f7db66f86eba1525e3"
+      }
+    },
+    {
+      "accession": "SRR16036151",
+      "experiment_accession": "SRX12322872",
+      "sample_accession": "SAMN21582593",
+      "secondary_sample_accession": "SRS10296124",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595995",
+      "files": [
+        {
+          "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036151/180410_O_XX_E13.bam.1",
+          "filename": "180410_O_XX_E13.bam",
+          "size": 89356425428,
+          "kind": "raw",
+          "accession": "GSM5595995",
+          "md5": "a15cbfbf74256e4305882238ae69b71a",
+          "description": "NCBI SDL remote|128281026",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036151",
+        "experiment_accession": "SRX12322872",
+        "sample_accession": "SAMN21582593",
+        "secondary_sample_accession": "SRS10296124",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036151/180410_O_XX_E13.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036151/180410_O_XX_E13.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036151/180410_O_XX_E13.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036151/180410_O_XX_E13.bam.1.bai",
+        "submitted_bytes": "89356425428;15661768",
+        "submitted_md5": "a15cbfbf74256e4305882238ae69b71a;b9abddbaf18d95a6c06ab43be150764e"
+      }
+    },
+    {
+      "accession": "SRR16036141",
+      "experiment_accession": "SRX12322862",
+      "sample_accession": "SAMN21582575",
+      "secondary_sample_accession": "SRS10296114",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595985",
+      "files": [
+        {
+          "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036141/170814_AGP_XY_E11.bam.1",
+          "filename": "170814_AGP_XY_E11.bam",
+          "size": 110131068636,
+          "kind": "raw",
+          "accession": "GSM5595985",
+          "md5": "08aca5cba3721304e816ea4250ceef21",
+          "description": "NCBI SDL remote|127958447",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036141",
+        "experiment_accession": "SRX12322862",
+        "sample_accession": "SAMN21582575",
+        "secondary_sample_accession": "SRS10296114",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036141/170814_AGP_XY_E11.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036141/170814_AGP_XY_E11.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036141/170814_AGP_XY_E11.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036141/170814_AGP_XY_E11.bam.1.bai",
+        "submitted_bytes": "110131068636;17484872",
+        "submitted_md5": "08aca5cba3721304e816ea4250ceef21;cfdfdee9bec6f86fda82aa5947b227f5"
+      }
+    },
+    {
+      "accession": "SRR16036145",
+      "experiment_accession": "SRX12322866",
+      "sample_accession": "SAMN21582583",
+      "secondary_sample_accession": "SRS10296118",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595989",
+      "files": [
+        {
+          "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036145/170724_T_XY_E12.bam.1",
+          "filename": "170724_T_XY_E12.bam",
+          "size": 140830196941,
+          "kind": "raw",
+          "accession": "GSM5595989",
+          "md5": "1fddad8738ef5d304b3df47ba6e1aeca",
+          "description": "NCBI SDL remote|128008591",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036145",
+        "experiment_accession": "SRX12322866",
+        "sample_accession": "SAMN21582583",
+        "secondary_sample_accession": "SRS10296118",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036145/170724_T_XY_E12.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036145/170724_T_XY_E12.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036145/170724_T_XY_E12.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036145/170724_T_XY_E12.bam.1.bai",
+        "submitted_bytes": "140830196941;19910264",
+        "submitted_md5": "1fddad8738ef5d304b3df47ba6e1aeca;afd1a74c4e903b46755c4a895d961551"
+      }
+    },
+    {
+      "accession": "SRR16036153",
+      "experiment_accession": "SRX12322874",
+      "sample_accession": "SAMN21582596",
+      "secondary_sample_accession": "SRS10296127",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595997",
+      "files": [
+        {
+          "url": "https://sra-pub-src-2.s3.amazonaws.com/SRR16036153/170316_T_XY_E16.bam.1",
+          "filename": "170316_T_XY_E16.bam",
+          "size": 65826516788,
+          "kind": "raw",
+          "accession": "GSM5595997",
+          "md5": "a0b80ff25ff16d989082c3d8155460de",
+          "description": "NCBI SDL remote|62390760",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036153",
+        "experiment_accession": "SRX12322874",
+        "sample_accession": "SAMN21582596",
+        "secondary_sample_accession": "SRS10296127",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036153/170316_T_XY_E16.bam;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036153/170316_T_XY_E16.bam.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036153/170316_T_XY_E16.bam;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036153/170316_T_XY_E16.bam.bai",
+        "submitted_bytes": "65826516788;13958464",
+        "submitted_md5": "a0b80ff25ff16d989082c3d8155460de;5043cade7b7d47ca1c64c0f5a89c2f2a"
+      }
+    },
+    {
+      "accession": "SRR16036146",
+      "experiment_accession": "SRX12322867",
+      "sample_accession": "SAMN21582584",
+      "secondary_sample_accession": "SRS10296119",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595990",
+      "files": [
+        {
+          "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036146/170816_O_XX_E12.bam.1",
+          "filename": "170816_O_XX_E12.bam",
+          "size": 59847980207,
+          "kind": "raw",
+          "accession": "GSM5595990",
+          "md5": "6fdfdb3bbbc60eac23ea2b206876ee80",
+          "description": "NCBI SDL remote|127927366",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036146",
+        "experiment_accession": "SRX12322867",
+        "sample_accession": "SAMN21582584",
+        "secondary_sample_accession": "SRS10296119",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036146/170816_O_XX_E12.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036146/170816_O_XX_E12.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036146/170816_O_XX_E12.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036146/170816_O_XX_E12.bam.1.bai",
+        "submitted_bytes": "59847980207;12149752",
+        "submitted_md5": "6fdfdb3bbbc60eac23ea2b206876ee80;90c10854a44ccadce01a8c61b9ba5e44"
+      }
+    },
+    {
+      "accession": "SRR16036147",
+      "experiment_accession": "SRX12322868",
+      "sample_accession": "SAMN21582586",
+      "secondary_sample_accession": "SRS10296120",
+      "study_accession": "PRJNA765715",
+      "library_strategy": "RNA-Seq",
+      "library_source": "TRANSCRIPTOMIC",
+      "library_selection": "cDNA",
+      "instrument_model": "Illumina HiSeq 4000",
+      "read_count": 0,
+      "base_count": 0,
+      "sample": "GSM5595991",
+      "files": [
+        {
+          "url": "https://sra-pub-src-1.s3.amazonaws.com/SRR16036147/170816_T_XY_E12.bam.1",
+          "filename": "170816_T_XY_E12.bam",
+          "size": 116546544443,
+          "kind": "raw",
+          "accession": "GSM5595991",
+          "md5": "5f20546cb62aa7065da28afcfa72a366",
+          "description": "NCBI SDL remote|127958890",
+          "aspera": null,
+          "relpath": null
+        }
+      ],
+      "raw": {
+        "run_accession": "SRR16036147",
+        "experiment_accession": "SRX12322868",
+        "sample_accession": "SAMN21582586",
+        "secondary_sample_accession": "SRS10296120",
+        "study_accession": "PRJNA765715",
+        "library_strategy": "RNA-Seq",
+        "library_source": "TRANSCRIPTOMIC",
+        "library_selection": "cDNA",
+        "instrument_model": "Illumina HiSeq 4000",
+        "read_count": "0",
+        "base_count": "0",
+        "submitted_ftp": "ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036147/170816_T_XY_E12.bam.1;ftp.sra.ebi.ac.uk/vol1/run/SRR160/SRR16036147/170816_T_XY_E12.bam.1.bai",
+        "submitted_aspera": "fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036147/170816_T_XY_E12.bam.1;fasp.sra.ebi.ac.uk:/vol1/run/SRR160/SRR16036147/170816_T_XY_E12.bam.1.bai",
+        "submitted_bytes": "116546544443;17433600",
+        "submitted_md5": "5f20546cb62aa7065da28afcfa72a366;30351f713a59738528494b9e3c936227"
+      }
+    }
+  ]
+}

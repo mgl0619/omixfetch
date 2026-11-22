@@ -247,6 +247,28 @@ without authorisation. The SRA and BioProject accessions are recorded in
 
 ---
 
+## 4b. The whole thing in one command
+
+```bash
+omixfetch fastq GSE184708 -o ./data --dry-run
+omixfetch fastq GSE184708 -o ./data
+```
+
+The dry run shows, per run, which sources exist, their sizes, and the route
+the pipeline will take. The real run installs any missing converter, then for
+each run: checks free disk, downloads, converts, verifies spot counts against
+NCBI, moves the FASTQ into `fastq/<GSM>/`, and deletes the intermediate files.
+Progress is saved after every step; if anything interrupts it, run the same
+command again and finished runs are skipped. Runs that could not be completed
+are listed at the end and in `fastq_manifest.tsv`, and the command exits
+non-zero.
+
+For 10x data, expect it to choose the original BAM even though the `.sra` is
+smaller — the `.sra` has lost the barcode read (see the README).
+
+On Apple Silicon, 10x's `bamtofastq` is an x86_64 binary and needs Rosetta 2
+(`softwareupdate --install-rosetta`). On Linux it runs natively.
+
 ## 5. Metadata
 
 Every download writes metadata alongside the data. To fetch only that:

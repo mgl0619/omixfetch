@@ -295,6 +295,119 @@ omixfetch manifest GSE164378 -o files.txt --format aria2
 aria2c -i files.txt -j 8 -x 16
 ```
 
+## Download routes
+
+Every way to fetch one GEO series, in one place. The examples use GSE184708, a
+20-run mouse scRNA-seq series submitted as aligned BAMs (1.7 TiB). **Treat it
+as a final-stage test, not something to iterate on:** a full fetch takes many
+hours.
+
+### Hands-off: the autonomous pipeline
+
+```bash
+omixfetch fastq GSE184708 -o ./data --dry-run   # show the plan, fetch nothing
+omixfetch fastq GSE184708 -o ./data             # fetch every run as FASTQ
+```
+
+The converters it needs — NCBI's SRA Toolkit and 10x `bamtofastq` — are
+installed automatically on first use, as prebuilt binaries under
+`~/.omixfetch/tools` (set `OMIXFETCH_HOME` to put them elsewhere, e.g. on a
+cluster with a small home quota). No conda is involved, so the sra-tools/aria2
+conflict does not arise. To install them ahead of time: `omixfetch setup`.
+
+For each run it uses the first route that works, falling through on failure:
+ENA's own FASTQ, then NCBI's `.sra` converted with `fasterq-dump`, then the
+original submission converted with 10x `bamtofastq`.
+
+**10x submissions are handled specially.** When a 10x BAM is loaded into SRA,
+the cell barcode and UMI — stored in BAM tags, not as a read — are dropped, so
+the `.sra` holds only the cDNA read. GSE184708 shows it plainly: declared
+paired-end, 98 bases per spot, `spots_with_mates` 0. Converting that `.sra`
+would give FASTQ that Cell Ranger cannot use. The pipeline detects this from
+NCBI's metadata, skips the `.sra` route for such runs, and uses the original
+BAM with `bamtofastq`, which rebuilds R1/R2/I1 from the tags. Before each BAM
+download it reads the header (a few MB) to confirm the `10x_bam_to_fastq`
+lines `bamtofastq` needs are present. It checks spot counts
+against ENA's metadata, refuses a route whose converter is missing *before*
+downloading anything, checks free disk space per run, and records progress in
+`<ACC>/.omixfetch/state.json` — rerun the same command after an interruption
+and finished runs are skipped. Results are listed in `<ACC>/fastq_manifest.tsv`.
+
+Useful options: `--routes sra,original` to change the order, `--parallel-runs`,
+`--include 'SRR160361*'` to fetch a subset, `--keep-intermediate` to keep the
+`.sra`/BAM files.
+
+### By hand: each route individually
+
+| # | What | From | Converter |
+|---|---|---|---|
+| 1 | Processed files (matrices, tables) | GEO | — |
+| 2 | FASTQ | ENA | — |
+| 3 | Original submission (e.g. BAM) | ENA | `bamtofastq` |
+| 4 | Original submission (e.g. BAM) | NCBI's AWS mirror | `bamtofastq` |
+| 5 | Normalised `.sra` | NCBI's AWS mirror | `fasterq-dump` |
+
+```bash
+# 1  processed files
+omixfetch get GSE184708 -o ./data
+
+# 2  FASTQ, when ENA has it (GSE184708 does not -- it was submitted as BAM)
+omixfetch get GSE52778 -o ./data --reads-only
+
+# 3  original BAMs from ENA
+omixfetch get GSE184708 -o ./data --reads-only --prefer submitted
+omixfetch get GSE184708 -o ./data --reads-only --prefer submitted --backend aspera
+
+# 4  original BAMs from NCBI's AWS mirror
+omixfetch get GSE184708 -o ./data --reads-only --source ncbi --sra-flavour original
+omixfetch get GSE184708 -o ./data --reads-only --source ncbi --sra-flavour original --backend s5cmd
+
+# 5  .sra from AWS, converted to FASTQ in the same command
+omixfetch get GSE184708 -o ./data --reads-only --source ncbi --convert fastq -t 8
+
+# which source is fastest from this machine
+omixfetch benchmark GSE184708 --sample 100MB
+```
+
+Add `--dry-run` to any `get` to see what would be fetched, and
+`--include 'SRR16036138*'` to try a single run first.
+
+### Transfer engines
+
+| `--backend` | Works with | Install |
+|---|---|---|
+| `aria2` | any HTTPS route | in `environment.yml` |
+| `s5cmd` | NCBI AWS routes (4, 5) | `conda install -c conda-forge s5cmd` |
+| `aspera` | ENA routes (2, 3); needs outbound UDP 33001 | `conda install -c hcc aspera-cli` |
+| `python` | any HTTPS route; one connection per file | built in |
+
+`auto` (the default) picks `s5cmd` when every file is on S3 and s5cmd is
+installed, otherwise `aria2`, falling back to `python` if aria2 fails.
+
+### Which to choose
+
+The archives' sizes are fixed; their speeds are not — they depend on your
+network path, so run `benchmark` from the machine that will do the work.
+For aligned submissions like GSE184708, route 5 moves the least data
+(709 GiB of `.sra` against 1.7 TiB of BAM) and lands directly as FASTQ, but its
+conversion fetches reference sequences from NCBI (see TUTORIAL.md,
+troubleshooting). If that is blocked, use route 4.
+
+### What has been verified
+
+| Route | Status |
+|---|---|
+| 1 GEO processed | real downloads, sizes and gzip integrity checked |
+| 2 ENA FASTQ | resolved and range-capable; long transfers were cut off in the test environment |
+| 3 ENA submitted | one `.bai` from GSE184708 downloaded, md5 matched ENA |
+| 3 via Aspera | endpoints published for all 20 runs of GSE184708; `ascp` not yet run |
+| 4 NCBI original | range requests and throughput sampled; no full BAM downloaded |
+| 5 NCBI `.sra` | SRR390728 downloaded, md5 matched; its conversion failed on a reference fetch |
+| `s5cmd` backend | unit-tested only; not yet run against S3 |
+| `fastq` pipeline | unit-tested offline; plans GSE184708 correctly (all 20 runs to `original`); full runs pending |
+| bundled tools | SRA Toolkit 3.4.1 and bamtofastq 1.4.1 installed and run on macOS arm64 |
+| 10x header probe | GSE184708 BAM header read with a 4 MB range request; `10x_bam_to_fastq` lines found |
+
 ## What you get
 
 Files are grouped by sample by default, with 10x triplets given their

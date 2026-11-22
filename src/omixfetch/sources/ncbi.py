@@ -49,6 +49,8 @@ class SdlObject:
     object_type: str
     #: ``"sra"`` or ``"original"``.
     flavour: str
+    #: SDL's file type, e.g. ``"TenX"`` for a Cell Ranger BAM.
+    file_type: str = ""
     links: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -90,6 +92,7 @@ def parse_sdl(payload: dict[str, Any]) -> list[SdlObject]:
                     md5=record.get("md5"),
                     object_type=object_id,
                     flavour=_flavour(object_id, str(record.get("type") or "")),
+                    file_type=str(record.get("type") or ""),
                     links=links,
                 )
             )

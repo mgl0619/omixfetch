@@ -1,0 +1,25 @@
+accession	filename	kind	size_bytes	md5	description	url
+GSE184708	GSE184708_mayere_barcodes.tsv.gz	supplementary	440826			https://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184708/suppl/GSE184708_mayere_barcodes.tsv.gz
+GSE184708	GSE184708_mayere_genes.tsv.gz	supplementary	108592			https://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184708/suppl/GSE184708_mayere_genes.tsv.gz
+GSE184708	GSE184708_mayere_meta_data.csv.gz	supplementary	7392195			https://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184708/suppl/GSE184708_mayere_meta_data.csv.gz
+GSE184708	GSE184708_raw_counts_gonad_all_samples_XX_XY_E10_to_E16.mtx.gz	supplementary	1252552764			https://ftp.ncbi.nlm.nih.gov/geo/series/GSE184nnn/GSE184708/suppl/GSE184708_raw_counts_gonad_all_samples_XX_XY_E10_to_E16.mtx.gz
+GSM5595986	170823_AGP_XX_E11.bam	raw	93406055939	5310bc0406071b66786b8d58a405fabc	NCBI SDL remote|128040092	https://sra-pub-src-1.s3.amazonaws.com/SRR16036142/170823_AGP_XX_E11.bam.1
+GSM5595996	170313_O_XX_E16.bam	raw	88728121546	e7fd4b1bf6d7ff42d0904d5ef0d4dc40	NCBI SDL remote|131709052	https://sra-pub-src-2.s3.amazonaws.com/SRR16036152/170313_O_XX_E16.bam.1
+GSM5595999	170712_T_XY_E16.bam	raw	89660110557	059324d3b6e8258249901207c2331493	NCBI SDL remote|131556970	https://sra-pub-src-1.s3.amazonaws.com/SRR16036155/170712_T_XY_E16.bam.1
+GSM5595980	170828_AGP_XX_E10.bam	raw	79779086333	9aa61b9391d470191a79002a364a3489	NCBI SDL remote|127920310	https://sra-pub-src-2.s3.amazonaws.com/SRR16036136/170828_AGP_XX_E10.bam.1
+GSM5595981	170828_AGP_XY_E10.bam	raw	56777038022	ff21d855824b14ace1eeefba5b35bbfa	NCBI SDL remote|127916479	https://sra-pub-src-1.s3.amazonaws.com/SRR16036137/170828_AGP_XY_E10.bam.1
+GSM5595983	170830_AGP_XY_E10.bam	raw	160375553957	bd7e09badd5fa15c87accebb9d669734	NCBI SDL remote|128084089	https://sra-pub-src-1.s3.amazonaws.com/SRR16036139/170830_AGP_XY_E10.bam.1
+GSM5595984	170814_AGP_XX_E11.bam	raw	95434647573	9481c88301d94477851dfa24989155cd	NCBI SDL remote|128080988	https://sra-pub-src-1.s3.amazonaws.com/SRR16036140/170814_AGP_XX_E11.bam.1
+GSM5595987	170823_AGP_XY_E11.bam	raw	131535337375	a6fb8b40a5d1c5e2938133af6440b886	NCBI SDL remote|127957275	https://sra-pub-src-1.s3.amazonaws.com/SRR16036143/170823_AGP_XY_E11.bam.1
+GSM5595988	170724_O_XX_E12.bam	raw	68550653371	2e996788dffccf7de1ad3d3a39e7b1ec	NCBI SDL remote|128146260	https://sra-pub-src-2.s3.amazonaws.com/SRR16036144/170724_O_XX_E12.bam.1
+GSM5595992	170726_T_XY_E13.bam	raw	114017476070	68737d076bd5b941b4da8d3d466a0fbd	NCBI SDL remote|131562945	https://sra-pub-src-2.s3.amazonaws.com/SRR16036148/170726_T_XY_E13.bam.1
+GSM5595993	170802_T_XY_E13.bam	raw	82821521679	d112fd647d2ea6abb8bc67722430af45	NCBI SDL remote|131557071	https://sra-pub-src-1.s3.amazonaws.com/SRR16036149/170802_T_XY_E13.bam.1
+GSM5595994	180222_O_XX_E13.bam	raw	64432208795	44fa3bfce2164838ccedb89aca1ca2b2	NCBI SDL remote|131629666	https://sra-pub-src-1.s3.amazonaws.com/SRR16036150/180222_O_XX_E13.bam.1
+GSM5595998	170712_O_XX_E16.bam	raw	42491884381	9bc346ae934db92032a85c130bff2317	NCBI SDL remote|128152371	https://sra-pub-src-1.s3.amazonaws.com/SRR16036154/170712_O_XX_E16.bam.1
+GSM5595982	170830_AGP_XX_E10.bam	raw	119194087864	00dbf15405d748340fbbf71240bf6771	NCBI SDL remote|127955708	https://sra-pub-src-2.s3.amazonaws.com/SRR16036138/170830_AGP_XX_E10.bam.1
+GSM5595995	180410_O_XX_E13.bam	raw	89356425428	a15cbfbf74256e4305882238ae69b71a	NCBI SDL remote|128281026	https://sra-pub-src-2.s3.amazonaws.com/SRR16036151/180410_O_XX_E13.bam.1
+GSM5595985	170814_AGP_XY_E11.bam	raw	110131068636	08aca5cba3721304e816ea4250ceef21	NCBI SDL remote|127958447	https://sra-pub-src-2.s3.amazonaws.com/SRR16036141/170814_AGP_XY_E11.bam.1
+GSM5595989	170724_T_XY_E12.bam	raw	140830196941	1fddad8738ef5d304b3df47ba6e1aeca	NCBI SDL remote|128008591	https://sra-pub-src-1.s3.amazonaws.com/SRR16036145/170724_T_XY_E12.bam.1
+GSM5595997	170316_T_XY_E16.bam	raw	65826516788	a0b80ff25ff16d989082c3d8155460de	NCBI SDL remote|62390760	https://sra-pub-src-2.s3.amazonaws.com/SRR16036153/170316_T_XY_E16.bam.1
+GSM5595990	170816_O_XX_E12.bam	raw	59847980207	6fdfdb3bbbc60eac23ea2b206876ee80	NCBI SDL remote|127927366	https://sra-pub-src-1.s3.amazonaws.com/SRR16036146/170816_O_XX_E12.bam.1
+GSM5595991	170816_T_XY_E12.bam	raw	116546544443	5f20546cb62aa7065da28afcfa72a366	NCBI SDL remote|127958890	https://sra-pub-src-1.s3.amazonaws.com/SRR16036147/170816_T_XY_E12.bam.1

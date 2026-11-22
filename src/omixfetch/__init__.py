@@ -6,7 +6,7 @@ reads mirrored by ENA, then hands the transfer to aria2c for
 multi-connection, resumable downloading.
 """
 
-__version__ = "0.6.2"
+__version__ = "0.7.0"
 
 from .accession import Archive, parse_accession
 from .models import Dataset, DatasetMetadata, RemoteFile, SampleMetadata
