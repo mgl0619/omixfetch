@@ -11,26 +11,6 @@ downloads, retry with backoff, and checksum verification. The Python side does
 the part no existing tool does well: turning an accession into a complete,
 filterable manifest and a tidy metadata table.
 
-## Why this exists
-
-Downloading a GEO series is nominally easy and repeatedly annoying:
-
-- GEO's HTTPS endpoint returns **403 for directory listings**, so you cannot
-  simply enumerate `.../suppl/`. The authoritative file list lives in the SOFT
-  record.
-- NCBI throttles bursts by returning an **HTML error page with a 200 status**,
-  which naive clients happily write to disk as a `.tar`.
-- A 40 GB `_RAW.tar` over one connection is slow; GEO supports range requests,
-  so it does not have to be.
-- Metadata and data are fetched by different tools, so the characteristics
-  table that makes the matrix interpretable often never gets saved at all.
-- Getting raw reads usually means a second toolchain (SRA Toolkit) and an
-  `.sra` → FASTQ conversion step, even though ENA mirrors the same reads as
-  plain, range-capable HTTPS files.
-- `<GSE>_RAW.tar` is a bundle of the same per-sample supplementary files GEO
-  also serves individually. Fetch both and you transfer the data twice — for
-  GSE164378 that is 2.94 GB for 1.47 GB of unique data.
-
 ## Install
 
 **Python 3.10 or newer is required.** Python 3.9 is past end of life and is not
