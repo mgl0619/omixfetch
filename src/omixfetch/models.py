@@ -25,6 +25,9 @@ class RemoteFile:
     md5: str | None = None
     #: Free-text description from the archive, when available.
     description: str | None = None
+    #: ENA Aspera endpoint (``fasp.sra.ebi.ac.uk:/vol1/...``) when the
+    #: archive publishes one. Used only by the aspera backend.
+    aspera: str | None = None
     #: Path relative to the download directory, set by the layout step.
     #: ``None`` means the file lands at the top level under its own name.
     relpath: str | None = None

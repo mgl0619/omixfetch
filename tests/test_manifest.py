@@ -70,11 +70,13 @@ def test_files_table_handles_unknown_size(tmp_path):
     assert rows[0]["size_bytes"] == ""
 
 
-def test_human_bytes():
+def test_human_bytes_uses_binary_units():
+    """The divisor is 1024, so the labels must be binary too."""
     assert human_bytes(None) == "unknown"
     assert human_bytes(512) == "512 B"
-    assert human_bytes(1536) == "1.5 KB"
-    assert human_bytes(5 * (1 << 30)) == "5.0 GB"
+    assert human_bytes(1536) == "1.5 KiB"
+    assert human_bytes(5 * (1 << 30)) == "5.0 GiB"
+    assert human_bytes(1 << 40) == "1.0 TiB"
 
 
 def test_total_size_distinguishes_unknown_from_empty():

@@ -170,6 +170,8 @@ def resolve_geo(
     include_matrix: bool = False,
     include_reads: bool = False,
     prefer: str = "fastq",
+    source: str = "ena",
+    sra_flavour: str = "sra",
     include_archives: bool = False,
     fetch_sizes: bool = True,
     size_workers: int = 8,
@@ -286,7 +288,9 @@ def resolve_geo(
         # Imported here to keep the ENA dependency off the processed-file path.
         from .ena import attach_reads
 
-        attach_reads(dataset, session, prefer=prefer)
+        attach_reads(
+            dataset, session, prefer=prefer, source=source, sra_flavour=sra_flavour
+        )
 
     return dataset
 

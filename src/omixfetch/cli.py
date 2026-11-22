@@ -9,7 +9,16 @@ from rich.console import Console
 from rich.table import Table
 
 from . import __version__
-from .backends import Aria2Backend, RequestsBackend, aria2_available, aria2_version
+from .backends import (
+    Aria2Backend,
+    AsperaBackend,
+    RequestsBackend,
+    aria2_available,
+    aria2_version,
+    ascp_available,
+)
+from .benchmark import benchmark_source, format_table
+from .convert import fasterq_dump_available, sra_to_fastq
 from .errors import OmixfetchError
 from .filters import apply_filters, parse_size
 from .http import make_session
@@ -45,6 +54,32 @@ VERBOSE = typer.Option(
     False,
     "--verbose",
     help="Show the resolver's own progress logging (geofetch is quiet by default).",
+)
+SOURCE = typer.Option(
+    "ena",
+    "--source",
+    help="Where raw-read bytes come from: 'ena' (EBI) or 'ncbi' (NCBI SDL / "
+    "S3 mirror, often faster and can serve the smaller .sra archive).",
+)
+SRA_FLAVOUR = typer.Option(
+    "sra",
+    "--sra-flavour",
+    help="With --source ncbi: 'sra' for the normalised archive (smaller, "
+    "convert with fasterq-dump) or 'original' for the submitter's upload.",
+)
+CONVERT = typer.Option(
+    None,
+    "--convert",
+    help="After downloading, convert .sra archives to this format. Currently "
+    "'fastq' (via fasterq-dump from the SRA Toolkit).",
+)
+KEEP_SRA = typer.Option(
+    False,
+    "--keep-sra",
+    help="Keep the .sra archives after converting. They are removed by default.",
+)
+THREADS = typer.Option(
+    4, "--threads", "-t", help="Threads for conversion."
 )
 PREFER = typer.Option(
     "fastq",
@@ -151,6 +186,8 @@ def list_files(
         False, "--reads", help="Also resolve raw sequencing reads via ENA."
     ),
     prefer: str = PREFER,
+    source: str = SOURCE,
+    sra_flavour: str = SRA_FLAVOUR,
     include_archives: bool = typer.Option(
         False,
         "--include-archives",
@@ -170,6 +207,8 @@ def list_files(
         include_reads=reads,
         include_archives=include_archives,
         prefer=prefer,
+        source=source,
+        sra_flavour=sra_flavour,
     ):
         selected = apply_filters(
             dataset.files, include=include, exclude=exclude, kinds=kind, max_size=limit
@@ -282,7 +321,9 @@ def get(
     connections: int = typer.Option(
         8, "--connections", "-x", help="Connections per file."
     ),
-    backend: str = typer.Option("auto", "--backend", "-b", help="auto, aria2 or python."),
+    backend: str = typer.Option(
+        "auto", "--backend", "-b", help="auto, aria2, aspera or python."
+    ),
     include: list[str] = typer.Option(
         [], "--include", "-i", help="Keep files matching this glob."
     ),
@@ -309,6 +350,11 @@ def get(
         False, "--reads-only", help="Fetch only raw reads, no processed files."
     ),
     prefer: str = PREFER,
+    source: str = SOURCE,
+    sra_flavour: str = SRA_FLAVOUR,
+    convert: str | None = CONVERT,
+    keep_sra: bool = KEEP_SRA,
+    threads: int = THREADS,
     include_archives: bool = typer.Option(
         False,
         "--include-archives",
@@ -328,6 +374,20 @@ def get(
     verbose: bool = VERBOSE,
 ) -> None:
     """Download data files and metadata for each accession."""
+    if convert is not None and convert != "fastq":
+        error_console.print(
+            f"[red]Unknown --convert target {convert!r}. Currently only "
+            f"'fastq' is supported.[/red]"
+        )
+        raise typer.Exit(code=2)
+    if convert == "fastq" and not fasterq_dump_available():
+        error_console.print(
+            "[red]--convert fastq needs fasterq-dump from the SRA Toolkit, "
+            "which was not found on PATH. Install it with: "
+            "mamba install -c bioconda sra-tools[/red]"
+        )
+        raise typer.Exit(code=2)
+
     if layout not in LAYOUTS:
         error_console.print(
             f"[red]Unknown layout {layout!r}. Use one of: {', '.join(LAYOUTS)}.[/red]"
@@ -345,6 +405,8 @@ def get(
         include_reads=want_reads,
         include_archives=include_archives,
         prefer=prefer,
+        source=source,
+        sra_flavour=sra_flavour,
     )
     if reads_only:
         kind = list(kind) + ["raw"] if kind else ["raw"]
@@ -354,7 +416,9 @@ def get(
         engine_name = "aria2" if aria2_available() else "python"
     else:
         engine_name = backend
-    if engine_name == "aria2":
+    if engine_name == "aspera":
+        engine = AsperaBackend(quiet=quiet)
+    elif engine_name == "aria2":
         engine = Aria2Backend(connections=connections, concurrent=jobs, quiet=quiet)
     elif engine_name == "python":
         if backend == "auto":
@@ -364,7 +428,9 @@ def get(
             )
         engine = RequestsBackend(concurrent=jobs, quiet=quiet)
     else:
-        error_console.print(f"[red]Unknown backend {backend!r}. Use auto, aria2 or python.[/red]")
+        error_console.print(
+            f"[red]Unknown backend {backend!r}. Use auto, aria2, aspera or python.[/red]"
+        )
         raise typer.Exit(code=2)
 
     for dataset in datasets:
@@ -429,7 +495,117 @@ def get(
             else:
                 error_console.print(f"[red]error[/red] {dataset.accession}: {exc}")
                 raise typer.Exit(code=1) from exc
+        if convert == "fastq":
+            _convert_downloaded(destination / "data", threads, keep_sra)
+
         console.print(f"    [green]complete[/green] -> {destination / 'data'}")
+
+
+@app.command("benchmark")
+def benchmark(
+    accession: str = typer.Argument(..., help="A GEO accession to benchmark against."),
+    sample: str = typer.Option(
+        "100MB", "--sample", help="Bytes to sample from each source."
+    ),
+    resolver: str = RESOLVER,
+) -> None:
+    """Measure achievable throughput from each available source.
+
+    Which mirror is fastest depends on the network path of this machine, so
+    published figures are not transferable -- this samples a fixed number of
+    bytes from one representative file per source and reports the rate, plus
+    how long the whole dataset would take at that rate.
+    """
+    from .sources.ena import fetch_runs, project_accessions
+    from .sources.ncbi import fetch_sdl, objects_to_files
+
+    sample_bytes = parse_size(sample)
+    session = make_session()
+
+    with console.status(f"Resolving {accession} ..."):
+        dataset = resolve(
+            accession, session=session, resolver=resolver, include_reads=False
+        )
+        projects = project_accessions(dataset.metadata.relations)
+        runs = fetch_runs(session, projects[0]) if projects else []
+
+    if not runs:
+        error_console.print(
+            f"[red]{accession} has no public ENA runs to benchmark.[/red]"
+        )
+        raise typer.Exit(code=1)
+
+    candidates: list[tuple[str, object]] = []
+    ena_files = [f for run in runs for f in run.files]
+    if ena_files:
+        biggest = max(ena_files, key=lambda f: f.size or 0)
+        candidates.append(("ENA HTTPS", biggest))
+
+    objects = fetch_sdl(session, [r.accession for r in runs])
+    totals = {}
+    for flavour, label in (("sra", "NCBI S3 (.sra)"), ("original", "NCBI S3 (original)")):
+        files = objects_to_files(objects, flavour=flavour)
+        if files:
+            candidates.append((label, max(files, key=lambda f: f.size or 0)))
+            totals[label] = sum(f.size or 0 for f in files)
+    totals["ENA HTTPS"] = sum(f.size or 0 for f in ena_files)
+
+    console.print(f"[bold]{accession}[/bold]  {len(runs)} run(s)")
+    for label, total in totals.items():
+        console.print(f"  {label:<22} {human_bytes(total)} total")
+    console.print(f"\nSampling {human_bytes(sample_bytes)} per source ...\n")
+
+    results = []
+    for label, f in candidates:
+        with console.status(f"  {label} ..."):
+            results.append(benchmark_source(label, f, session, sample_bytes))
+
+    for line in format_table(results, None):
+        console.print("  " + line)
+
+    console.print()
+    for r in results:
+        total = totals.get(r.source)
+        hours = r.projected_hours(total) if total else None
+        if hours is not None:
+            console.print(
+                f"  {r.source:<22} full set ({human_bytes(total)}): {hours:.1f} h"
+            )
+
+    if not ascp_available():
+        console.print(
+            "\n  [dim]ascp not installed; ENA Aspera not benchmarked. "
+            "conda install -c hcc aspera-cli[/dim]"
+        )
+
+
+def _convert_downloaded(data_dir: Path, threads: int, keep_sra: bool) -> None:
+    """Convert every .sra archive under *data_dir* to FASTQ, in place.
+
+    Each archive is converted into its own directory so paired files stay
+    beside the sample they came from.
+    """
+    archives = sorted(data_dir.rglob("*.sra"))
+    if not archives:
+        console.print("    no .sra archives to convert.")
+        return
+
+    for archive in archives:
+        console.print(f"    converting  {archive.name} ...")
+        try:
+            produced = sra_to_fastq(
+                archive,
+                archive.parent,
+                threads=threads,
+                gzip_output=True,
+                keep_sra=keep_sra,
+            )
+        except OmixfetchError as exc:
+            error_console.print(f"[red]    conversion failed[/red]: {exc}")
+            raise typer.Exit(code=1) from exc
+        for path in produced:
+            size = path.stat().st_size
+            console.print(f"      wrote {path.name}  ({human_bytes(size)})")
 
 
 if __name__ == "__main__":
