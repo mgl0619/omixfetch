@@ -168,3 +168,47 @@ def test_resolve_ignores_a_nonexistent_path(tmp_path, monkeypatch):
 def test_build_command_uses_the_resolved_binary(tmp_path):
     cmd = build_command(tmp_path / "a.sra", tmp_path, binary="/opt/sra/fasterq-dump")
     assert cmd[0] == "/opt/sra/fasterq-dump"
+
+
+def test_reference_compressed_failure_is_explained(tmp_path, monkeypatch):
+    """Aligned .sra archives need reference sequences to reconstruct reads."""
+    import subprocess
+
+    from omixfetch.convert import sra_to_fastq
+    from omixfetch.errors import BackendError
+
+    binary = _fake_binary(tmp_path)
+    archive = tmp_path / "SRR1.sra"
+    archive.write_bytes(b"")
+
+    def fail(*a, **k):
+        return subprocess.CompletedProcess(
+            a[0], 3, "", "err: can't open NC_000010.9 as a RefSeq or as a WGS"
+        )
+
+    monkeypatch.setattr(subprocess, "run", fail)
+    with pytest.raises(BackendError) as excinfo:
+        sra_to_fastq(archive, tmp_path / "out", binary=str(binary))
+
+    message = str(excinfo.value)
+    assert "reference-compressed" in message
+    # The actionable alternative is named.
+    assert "--sra-flavour original" in message
+
+
+def test_other_failures_keep_the_plain_message(tmp_path, monkeypatch):
+    import subprocess
+
+    from omixfetch.convert import sra_to_fastq
+    from omixfetch.errors import BackendError
+
+    binary = _fake_binary(tmp_path)
+    archive = tmp_path / "SRR1.sra"
+    archive.write_bytes(b"")
+
+    monkeypatch.setattr(
+        subprocess, "run",
+        lambda *a, **k: subprocess.CompletedProcess(a[0], 1, "", "disk full"),
+    )
+    with pytest.raises(BackendError, match="disk full"):
+        sra_to_fastq(archive, tmp_path / "out", binary=str(binary))

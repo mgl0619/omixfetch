@@ -339,6 +339,14 @@ environment on that platform at all: installing sra-tools alongside aria2
 downloads. Use `environment-convert.yml` to keep them apart, and check with
 `aria2c --version` afterwards.
 
+**`fasterq-dump` fails with "can't open ... as a RefSeq or as a WGS"** — the
+`.sra` is reference-compressed, which is how NCBI stores aligned (BAM/CRAM)
+submissions and part of why it is smaller than the original. Reconstructing
+reads needs the reference sequences fetched from NCBI, so the conversion host
+must be able to reach them. If that is not possible, take the submitter's own
+file instead and convert it locally: `--sra-flavour original` (then
+`bamtofastq` for 10x BAMs). Verified failing this way on SRR390728.
+
 **Two modalities in one sample kept their long filenames** — intentional. When
 renaming would make two files collide inside one sample directory, the
 published names are kept rather than risk overwriting data.

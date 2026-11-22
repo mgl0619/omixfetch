@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "omixfetch"
-version = "0.6.1"
+version = "0.6.2"
 description = "Parallel, resumable downloads of public genomics datasets from NCBI GEO"
 readme = "README.md"
 license = { file = "LICENSE" }

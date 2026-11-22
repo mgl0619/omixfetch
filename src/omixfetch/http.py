@@ -16,7 +16,7 @@ from urllib3.util.retry import Retry
 
 from .errors import ResolveError
 
-USER_AGENT = "omixfetch/0.6.1 (+https://github.com/mgl0619/omixfetch)"
+USER_AGENT = "omixfetch/0.6.2 (+https://github.com/mgl0619/omixfetch)"
 
 DEFAULT_TIMEOUT = 120
 

@@ -27,6 +27,10 @@ FASTERQ_DUMP = "fasterq-dump"
 #: a toolkit installed outside omixfetch's own environment.
 PATH_ENV_VAR = "OMIXFETCH_FASTERQ_DUMP"
 
+#: Signatures of a conversion that failed because the archive is
+#: reference-compressed and the reference could not be fetched.
+_REFERENCE_ERRORS = ("as a RefSeq or as a WGS", "rcVFS", "cannot open reference")
+
 
 def resolve_fasterq_dump(explicit: str | None = None) -> str | None:
     """Locate a usable ``fasterq-dump``, or return None.
@@ -166,9 +170,24 @@ def sra_to_fastq(
     )
     proc = subprocess.run(command, capture_output=True, text=True)
     if proc.returncode != 0:
+        stderr = (proc.stderr or "").strip()
+        if any(sig in stderr for sig in _REFERENCE_ERRORS):
+            raise BackendError(
+                f"fasterq-dump could not reconstruct reads from {sra_path.name}: "
+                f"this archive is reference-compressed, and the reference "
+                f"sequences it needs could not be fetched from NCBI.\n"
+                f"  - aligned submissions (BAM/CRAM) are stored this way, which "
+                f"is part of why the .sra is smaller than the original\n"
+                f"  - conversion therefore needs outbound access to NCBI's "
+                f"reference service; check it is reachable and that "
+                f"`vdb-config --report-cloud-identity` is sane\n"
+                f"  - or avoid the reference entirely by fetching the "
+                f"submitter's own file instead: --sra-flavour original\n"
+                f"fasterq-dump said: {stderr[:300]}"
+            )
         raise BackendError(
             f"fasterq-dump failed for {sra_path.name} "
-            f"(exit {proc.returncode}): {(proc.stderr or '').strip()[:400]}"
+            f"(exit {proc.returncode}): {stderr[:400]}"
         )
 
     produced = sorted(set(outdir.glob("*.fastq")) - before)
