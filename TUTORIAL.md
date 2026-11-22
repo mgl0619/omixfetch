@@ -343,12 +343,33 @@ works there: an environment seen here ended up with sra-tools present and
 aria2 gone, though which install removed it was not established.
 
 **`fasterq-dump` fails with "can't open ... as a RefSeq or as a WGS"** — the
-`.sra` is reference-compressed, which is how NCBI stores aligned (BAM/CRAM)
-submissions and part of why it is smaller than the original. Reconstructing
-reads needs the reference sequences fetched from NCBI, so the conversion host
-must be able to reach them. If that is not possible, take the submitter's own
-file instead and convert it locally: `--sra-flavour original` (then
-`bamtofastq` for 10x BAMs). Verified failing this way on SRR390728.
+`.sra` does not contain the read bases. Aligned submissions are stored as
+differences against a reference genome, the same idea as CRAM, and the
+reference lives in NCBI's repository rather than in the file you downloaded.
+Installing the toolkit locally does not help: the software is present, the
+data is incomplete. This is also where part of the size advantage over the
+original BAM comes from. Verified failing this way on SRR390728.
+
+Three ways out, in order of preference:
+
+1. **Let it fetch, and cache sensibly.** References are cached in the VDB user
+   repository, so one reference set serves every run of a study — a few GB
+   once, not per run. Point the cache at scratch, never at a home directory
+   with a quota, or a failed cache write will look like a network failure:
+
+   ```bash
+   vdb-config --interactive     # set the cache location
+   ```
+
+2. **Pre-fetch.** `prefetch SRR16036138` acquires the references alongside the
+   run into the local repository, after which conversion works offline.
+
+3. **Avoid references entirely** with `--sra-flavour original`: submitted
+   BAMs are self-contained. For GSE184708 that is 1.7 TiB instead of 709 GiB,
+   and 10x BAMs then need `bamtofastq` rather than `fasterq-dump`.
+
+The caching behaviour in (1) is how the toolkit is documented to work; it was
+not verified here, because the test never got past the first reference fetch.
 
 **Two modalities in one sample kept their long filenames** — intentional. When
 renaming would make two files collide inside one sample directory, the
