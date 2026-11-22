@@ -333,11 +333,14 @@ file, so simply rerunning the same command makes forward progress.
 **`sra-tools` will not install / `perl-xml-libxml` cannot be satisfied** —
 on osx-arm64, sra-tools 3.2.x depends on a package with no Apple Silicon
 build. Ask for a newer one (`sra-tools>=3.4`) and put `conda-forge` ahead of
-`bioconda`. Note that sra-tools and aria2 cannot be solved into one
-environment on that platform at all: installing sra-tools alongside aria2
-*removes aria2* rather than failing, silently costing you multi-connection
-downloads. Use `environment-convert.yml` to keep them apart, and check with
-`aria2c --version` afterwards.
+`bioconda`.
+
+Separately, sra-tools and aria2 cannot be solved into one environment on that
+platform at all — a combined solve fails on a `libxml2`/`icu` conflict. Use
+`environment-convert.yml` to keep them apart. If you have previously installed
+sra-tools into an environment that had aria2, check `aria2c --version` still
+works there: an environment seen here ended up with sra-tools present and
+aria2 gone, though which install removed it was not established.
 
 **`fasterq-dump` fails with "can't open ... as a RefSeq or as a WGS"** — the
 `.sra` is reference-compressed, which is how NCBI stores aligned (BAM/CRAM)

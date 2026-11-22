@@ -216,8 +216,9 @@ the archive (`--keep-sra` to retain it).
 
 Conversion needs the SRA Toolkit, which pip does not install. **It does not
 have to live in omixfetch's environment** — on osx-arm64 `sra-tools` and
-`aria2` cannot be solved together, and installing sra-tools into the main
-environment silently removes aria2. So the toolkit gets its own:
+`aria2` cannot be solved into one environment at all: they disagree over
+`libxml2`/`icu`, and a combined solve fails outright. So the toolkit gets its
+own:
 
 ```bash
 mamba env create -f environment-convert.yml

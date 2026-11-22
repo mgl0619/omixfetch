@@ -5,8 +5,8 @@
 #   fasterq-dump --version
 #
 # Kept separate from the main environment on purpose: sra-tools and aria2
-# cannot be solved together on osx-arm64 (a libxml2/icu conflict), and
-# installing sra-tools alongside aria2 removes aria2 rather than failing.
+# cannot be solved together on osx-arm64 -- a combined solve fails on a
+# libxml2/icu conflict.
 #
 # Two ways to use it:
 #

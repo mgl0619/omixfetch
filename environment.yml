@@ -9,9 +9,8 @@
 # aria2 is the download engine, not an optional extra.
 #
 # sra-tools is deliberately NOT here. It and aria2 cannot be solved into one
-# environment on osx-arm64 -- they disagree over libxml2/icu, and installing
-# sra-tools into this environment REMOVES aria2, silently losing
-# multi-connection downloads. Conversion gets its own environment:
+# environment on osx-arm64 -- they disagree over libxml2/icu and a combined
+# solve fails. Conversion gets its own environment:
 #
 #     mamba env create -f environment-convert.yml
 #
