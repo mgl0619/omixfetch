@@ -3,7 +3,7 @@
 import pytest
 
 from omixfetch.benchmark import SampleResult, benchmark_source, format_table
-from omixfetch.convert import build_command
+from omixfetch.convert import PATH_ENV_VAR, build_command, resolve_fasterq_dump
 from omixfetch.models import RemoteFile
 from omixfetch.sources.ncbi import objects_to_files, parse_sdl
 
@@ -133,3 +133,38 @@ def test_format_table_ranks_fastest_first_and_lists_failures_last():
     assert rows[0].startswith("fast")
     assert rows[1].startswith("slow")
     assert rows[2].startswith("broken")
+
+
+def _fake_binary(tmp_path, name="fasterq-dump"):
+    path = tmp_path / name
+    path.write_text("#!/bin/sh\n")
+    path.chmod(0o755)
+    return path
+
+
+def test_resolve_prefers_explicit_path(tmp_path):
+    binary = _fake_binary(tmp_path)
+    assert resolve_fasterq_dump(str(binary)) == str(binary)
+
+
+def test_resolve_accepts_a_directory(tmp_path):
+    binary = _fake_binary(tmp_path)
+    assert resolve_fasterq_dump(str(tmp_path)) == str(binary)
+
+
+def test_resolve_falls_back_to_environment_variable(tmp_path, monkeypatch):
+    """The toolkit need not live in omixfetch's own environment."""
+    binary = _fake_binary(tmp_path)
+    monkeypatch.setenv(PATH_ENV_VAR, str(binary))
+    assert resolve_fasterq_dump(None) == str(binary)
+
+
+def test_resolve_ignores_a_nonexistent_path(tmp_path, monkeypatch):
+    monkeypatch.delenv(PATH_ENV_VAR, raising=False)
+    monkeypatch.setattr("shutil.which", lambda _n: None)
+    assert resolve_fasterq_dump(str(tmp_path / "absent")) is None
+
+
+def test_build_command_uses_the_resolved_binary(tmp_path):
+    cmd = build_command(tmp_path / "a.sra", tmp_path, binary="/opt/sra/fasterq-dump")
+    assert cmd[0] == "/opt/sra/fasterq-dump"

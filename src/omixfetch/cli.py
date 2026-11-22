@@ -18,7 +18,7 @@ from .backends import (
     ascp_available,
 )
 from .benchmark import benchmark_source, format_table
-from .convert import fasterq_dump_available, sra_to_fastq
+from .convert import PATH_ENV_VAR, fasterq_dump_available, sra_to_fastq
 from .errors import OmixfetchError
 from .filters import apply_filters, parse_size
 from .http import make_session
@@ -80,6 +80,12 @@ KEEP_SRA = typer.Option(
 )
 THREADS = typer.Option(
     4, "--threads", "-t", help="Threads for conversion."
+)
+FASTERQ_DUMP_PATH = typer.Option(
+    None,
+    "--fasterq-dump",
+    help="Path to a fasterq-dump binary (or the directory holding it). It "
+    f"need not be in omixfetch's environment. Also read from ${PATH_ENV_VAR}.",
 )
 PREFER = typer.Option(
     "fastq",
@@ -355,6 +361,7 @@ def get(
     convert: str | None = CONVERT,
     keep_sra: bool = KEEP_SRA,
     threads: int = THREADS,
+    fasterq_dump: str | None = FASTERQ_DUMP_PATH,
     include_archives: bool = typer.Option(
         False,
         "--include-archives",
@@ -380,11 +387,15 @@ def get(
             f"'fastq' is supported.[/red]"
         )
         raise typer.Exit(code=2)
-    if convert == "fastq" and not fasterq_dump_available():
+    if convert == "fastq" and not fasterq_dump_available(fasterq_dump):
         error_console.print(
-            "[red]--convert fastq needs fasterq-dump from the SRA Toolkit, "
-            "which was not found on PATH. Install it with: "
-            "mamba install -c bioconda sra-tools[/red]"
+            "[red]--convert fastq needs fasterq-dump, which could not be "
+            "located.[/red]\n"
+            "  Downloading .sra archives works without it; only conversion "
+            "needs the SRA Toolkit.\n"
+            "  Install separately:  mamba env create -f environment-convert.yml\n"
+            f"  Or point at it:      export {PATH_ENV_VAR}=/path/to/fasterq-dump\n"
+            "  Or pass:             --fasterq-dump /path/to/fasterq-dump"
         )
         raise typer.Exit(code=2)
 
@@ -496,7 +507,9 @@ def get(
                 error_console.print(f"[red]error[/red] {dataset.accession}: {exc}")
                 raise typer.Exit(code=1) from exc
         if convert == "fastq":
-            _convert_downloaded(destination / "data", threads, keep_sra)
+            _convert_downloaded(
+                destination / "data", threads, keep_sra, fasterq_dump
+            )
 
         console.print(f"    [green]complete[/green] -> {destination / 'data'}")
 
@@ -579,7 +592,9 @@ def benchmark(
         )
 
 
-def _convert_downloaded(data_dir: Path, threads: int, keep_sra: bool) -> None:
+def _convert_downloaded(
+    data_dir: Path, threads: int, keep_sra: bool, binary: str | None = None
+) -> None:
     """Convert every .sra archive under *data_dir* to FASTQ, in place.
 
     Each archive is converted into its own directory so paired files stay
@@ -599,6 +614,7 @@ def _convert_downloaded(data_dir: Path, threads: int, keep_sra: bool) -> None:
                 threads=threads,
                 gzip_output=True,
                 keep_sra=keep_sra,
+                binary=binary,
             )
         except OmixfetchError as exc:
             error_console.print(f"[red]    conversion failed[/red]: {exc}")

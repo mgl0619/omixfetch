@@ -217,8 +217,14 @@ omixfetch get GSE184708 -o ./data --reads-only \
     --source ncbi --sra-flavour sra --convert fastq -t 8
 ```
 
-That needs the SRA Toolkit for the conversion step only
-(`mamba install -c bioconda sra-tools`); the download itself does not use it.
+That needs the SRA Toolkit for the conversion step only; the download itself
+does not use it. Install it in its own environment — on Apple Silicon it
+cannot coexist with aria2:
+
+```bash
+mamba env create -f environment-convert.yml
+export OMIXFETCH_FASTERQ_DUMP="$(conda run -n omixfetch-convert which fasterq-dump)"
+```
 
 Aspera is worth trying if your site permits outbound UDP 33001:
 
@@ -323,6 +329,15 @@ A handshake failure here is environmental, not an omixfetch bug.
 
 **A large download fails repeatedly** — each retry resumes from the partial
 file, so simply rerunning the same command makes forward progress.
+
+**`sra-tools` will not install / `perl-xml-libxml` cannot be satisfied** —
+on osx-arm64, sra-tools 3.2.x depends on a package with no Apple Silicon
+build. Ask for a newer one (`sra-tools>=3.4`) and put `conda-forge` ahead of
+`bioconda`. Note that sra-tools and aria2 cannot be solved into one
+environment on that platform at all: installing sra-tools alongside aria2
+*removes aria2* rather than failing, silently costing you multi-connection
+downloads. Use `environment-convert.yml` to keep them apart, and check with
+`aria2c --version` afterwards.
 
 **Two modalities in one sample kept their long filenames** — intentional. When
 renaming would make two files collide inside one sample directory, the

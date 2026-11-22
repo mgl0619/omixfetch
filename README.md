@@ -212,12 +212,26 @@ omixfetch get GSE184708 -o ./data --reads-only --source ncbi --convert fastq -t 
 ```
 
 This downloads each `.sra`, runs `fasterq-dump`, gzips the result and removes
-the archive (`--keep-sra` to retain it). Conversion needs the SRA Toolkit,
-which pip does not install:
+the archive (`--keep-sra` to retain it).
+
+Conversion needs the SRA Toolkit, which pip does not install. **It does not
+have to live in omixfetch's environment** — on osx-arm64 `sra-tools` and
+`aria2` cannot be solved together, and installing sra-tools into the main
+environment silently removes aria2. So the toolkit gets its own:
 
 ```bash
-mamba install -c bioconda sra-tools
+mamba env create -f environment-convert.yml
+export OMIXFETCH_FASTERQ_DUMP="$(conda run -n omixfetch-convert which fasterq-dump)"
 ```
+
+Or point at any binary directly, including one from a container or NCBI's
+dependency-free [release tarballs](https://github.com/ncbi/sra-tools/releases):
+
+```bash
+omixfetch get ... --convert fastq --fasterq-dump /opt/sra-tools/bin/fasterq-dump
+```
+
+Downloading `.sra` archives needs no toolkit at all; only conversion does.
 
 #### Measuring which source is fastest
 

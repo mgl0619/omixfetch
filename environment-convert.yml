@@ -1,0 +1,30 @@
+# Conversion-only environment for omixfetch.
+#
+#   mamba env create -f environment-convert.yml
+#   mamba activate omixfetch-convert
+#   fasterq-dump --version
+#
+# Kept separate from the main environment on purpose: sra-tools and aria2
+# cannot be solved together on osx-arm64 (a libxml2/icu conflict), and
+# installing sra-tools alongside aria2 removes aria2 rather than failing.
+#
+# Two ways to use it:
+#
+#   1. Download in the omixfetch environment, then activate this one and run
+#      `omixfetch` again with --convert fastq. The package is pure Python, so
+#      `pip install omixfetch` here as well if you want the one-step form.
+#   2. Put this environment's bin directory on PATH while running omixfetch
+#      from the main environment, so fasterq-dump is found.
+#
+# On Linux the two often solve together and this file is unnecessary.
+# NCBI also ships dependency-free binaries:
+#   https://github.com/ncbi/sra-tools/releases
+name: omixfetch-convert
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.13
+  # 3.4 or newer; 3.2.x pulls perl-xml-libxml, which has no osx-arm64 build.
+  - sra-tools>=3.4
+  - pip

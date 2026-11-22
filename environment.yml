@@ -4,19 +4,19 @@
 #   mamba activate omixfetch
 #   pip install -e ".[dev]"
 #
-# aria2 is included deliberately: it is the download engine, not an optional
-# extra, and installing it through conda-forge avoids depending on a system
-# package manager.
+# Channel order matters: conda-forge before bioconda.
 #
-# geofetch is a required dependency -- it is the default metadata resolver for
-# GEO series. It is installed via pip below because the conda-forge build lags
-# the PyPI release. It brings the pepkit stack (peppy, pandas, numpy, pipestat,
-# yacman) with it, roughly 137 MB.
+# aria2 is the download engine, not an optional extra.
 #
-# NOT included, and not needed: the SRA Toolkit (prefetch / fasterq-dump).
-# omixfetch fetches raw reads from ENA as plain HTTPS files and never invokes
-# geofetch's own raw-data path. If you want that path separately:
-#     mamba install -c bioconda sra-tools
+# sra-tools is deliberately NOT here. It and aria2 cannot be solved into one
+# environment on osx-arm64 -- they disagree over libxml2/icu, and installing
+# sra-tools into this environment REMOVES aria2, silently losing
+# multi-connection downloads. Conversion gets its own environment:
+#
+#     mamba env create -f environment-convert.yml
+#
+# See TUTORIAL.md section 4 for how the two fit together. Downloading .sra
+# archives needs no toolkit at all; only `--convert fastq` does.
 name: omixfetch
 channels:
   - conda-forge
