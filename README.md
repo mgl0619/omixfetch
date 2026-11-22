@@ -47,7 +47,7 @@ omixfetch **downloads**. It doesn't convert between formats; see
 | **Resumes** | interrupted transfers continue where they stopped; rerunning a finished job fetches nothing |
 | **Lays out** | files by sample, with 10x matrices given the names `scanpy` and Seurat expect |
 | **Records** | study and sample metadata as JSON, TSV and PEP, plus the unmodified archive records |
-| **Avoids waste** | drops `_RAW.tar` when its contents are listed individually, checks a BAM's header before committing to a 100 GB download, and reports controlled-access data instead of failing on it |
+| **Avoids waste** | drops `_RAW.tar` when its contents are listed individually, can read a BAM's header (4 MB) before you commit to a 100 GB download, and reports controlled-access data instead of failing on it |
 
 Supported today: **NCBI GEO**, with raw reads via **ENA** and **NCBI SRA**.
 Planned: ArrayExpress/E-MTAB, PRIDE, MetaboLights (see [ROADMAP.md](ROADMAP.md)).
@@ -174,7 +174,15 @@ BioProject accessions are recorded in the metadata for that request.
 ## Know what you are downloading
 
 Raw downloads are large, and the form you fetch decides what you can do with
-it later. Two things omixfetch checks before you spend hours on a transfer:
+it later. Two things are worth checking before you spend hours on a transfer.
+omixfetch checks both per run in the planner of the `fastq` command, whose
+dry run downloads nothing:
+
+```bash
+omixfetch fastq GSE184708 -o ./plan --dry-run
+```
+
+(`get` doesn't run this check yet; see [ROADMAP.md](ROADMAP.md).)
 
 **1. Was the submission FASTQ or BAM?** omixfetch reads NCBI's record of the
 original file, backed by ENA's. For a FASTQ submission, every form contains

@@ -1,19 +1,24 @@
 # omixfetch tutorial
 
-A walkthrough from a clean machine to a loaded single-cell matrix.
+From a clean machine to downloaded data, raw and processed, with the
+metadata alongside.
 
-Every `omixfetch` command below has been run against the live archives, and
-the outputs shown are what they returned. The `scanpy` and `Seurat` snippets
-in section 3 are the intended usage of the directory layout rather than
-captured runs — neither library is a dependency of this project.
+omixfetch downloads. It doesn't convert between formats. The conversion
+commands that still ship are covered once, in the
+[appendix](#appendix-transitional-conversion-commands), and are due to move to
+a separate tool.
+
+The `omixfetch` outputs shown were captured from live runs; some are trimmed.
+The `scanpy` and Seurat snippets in section 3 show how the layout is meant to
+be used; they weren't captured, since neither library is a dependency.
 
 ---
 
 ## 1. Install
 
-**Python 3.10 or newer is required.** Python 3.9 is past end of life, and
-`pip install` will refuse it — if you see `ModuleNotFoundError: No module
-named 'omixfetch'` straight after installing, check this first:
+**Python 3.10 or newer.** Python 3.9 is past end of life and `pip install`
+refuses it. If you see `ModuleNotFoundError: No module named 'omixfetch'`
+right after installing, check this first:
 
 ```bash
 python -c "import sys; print(sys.version)"
@@ -24,12 +29,10 @@ python -c "import sys; print(sys.version)"
 ```bash
 git clone https://github.com/mgl0619/omixfetch.git
 cd omixfetch
-mamba env create -f environment.yml
+mamba env create -f environment.yml      # Python 3.13 + aria2
 mamba activate omixfetch
 pip install -e ".[dev]"
 ```
-
-`environment.yml` pins Python 3.13 and includes `aria2`, the download engine.
 
 Using `micromamba` for the first time? It needs a root prefix before
 `env create` works:
@@ -47,6 +50,13 @@ pip install -e ".[dev]"
 brew install aria2          # macOS; apt install aria2 on Debian/Ubuntu
 ```
 
+### Optional transfer engines
+
+```bash
+conda install -c conda-forge s5cmd      # S3-native; fast against NCBI's AWS mirror
+conda install -c hcc aspera-cli         # UDP transfers from ENA
+```
+
 ### Check it worked
 
 ```bash
@@ -54,15 +64,16 @@ omixfetch --version
 ```
 
 ```
-omixfetch 0.5.0
+omixfetch 0.8.0
 aria2c: aria2 version 1.37.0
+s5cmd:  not installed
 ```
 
-If the second line says `not installed`, downloads still work but fall back to
-a slower threaded downloader that cannot split a single file across
-connections. Install aria2 before fetching anything large.
+If `aria2c` says `not installed`, downloads still work but use a built-in
+downloader that can't split a single file across connections. Install aria2
+before fetching anything large.
 
-Run the test suite to confirm the install is sound — it needs no network:
+The test suite needs no network:
 
 ```bash
 python -m pytest
@@ -88,30 +99,30 @@ omixfetch info GSE164378
  PubMed        34062119
 ```
 
-The `Resolver` row tells you which metadata backend ran — see section 7.
-
-`list` shows exactly what would be fetched, and accepts the same filters as
+`list` shows exactly what would be fetched, and takes the same filters as
 `get`:
 
 ```bash
 omixfetch list GSE164378 --include "*RNA_3P*"
 ```
 
-Add `--dry-run` to `get` for the same preview with the final paths resolved.
+`get --dry-run` gives the same preview with the final paths filled in.
 
 ---
 
 ## 3. Download processed data
 
+For most analyses this is all you need, and it's usually small.
+
 ```bash
 omixfetch get GSE164378 -o ./data --include "*RNA_3P*" -j 4 -x 16
 ```
 
-- `-j 4` — four files at once
-- `-x 16` — sixteen connections **within** each file
+- `-j 4`: four files at once
+- `-x 16`: sixteen connections **within** each file
 
-The second flag is where the time is saved. NCBI throttles per connection, so
-a 1 GB matrix downloads far faster split sixteen ways.
+`-x` is the flag that saves the time. Archives throttle each connection, so a
+large file arrives much faster split sixteen ways.
 
 Files are grouped by sample, and 10x triplets get their Cell Ranger names:
 
@@ -131,12 +142,13 @@ data/GSE164378/
     └── GSE164378.soft.txt
 ```
 
-Pass `--layout flat` to keep one directory with the published filenames.
+`--layout flat` keeps one directory and the published filenames.
+`<GSE>_RAW.tar` is skipped when its contents are also listed one by one;
+`--include-archives` fetches it anyway.
 
 ### Load it
 
-Because the directory is already in Cell Ranger shape, no renaming step is
-needed:
+The directory is already in Cell Ranger shape, so there's nothing to rename:
 
 ```python
 import scanpy as sc
@@ -157,12 +169,16 @@ samples = pd.read_csv("data/GSE164378/metadata/GSE164378.samples.tsv", sep="\t")
 
 ---
 
-## 4. Download raw reads
+## 4. Download raw data
 
-omixfetch fetches FASTQ from **ENA**, which mirrors SRA and serves reads as
-ordinary files. No SRA Toolkit, and no `.sra` conversion step.
+Raw reads come down **as they were deposited**: FASTQ if the submitter
+uploaded FASTQ, the original BAM if they uploaded BAM, or NCBI's `.sra`
+archive if you ask for it. omixfetch moves and verifies the bytes; it doesn't
+change their format.
 
-Always preview first — read sets are large:
+### 4.1 Preview
+
+Read sets are large. Always preview:
 
 ```bash
 omixfetch get GSE52778 -o ./data --reads-only --dry-run
@@ -174,21 +190,52 @@ GSE52778  39 file(s), 46.9 GB  ->  ./data/GSE52778
     would fetch  GSM1275863/SRR1039509_2.fastq.gz  (1.1 GB)
 ```
 
-Then drop `--dry-run`. Runs are grouped under the GEO sample they belong to.
+Drop `--dry-run` to fetch. Runs are filed under the GEO sample they belong to.
+`--reads` instead of `--reads-only` fetches processed files too.
 
-ENA publishes an md5 for every read file, so these are verified end to end —
-a corrupt file is deleted rather than left on disk.
+### 4.2 Choose the form
 
-For long-read studies where the submitter deposited BAM rather than FASTQ:
+| You want | Command |
+|---|---|
+| FASTQ, where the submitter uploaded FASTQ (default) | `--reads-only` |
+| the submitter's own files (BAM, CRAM, …) | `--reads-only --prefer submitted` |
+| the same, from NCBI's AWS mirror | `--reads-only --source ncbi --sra-flavour original` |
+| NCBI's normalised `.sra` | `--reads-only --source ncbi --sra-flavour sra` |
+
+Every file is checked against the archive's published size and md5. A file
+that fails is deleted, not left on disk looking finished.
+
+Try one run before committing to a study:
 
 ```bash
-omixfetch get <GSE> -o ./data --reads-only --prefer submitted
+omixfetch get GSE184708 -o ./data --reads-only --prefer submitted \
+    --include "SRR16036138*" --dry-run
 ```
 
-### Going faster
+### 4.3 Check what the submission contains
 
-Reads are served by both EBI and NCBI, and which is quicker depends on your
-network. Measure before committing to a large transfer:
+The form decides what you can do with the data later, so check it first. This
+matters most for 10x data submitted as BAM. The cell barcode and UMI live in
+BAM tags, and they're lost when NCBI loads the BAM into `.sra`. ENA's FASTQ
+is derived the same way and loses them too. For GSE184708, only the original
+BAM still has them.
+
+The per-run check, which reads each BAM's header with a 4 MB range request
+rather than the whole file, currently runs as part of the planner in the
+`fastq` command. Its dry run downloads nothing and shows, for each run, what
+was submitted, what the header says, and which files are worth fetching:
+
+```bash
+omixfetch fastq GSE184708 -o ./plan --dry-run
+```
+
+Before fetching raw data at all, check GEO's processed files. For GSE184708
+they're 1.2 GiB against 1.7 TiB of BAMs.
+
+### 4.4 Choose the source and engine
+
+EBI and NCBI both serve the data. Which is faster depends on your network, so
+measure from the machine that will do the downloading:
 
 ```bash
 omixfetch benchmark GSE184708 --sample 100MB
@@ -200,78 +247,45 @@ NCBI S3 (.sra)            46.6 MiB/s   -> 4.3 h for the full set
 ENA HTTPS                  0.9 MiB/s   -> 544.9 h for the full set
 ```
 
-Those numbers are from one particular machine and are **not** transferable —
-run it yourself on the node that will do the downloading.
-
-Then pick a source:
+Those numbers come from one machine on one day, so they **won't** match
+yours. Then fetch from the faster source:
 
 ```bash
-omixfetch get GSE184708 -o ./data --reads-only --source ncbi
+omixfetch get GSE184708 -o ./data --reads-only --source ncbi --sra-flavour original
 ```
 
-If you want FASTQ, the `.sra` route is both the smallest transfer and the
-direct path to it — one command downloads and converts:
+Pick the engine with `--backend`:
+
+| `--backend` | Use for |
+|---|---|
+| `auto` (default) | `s5cmd` when every file is on S3 and it's installed, otherwise `aria2`, then `python` |
+| `aria2` | any HTTPS source; `-j` files × `-x` connections per file |
+| `s5cmd` | NCBI's AWS mirror |
+| `aspera` | ENA, if your site allows outbound UDP 33001 |
+| `python` | built in; whole files only |
 
 ```bash
-omixfetch get GSE184708 -o ./data --reads-only \
-    --source ncbi --sra-flavour sra --convert fastq -t 8
+omixfetch get GSE184708 -o ./data --reads-only --source ncbi --sra-flavour original \
+    --backend s5cmd -j 8 -x 16
 ```
 
-That needs the SRA Toolkit for the conversion step only; the download itself
-does not use it. Install it in its own environment — on Apple Silicon it
-cannot coexist with aria2:
-
-```bash
-mamba env create -f environment-convert.yml
-export OMIXFETCH_FASTERQ_DUMP="$(conda run -n omixfetch-convert which fasterq-dump)"
-```
-
-Aspera is worth trying if your site permits outbound UDP 33001:
-
-```bash
-conda install -c hcc aspera-cli
-omixfetch get GSE184708 -o ./data --reads-only --backend aspera
-```
-
-### When no reads come back
+### 4.5 When no reads come back
 
 ```
 GSE164378: ENA serves no public runs for this project. Human data under
 controlled access (dbGaP) is the usual reason ...
 ```
 
-This is a permissions boundary, not a bug. Restricted human data lives in
-dbGaP and requires an approved data access request; no tool can fetch it
-without authorisation. The SRA and BioProject accessions are recorded in
-`metadata.json` so you can take them to `prefetch` once you have access.
+This is an access boundary, not a bug. Restricted human data lives in dbGaP
+and needs an approved data access request; no tool can fetch it without one.
+The SRA and BioProject accessions are recorded in `metadata.json` for that
+request.
 
 ---
 
-## 4b. The whole thing in one command
-
-```bash
-omixfetch fastq GSE184708 -o ./data --dry-run
-omixfetch fastq GSE184708 -o ./data
-```
-
-The dry run shows, per run, which sources exist, their sizes, and the route
-the pipeline will take. The real run installs any missing converter, then for
-each run: checks free disk, downloads, converts, verifies spot counts against
-NCBI, moves the FASTQ into `fastq/<GSM>/`, and deletes the intermediate files.
-Progress is saved after every step; if anything interrupts it, run the same
-command again and finished runs are skipped. Runs that could not be completed
-are listed at the end and in `fastq_manifest.tsv`, and the command exits
-non-zero.
-
-For 10x data, expect it to choose the original BAM even though the `.sra` is
-smaller — the `.sra` has lost the barcode read (see the README).
-
-On Apple Silicon, 10x's `bamtofastq` is an x86_64 binary and needs Rosetta 2
-(`softwareupdate --install-rosetta`). On Linux it runs natively.
-
 ## 5. Metadata
 
-Every download writes metadata alongside the data. To fetch only that:
+Every download writes metadata alongside the data. To fetch only metadata:
 
 ```bash
 omixfetch metadata GSE164378 -o ./data --pep
@@ -281,23 +295,23 @@ omixfetch metadata GSE164378 -o ./data --pep
 |---|---|
 | `<ACC>.metadata.json` | the complete parsed record |
 | `<ACC>.samples.tsv` | one row per sample, characteristics as columns |
-| `<ACC>.files.tsv` | file manifest with sizes and URLs |
-| `<ACC>.runs.tsv` | sequencing runs, with `--reads` |
+| `<ACC>.files.tsv` | every file, with size and URL |
+| `<ACC>.runs.tsv` | sequencing runs mapped to samples, with `--reads` |
 | `<ACC>.soft.txt` | the unmodified GEO record |
 | `pep/` | PEP project, with `--pep` |
 
-`--pep` writes a `config.yaml` plus sample CSV that `peppy`, `looper` and
+`--pep` writes a `config.yaml` and sample CSV that `peppy`, `looper` and
 `eido` read directly.
 
 ---
 
 ## 6. Resume and manifests
 
-Transfers resume. Rerun the same command after an interruption and aria2
-continues from where it stopped — partial files are never silently treated as
-complete.
+Transfers resume. After an interruption, rerun the same command: partial files
+continue from where they stopped, and finished files are skipped after their
+size is checked.
 
-To hand the transfer to another system, emit a manifest instead:
+To run the transfer with other tooling, export a manifest instead:
 
 ```bash
 omixfetch manifest GSE164378 -o files.txt --format aria2
@@ -310,89 +324,86 @@ aria2c -i files.txt -j 8 -x 16
 
 ## 7. Choosing a resolver
 
-Metadata resolution has two backends, selected with `--resolver`:
+Metadata resolution has two backends, chosen with `--resolver`:
 
 | Value | Behaviour |
 |---|---|
-| `auto` (default) | geofetch for GSE series, except where it cannot serve the request |
+| `auto` (default) | geofetch for GSE series, except where it can't serve the request |
 | `native` | the built-in SOFT parser, always |
 | `geofetch` | geofetch, always (GSE only) |
 
-`auto` falls back to native for GSM and GPL accessions, for any `--reads`
-workflow, and for series with no processed files. Those limits were measured
-against geofetch 0.12.11, not assumed. Transfers go through aria2c either way:
-geofetch is called in metadata-only mode and never downloads anything.
+`auto` falls back to the native parser for GSM and GPL accessions, for any
+`--reads` workflow, and for series with no processed files. Those limits were
+measured against geofetch 0.12.11, not assumed. geofetch only supplies
+metadata here; omixfetch's own engines move every byte.
 
-Use `--verbose` to see the resolver's own progress logging, which is
-suppressed by default.
+`--verbose` shows the resolver's own progress logging, which is hidden by
+default.
 
 ---
 
 ## 8. Troubleshooting
 
-**`ModuleNotFoundError: No module named 'omixfetch'`** — the editable install
-did not take effect, usually because `pip` and `pytest` are different
+**`ModuleNotFoundError: No module named 'omixfetch'`**: the editable install
+didn't take effect, usually because `pip` and `pytest` are different
 interpreters, or the active Python is 3.9. Use `python -m pytest`, which
-always uses the interpreter you think it does.
+always runs the interpreter you think it does.
 
-**`aria2c not found; falling back to the built-in downloader`** — install
-aria2. The fallback works but transfers each file over a single connection.
+**`aria2c not found; falling back to the built-in downloader`**: install
+aria2. The fallback works, but each file goes over a single connection.
 
-**aria2c installed but every transfer still falls back** — some environments
-put an intercepting TLS proxy in front of the network that aria2's TLS backend
-refuses. Verify with:
+**aria2c is installed but every transfer still falls back**: some networks
+put an intercepting TLS proxy in front of the internet, and aria2's TLS
+backend refuses it. Check with:
 
 ```bash
 aria2c --console-log-level=info --max-tries=1 -d /tmp -o t.bin \
   https://ftp.ncbi.nlm.nih.gov/geo/series/GSE164nnn/GSE164378/suppl/GSE164378_Antibody_HTO_info.xlsx
 ```
 
-A handshake failure here is environmental, not an omixfetch bug.
+A handshake failure here comes from the environment, not from omixfetch.
 
-**A large download fails repeatedly** — each retry resumes from the partial
-file, so simply rerunning the same command makes forward progress.
+**A large download keeps failing**: each retry resumes from the partial file,
+so rerunning the same command makes progress.
 
-**`sra-tools` will not install / `perl-xml-libxml` cannot be satisfied** —
-on osx-arm64, sra-tools 3.2.x depends on a package with no Apple Silicon
-build. Ask for a newer one (`sra-tools>=3.4`) and put `conda-forge` ahead of
-`bioconda`.
+**ENA is very slow**: run `omixfetch benchmark` and try `--source ncbi`. On
+the machines tested so far, NCBI's AWS mirror was roughly 20–60× faster than
+ENA's HTTPS.
 
-Separately, sra-tools and aria2 cannot be solved into one environment on that
-platform at all — a combined solve fails on a `libxml2`/`icu` conflict. Use
-`environment-convert.yml` to keep them apart. If you have previously installed
-sra-tools into an environment that had aria2, check `aria2c --version` still
-works there: an environment seen here ended up with sra-tools present and
-aria2 gone, though which install removed it was not established.
+**Two modalities in one sample kept their long filenames**: this is
+intentional. When renaming would make two files collide in one sample
+directory, the published names are kept rather than risk overwriting data.
 
-**`fasterq-dump` fails with "can't open ... as a RefSeq or as a WGS"** — the
-`.sra` does not contain the read bases. Aligned submissions are stored as
-differences against a reference genome, the same idea as CRAM, and the
-reference lives in NCBI's repository rather than in the file you downloaded.
-Installing the toolkit locally does not help: the software is present, the
-data is incomplete. This is also where part of the size advantage over the
-original BAM comes from. Verified failing this way on SRR390728.
+---
 
-Three ways out, in order of preference:
+## Appendix: transitional conversion commands
 
-1. **Let it fetch, and cache sensibly.** References are cached in the VDB user
-   repository, so one reference set serves every run of a study — a few GB
-   once, not per run. Point the cache at scratch, never at a home directory
-   with a quota, or a failed cache write will look like a network failure:
+These predate the decision to keep omixfetch download-only. They still work,
+won't get new features, and will move to a separate conversion tool that reads
+omixfetch's manifest.
 
-   ```bash
-   vdb-config --interactive     # set the cache location
-   ```
+```bash
+omixfetch setup                                    # installs SRA Toolkit + 10x bamtofastq
+omixfetch fastq GSE184708 -o ./data                # download, convert, verify, per run
+omixfetch get GSE184708 -o ./data --reads-only --source ncbi --convert fastq -t 8
+```
 
-2. **Pre-fetch.** `prefetch SRR16036138` acquires the references alongside the
-   run into the local repository, after which conversion works offline.
+`omixfetch fastq` follows the rules in section 4.3. For a 10x BAM submission
+it fetches the original BAM and runs `bamtofastq`, and refuses the `.sra`.
+Progress is saved after each step, so rerunning skips finished runs. It writes
+`download_report.html` and `fastq_manifest.tsv`.
 
-3. **Avoid references entirely** with `--sra-flavour original`: submitted
-   BAMs are self-contained. For GSE184708 that is 1.7 TiB instead of 709 GiB,
-   and 10x BAMs then need `bamtofastq` rather than `fasterq-dump`.
+Known issues, which are why conversion is being split out:
 
-The caching behaviour in (1) is how the toolkit is documented to work; it was
-not verified here, because the test never got past the first reference fetch.
-
-**Two modalities in one sample kept their long filenames** — intentional. When
-renaming would make two files collide inside one sample directory, the
-published names are kept rather than risk overwriting data.
+- **sra-tools and aria2 can't share a conda environment on Apple Silicon**
+  (a `libxml2`/`icu` conflict). `omixfetch setup` installs prebuilt binaries
+  outside conda. Alternatively, use `environment-convert.yml` and set
+  `OMIXFETCH_FASTERQ_DUMP` to its `fasterq-dump`.
+- **`perl-xml-libxml` can't be satisfied**: sra-tools 3.2.x has no osx-arm64
+  build. Ask for `sra-tools>=3.4` with `conda-forge` ahead of `bioconda`.
+- **`fasterq-dump`: "can't open ... as a RefSeq or as a WGS"**: aligned
+  `.sra` files store reads as differences against a reference genome kept in
+  NCBI's repository, so conversion needs network access to it. This failed in
+  testing on SRR390728. The original BAM is self-contained.
+- **`bamtofastq` on Apple Silicon** is an x86_64 binary and needs Rosetta 2
+  (`softwareupdate --install-rosetta`).

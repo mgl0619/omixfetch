@@ -78,6 +78,14 @@ Verified against the live API:
 
 ---
 
+## Download work next
+
+- Run the BAM-header check (`probe.assess_bam`) from `get` and `list`, not only
+  from the `fastq` planner, so users can see what a raw submission contains
+  without touching conversion code.
+- Write the HTML download report from `get` as well as `fastq`.
+- Optional SRA Lite downloads (`--sra-flavour lite`).
+
 ## Decision: conversion moves to a separate tool
 
 omixfetch's job is **downloading**: finding the right files for an accession
