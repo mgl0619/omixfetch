@@ -46,6 +46,7 @@ OMIXFETCH_LIVE=final  OMIXFETCH_LIVE_OUT=/scratch/me/gse184708 python -m pytest 
 
 | Tier | Last run | Outcome |
 |---|---|---|
+| quick | 0.8.0, macOS arm64 | decision tree chose `.sra` for GSE204978 after measuring NCBI 11.9 vs ENA 0.5 MiB/s; 2/2 done, spots match; report written |
 | quick | 0.7.x, macOS arm64 | ENA-FASTQ 2/2 in 28 s, sizes match ENA; `.sra` 2/2, spots 23,959 / 26,554 match NCBI in both mates; work dir removed; rerun skips both; GSE164378 reported, exit 1 |
 | medium | not yet run | |
 | final | not yet run | |

@@ -11,8 +11,12 @@ Route preference, per run, falling through on failure:
 2. ``sra``        -- NCBI's normalised .sra from S3, then fasterq-dump.
                      Smallest transfer for aligned submissions, but needs
                      NCBI's reference service at conversion time.
-3. ``original``   -- the submitter's own file (often BAM) from NCBI S3, then
-                     10x ``bamtofastq`` if installed.
+3. ``original``   -- the submitter's own file (often BAM) from NCBI's AWS
+                     buckets, converted back to FASTQ. The BAM header decides
+                     how: ``bamtofastq`` for 10x BAMs, ``samtools fastq``
+                     otherwise -- and whether the result would be complete.
+                     A BAM converts back fully only if it kept the unmapped
+                     reads and, for single-cell data, the barcode and UMI.
 
 Each step is skipped when its output already exists, so rerunning the same
 command is always safe.
@@ -59,6 +63,14 @@ class RunPlan:
     mates_missing: bool = False
     #: NCBI marks the original submission as a Cell Ranger (10x) BAM.
     tenx: bool = False
+    #: What the submitter uploaded: "fastq", "bam", "cram" or "unknown".
+    submitted: str = "unknown"
+    #: BAM header assessment, for BAM/CRAM submissions (see probe.assess_bam).
+    bam_verdict: object | None = None
+    #: Single-cell data, judged from the BAM header or ENA library source.
+    single_cell: bool = False
+    #: Outcome of the decision tree; filled in before processing.
+    decision: object | None = None
 
     def available(self, order: tuple[str, ...] = ROUTES) -> list[str]:
         return [r for r in order if self.routes.get(r)]
@@ -92,6 +104,14 @@ class RunState:
     attempts: list[str] = field(default_factory=list)
     error: str | None = None
     updated: float = 0.0
+    #: Decision-tree branch taken, and routes excluded with reasons.
+    branch: str | None = None
+    excluded: dict = field(default_factory=dict)
+    submitted: str | None = None
+    #: Wall-clock timing and bytes moved for the successful route.
+    started: float | None = None
+    finished: float | None = None
+    bytes: int | None = None
 
 
 class StateStore:
@@ -180,11 +200,13 @@ class Tools:
     download: Callable[[list[RemoteFile], Path], None]
     #: convert_sra(sra_path, outdir) -> ConversionResult-like
     convert_sra: Callable[[Path, Path], object] | None = None
-    #: convert_bam(bam_path, outdir) -> list[Path]
-    convert_bam: Callable[[Path, Path], list[Path]] | None = None
-    #: check_bam(url) -> None, raising if bamtofastq could not convert it.
-    #: Costs a few MB instead of the whole file.
-    check_bam: Callable[[str], None] | None = None
+    #: convert_bam(bam_path, outdir, converter) -> list[Path]
+    convert_bam: Callable[..., list[Path]] | None = None
+    #: check_bam(url) -> BamAssessment, read from the header with a range
+    #: request: a few MB instead of the whole file.
+    check_bam: Callable[[str], object] | None = None
+    #: Converter executables actually installed, e.g. {"bamtofastq", "samtools"}.
+    converters: frozenset = frozenset({"bamtofastq"})
     log: Callable[[str], None] = print
 
 
@@ -209,17 +231,29 @@ def process_run(
         tools.log(f"  {plan.run}: already done, skipping")
         return state
 
+    from .decide import decide
+
     sample_dir = out_dir / "fastq" / (plan.sample or plan.run)
     work_dir = out_dir / "work" / plan.run
-    routes = plan.available(order)
-    reason = plan.incomplete_sra()
-    if reason and "sra" in routes and not allow_incomplete:
-        routes = [r for r in routes if r != "sra"]
-        tools.log(f"  {plan.run}: skipping sra route: {reason}")
+    decision = plan.decision or decide(
+        plan, allow_incomplete=allow_incomplete,
+        order_override=order if tuple(order) != ROUTES else None,
+    )
+    routes = list(decision.order)
+    store.update(plan.run, branch=decision.branch, excluded=dict(decision.excluded),
+                 submitted=plan.submitted)
+    for route, why in decision.excluded.items():
+        if plan.routes.get(route):
+            tools.log(f"  {plan.run}: not using {route}: {why}")
     if not routes:
+        if not plan.available():
+            return store.update(
+                plan.run, sample=plan.sample, status=SKIPPED,
+                error="no public source offers this run (controlled access?)",
+            )
         return store.update(
-            plan.run, sample=plan.sample, status=SKIPPED,
-            error="no public source offers this run (controlled access?)",
+            plan.run, sample=plan.sample, status=FAILED,
+            error=f"no faithful route: {decision.branch} (--allow-incomplete to accept loss)",
         )
 
     attempts = list(state.attempts)
@@ -228,10 +262,13 @@ def process_run(
         store.update(plan.run, sample=plan.sample, route=route,
                      expected_spots=plan.expected_spots, attempts=attempts,
                      status=PENDING, error=None)
+        started = time.time()
         try:
             if check_space:
                 check_disk(out_dir, disk_needed(plan, route))
-            fastq, spots = _run_route(plan, route, work_dir, sample_dir, tools)
+            fastq, spots = _run_route(
+                plan, route, work_dir, sample_dir, tools, allow_incomplete
+            )
             problem = verify_spots(plan.expected_spots, spots)
             if problem:
                 raise BackendError(problem)
@@ -245,14 +282,20 @@ def process_run(
         tools.log(f"  {plan.run}: done via {route} ({len(fastq)} file(s))")
         return store.update(
             plan.run, status=DONE, fastq=[str(p) for p in fastq],
-            spots_written=spots, error=None,
+            spots_written=spots, error=None, started=started, finished=time.time(),
+            bytes=sum(f.size or 0 for f in plan.routes[route]),
         )
 
     return store.get(plan.run)
 
 
 def _run_route(
-    plan: RunPlan, route: str, work_dir: Path, sample_dir: Path, tools: Tools
+    plan: RunPlan,
+    route: str,
+    work_dir: Path,
+    sample_dir: Path,
+    tools: Tools,
+    allow_incomplete: bool = False,
 ) -> tuple[list[Path], int | None]:
     """Execute one route; return final FASTQ paths and the spot count seen."""
     files = plan.routes[route]
@@ -274,11 +317,35 @@ def _run_route(
             "no bamtofastq available to convert the original submission; "
             "run `omixfetch setup` to install it"
         )
-    if route == "original" and tools.check_bam is not None:
+    converter = "bamtofastq"
+    if route == "original" and plan.bam_verdict is not None:
+        verdict = plan.bam_verdict
+        if verdict.converter is None:
+            raise BackendError(f"cannot convert back to FASTQ: {verdict.reason}")
+        if not verdict.acceptable and not allow_incomplete:
+            raise BackendError(f"conversion would be {verdict.complete}: {verdict.reason}")
+        converter = verdict.converter
+        if converter not in tools.converters:
+            raise BackendError(f"this BAM needs {converter}, which is not installed")
+    elif route == "original" and tools.check_bam is not None:
         bam_file = next((f for f in files if ".bam" in f.filename
                          and not f.filename.endswith(".bai")), None)
         if bam_file is not None:
-            tools.check_bam(bam_file.url)
+            verdict = tools.check_bam(bam_file.url)
+            if verdict is not None:
+                if verdict.converter is None:
+                    raise BackendError(f"cannot convert back to FASTQ: {verdict.reason}")
+                if not verdict.acceptable and not allow_incomplete:
+                    raise BackendError(
+                        f"conversion would be {verdict.complete}: {verdict.reason} "
+                        f"(--allow-incomplete to accept)"
+                    )
+                converter = verdict.converter
+        if converter not in tools.converters:
+            raise BackendError(
+                f"this BAM needs {converter}, which is not installed"
+                + (" (conda install -c bioconda samtools)" if converter == "samtools" else "")
+            )
 
     work_dir.mkdir(parents=True, exist_ok=True)
     for f in files:
@@ -288,14 +355,15 @@ def _run_route(
     if route == "sra":
         sra = next((work_dir / f.filename for f in files
                     if f.filename.endswith(".sra")), work_dir / files[0].filename)
-        result = tools.convert_sra(sra, work_dir)
+        result = (tools.convert_sra(sra, work_dir, single_cell=True)
+                  if plan.single_cell else tools.convert_sra(sra, work_dir))
         produced = list(getattr(result, "files", result))
         spots = getattr(result, "spots_read", None)
     else:  # original
         bam = next((work_dir / f.filename for f in files
                     if ".bam" in f.filename and not f.filename.endswith(".bai")),
                    work_dir / files[0].filename)
-        produced = tools.convert_bam(bam, work_dir)
+        produced = tools.convert_bam(bam, work_dir, converter)
         spots = None
 
     final = []
@@ -376,6 +444,10 @@ def plan_runs(accession: str, session) -> tuple[object, list[RunPlan]]:
             "sra": objects_to_files(mine, flavour="sra"),
             "original": objects_to_files(mine, flavour="original"),
         }
+        from .decide import submission_format
+
+        originals = [o.name for o in mine if o.flavour == "original"]
+        source = (run.library_source or "").upper()
         plans.append(
             RunPlan(
                 run=run.accession,
@@ -384,6 +456,73 @@ def plan_runs(accession: str, session) -> tuple[object, list[RunPlan]]:
                 routes={k: v for k, v in routes.items() if v},
                 mates_missing=bool(ri and ri.mates_missing),
                 tenx=any(o.file_type.lower() == "tenx" for o in mine),
+                submitted=submission_format(originals, run.raw.get("submitted_format")),
+                single_cell="SINGLE CELL" in source,
             )
         )
+
+    probe_bams(plans, session)
     return dataset, plans
+
+
+def probe_bams(plans: list[RunPlan], session, workers: int = 8) -> None:
+    """Read the header of every BAM submission (a few MB each), in parallel.
+
+    The header is the only reliable record of whether the BAM converts back
+    to complete FASTQ, and of whether the data is single-cell.
+    """
+    from concurrent.futures import ThreadPoolExecutor
+
+    from .probe import IMPOSSIBLE, BamAssessment, assess_bam, bam_header
+
+    def one(plan: RunPlan) -> None:
+        bam = next((f for f in plan.routes.get("original", [])
+                    if ".bam" in f.filename and not f.filename.endswith(".bai")), None)
+        if bam is None:
+            return
+        try:
+            plan.bam_verdict = assess_bam(bam_header(session, bam.url))
+        except Exception as exc:  # unreadable header: recorded, decided later
+            plan.bam_verdict = BamAssessment(None, "unknown", None,
+                                             f"BAM header could not be read: {exc}")
+            return
+        if plan.bam_verdict.converter == "bamtofastq" or plan.bam_verdict.complete == IMPOSSIBLE:
+            plan.single_cell = True
+
+    targets = [p for p in plans if p.submitted in ("bam", "cram")]
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        list(pool.map(one, targets))
+
+
+def measure_rates(plans: list[RunPlan], session, sample_bytes: int = 16 * 1024**2) -> dict:
+    """Measure throughput once per series from each source the plan uses.
+
+    Returns MiB/s keyed ``"ena"`` and ``"ncbi"``; a source that fails to
+    respond is simply absent, and the decision falls back to a default.
+    """
+    from .benchmark import benchmark_source
+
+    picks = {}
+    for plan in plans:
+        for route, key in (("ena-fastq", "ena"), ("sra", "ncbi"), ("original", "ncbi")):
+            if key not in picks and plan.routes.get(route):
+                picks[key] = max(plan.routes[route], key=lambda f: f.size or 0)
+    rates = {}
+    for key, f in picks.items():
+        result = benchmark_source(key, f, session, sample_bytes)
+        if result.mib_per_s:
+            rates[key] = result.mib_per_s
+    return rates
+
+
+def apply_decisions(
+    plans: list[RunPlan],
+    rates: dict | None = None,
+    allow_incomplete: bool = False,
+    order_override: tuple[str, ...] | None = None,
+) -> None:
+    """Run the decision tree for every plan, storing the result on it."""
+    from .decide import decide
+
+    for plan in plans:
+        plan.decision = decide(plan, rates, allow_incomplete, order_override)

@@ -230,6 +230,7 @@ def build_command(
     temp_dir: Path | None = None,
     binary: str | None = None,
     env_name: str | None = None,
+    include_technical: bool = False,
 ) -> list[str]:
     """Return the fasterq-dump argument vector.
 
@@ -257,7 +258,9 @@ def build_command(
         "--threads",
         str(max(1, threads)),
         flag[split],
-        "--skip-technical",
+        # Single-cell barcode and index reads are often flagged technical in
+        # SRA; skipping them would silently drop R1/I1.
+        "--include-technical" if include_technical else "--skip-technical",
         "--force",
     ]
 
@@ -329,6 +332,7 @@ def convert_sra(
     keep_sra: bool = False,
     binary: str | None = None,
     env_name: str | None = None,
+    include_technical: bool = False,
 ) -> ConversionResult:
     """Convert one ``.sra`` archive to FASTQ files.
 
@@ -364,6 +368,7 @@ def convert_sra(
         split=split,
         binary=resolved,
         env_name=env_name,
+        include_technical=include_technical,
     )
     proc = subprocess.run(command, capture_output=True, text=True)
     if proc.returncode != 0:

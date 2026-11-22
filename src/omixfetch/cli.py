@@ -562,10 +562,15 @@ def fastq(
     accession: str = typer.Argument(..., help="A GEO series, e.g. GSE184708."),
     outdir: Path = typer.Option(Path("."), "--outdir", "-o", help="Destination directory."),
     route_order: str = typer.Option(
-        "ena-fastq,sra,original",
+        "auto",
         "--routes",
-        help="Routes to try per run, in order. ena-fastq: ENA's own FASTQ; "
-        "sra: NCBI .sra + fasterq-dump; original: submitted BAM + bamtofastq.",
+        help="'auto' (default) follows the decision tree: the fastest route that "
+        "recovers every read, judged from what was submitted. Or a comma list "
+        "to force an order: ena-fastq, sra, original.",
+    ),
+    measure: bool = typer.Option(
+        True, "--measure/--no-measure",
+        help="Sample ~16 MB per source to rank routes by real throughput.",
     ),
     parallel_runs: int = typer.Option(
         2, "--parallel-runs", "-p", help="Runs processed at once."
@@ -589,8 +594,10 @@ def fastq(
         help="Install missing converters (SRA Toolkit, bamtofastq) automatically.",
     ),
     allow_incomplete: bool = typer.Option(
-        False, "--allow-incomplete-sra",
-        help="Use the .sra route even where it loses a read (10x R1). Rarely wanted.",
+        False, "--allow-incomplete", "--allow-incomplete-sra",
+        help="Accept conversions that cannot recover every read: an .sra that "
+        "lost the 10x barcode read, or a BAM that dropped unmapped reads. "
+        "Rarely wanted.",
     ),
     dry_run: bool = typer.Option(False, "--dry-run", help="Plan only; download nothing."),
 ) -> None:
@@ -613,14 +620,19 @@ def fastq(
         ROUTES,
         StateStore,
         Tools,
+        apply_decisions,
         is_complete,
+        measure_rates,
         plan_runs,
         process_run,
         write_manifest,
     )
-    from .probe import bam_header, is_tenx_bam
+    from .probe import assess_bam, bam_header
+    from .report import write_report
 
-    order = tuple(r.strip() for r in route_order.split(",") if r.strip())
+    wall_start = time.time()
+    auto = route_order.strip().lower() == "auto"
+    order = ROUTES if auto else tuple(r.strip() for r in route_order.split(",") if r.strip())
     unknown = [r for r in order if r not in ROUTES]
     if unknown:
         error_console.print(f"[red]Unknown route(s): {', '.join(unknown)}. "
@@ -630,7 +642,7 @@ def fastq(
     session = make_session()
     with console.status(f"Planning {accession} ..."):
         try:
-            _dataset, plans = plan_runs(accession, session)
+            dataset, plans = plan_runs(accession, session)
         except OmixfetchError as exc:
             error_console.print(f"[red]error[/red] {accession}: {exc}")
             raise typer.Exit(code=1) from exc
@@ -644,6 +656,12 @@ def fastq(
         )
         raise typer.Exit(code=1)
 
+    rates = {}
+    if measure:
+        with console.status("Measuring throughput per source ..."):
+            rates = measure_rates(plans, session)
+    apply_decisions(plans, rates, allow_incomplete, None if auto else order)
+
     base = outdir / accession
     store = StateStore(base / ".omixfetch" / "state.json")
 
@@ -653,11 +671,7 @@ def fastq(
     bamtofastq = find_tool("bamtofastq")
 
     def needs(route: str) -> bool:
-        return any(
-            route in p.available(order)
-            and not (route == "sra" and p.incomplete_sra() and not allow_incomplete)
-            for p in plans
-        )
+        return any(route in p.decision.order for p in plans)
 
     if install and not dry_run:
         if needs("sra") and not have_sra:
@@ -673,38 +687,50 @@ def fastq(
                     bamtofastq = str(install_bamtofastq(session))
                 except (OmixfetchError, OSError) as exc:
                     error_console.print(f"[yellow]bamtofastq install failed: {exc}[/yellow]")
-    have_bam = bamtofastq is not None
+    samtools = find_tool("samtools")
+    have_bam = bamtofastq is not None or samtools is not None
+    converters = frozenset(
+        name for name, path in (("bamtofastq", bamtofastq), ("samtools", samtools)) if path
+    )
 
     table = Table(title=f"{accession}: {len(plans)} run(s)")
-    for col in ("Run", "Sample", "Spots", "Routes available", "Plan", "Status"):
+    for col in ("Run", "Sample", "Submitted", "Decision", "Route", "Est.", "Status"):
         table.add_column(col)
     for plan in plans:
-        usable = [r for r in plan.available(order)
-                  if (r != "sra" or have_sra) and (r != "original" or have_bam)
-                  and not (r == "sra" and plan.incomplete_sra() and not allow_incomplete)]
-        sizes = ", ".join(
-            f"{r} {human_bytes(sum(f.size or 0 for f in plan.routes[r]))}"
-            for r in plan.available(order)
-        )
+        d = plan.decision
+        usable = [r for r in d.order
+                  if (r != "sra" or have_sra) and (r != "original" or have_bam)]
+        chosen = usable[0] if usable else ""
+        est = f"{d.estimates[chosen]:.1f} h" if chosen in d.estimates else ""
         state = store.get(plan.run)
         table.add_row(
-            plan.run, plan.sample or "",
-            f"{plan.expected_spots:,}" if plan.expected_spots else "?",
-            sizes or "none", usable[0] if usable else "[red]none usable[/red]",
+            plan.run, plan.sample or "", plan.submitted, d.branch,
+            chosen or "[red]none[/red]", est,
             "done" if is_complete(state) else state.status,
         )
     console.print(table)
+    if rates:
+        console.print("[dim]measured: " + ", ".join(
+            f"{k.upper()} {v:.1f} MiB/s" for k, v in sorted(rates.items())) + "[/dim]")
     console.print(
         f"[dim]fasterq-dump: {'environment ' + env_name if env_name else binary or 'not found'}"
-        f" | bamtofastq: {bamtofastq or 'not found'}[/dim]"
+        f" | bamtofastq: {bamtofastq or 'not found'}"
+        f" | samtools: {samtools or 'not found'}[/dim]"
     )
-    flagged = [p for p in plans if p.incomplete_sra()]
-    if flagged and not allow_incomplete:
-        console.print(
-            f"[yellow]{len(flagged)} run(s) skip the .sra route: "
-            f"{flagged[0].incomplete_sra()}. Using the original submission.[/yellow]"
-        )
+    tool_info = {
+        "fasterq-dump": ("environment " + env_name) if env_name else binary,
+        "bamtofastq": bamtofastq,
+        "samtools": samtools,
+        "aria2c": aria2_version(),
+        "s5cmd": s5cmd_version(),
+    }
+    title = getattr(getattr(dataset, "metadata", None), "title", None)
+    report_path = base / "download_report.html"
+
     if dry_run:
+        write_report(report_path, accession, plans, store, title=title, rates=rates,
+                     tools=tool_info, dry_run=True)
+        console.print(f"plan report: {report_path}")
         return
 
     log_path = base / ".omixfetch" / "pipeline.log"
@@ -733,7 +759,9 @@ def fastq(
                 log(f"  aria2c failed ({str(exc)[:80]}); retrying with built-in downloader")
         RequestsBackend(concurrent=jobs, quiet=True).download(files, dest)
 
-    def convert_bam(bam: Path, out: Path) -> list[Path]:
+    def convert_bam(bam: Path, out: Path, converter: str = "bamtofastq") -> list[Path]:
+        if converter == "samtools":
+            return _samtools_fastq(samtools, bam, out, threads)
         target = out / "bamtofastq_out"
         proc = _subprocess.run(
             [bamtofastq, f"--nthreads={threads}", str(bam), str(target)],
@@ -749,27 +777,31 @@ def fastq(
             produced.append(unique)
         return produced
 
-    def check_bam(url: str) -> None:
-        # A few MB, read before committing to a ~100 GB download.
+    def check_bam(url: str):
+        # A few MB, read before committing to a ~100 GB download: decides the
+        # converter and whether the FASTQ it produces would be complete.
         try:
             header = bam_header(session, url)
         except (ValueError, OSError) as exc:
             raise BackendError(f"could not read the BAM header: {exc}") from exc
-        if not is_tenx_bam(header):
-            raise BackendError(
-                "BAM has no 10x_bam_to_fastq header lines, so bamtofastq cannot "
-                "rebuild reads from it (not a Cell Ranger BAM)"
-            )
+        verdict = assess_bam(header)
+        log(f"  BAM check: {verdict.complete} via {verdict.converter} -- {verdict.reason}")
+        return verdict
 
     tools = Tools(
         download=download,
         check_bam=check_bam,
         convert_sra=(
-            (lambda sra, out: _convert_sra(sra, out, threads=threads,
-                                           binary=binary, env_name=env_name))
+            (lambda sra, out, single_cell=False: _convert_sra(
+                sra, out, threads=threads, binary=binary, env_name=env_name,
+                # Single-cell: keep every read, including ones SRA flags technical.
+                split="files" if single_cell else "3",
+                include_technical=single_cell,
+            ))
             if have_sra else None
         ),
         convert_bam=convert_bam if have_bam else None,
+        converters=converters,
         log=log,
     )
 
@@ -784,11 +816,14 @@ def fastq(
         ))
 
     manifest = write_manifest(store, base / "fastq_manifest.tsv")
+    write_report(report_path, accession, plans, store, title=title, rates=rates,
+                 tools=tool_info, wall_seconds=time.time() - wall_start)
     states = [store.get(p.run) for p in plans]
     done = sum(1 for s in states if s.status == DONE)
     failed = [s for s in states if s.status != DONE]
     log(f"{accession}: {done}/{len(plans)} run(s) complete -> {base / 'fastq'}")
     console.print(f"manifest: {manifest}")
+    console.print(f"report:   {report_path}")
     for s in failed:
         error_console.print(f"  [red]{s.run}[/red] {s.status}: {(s.error or '')[:160]}")
     if failed:
@@ -973,6 +1008,49 @@ def benchmark(
             "\n  [dim]ascp not installed; ENA Aspera not benchmarked. "
             "conda install -c hcc aspera-cli[/dim]"
         )
+
+
+def _samtools_fastq(samtools: str | None, bam: Path, out: Path, threads: int) -> list[Path]:
+    """Convert a non-10x BAM back to FASTQ with samtools.
+
+    Reads are collated by name first so mates come out together; reads that
+    are neither READ1 nor READ2 (single-end data) go to a separate file.
+    """
+    import subprocess as _sp
+
+    if samtools is None:
+        raise BackendError("samtools is not installed (conda install -c bioconda samtools)")
+    stem = bam.name.split(".bam")[0]
+    outputs = {
+        "-1": out / f"{stem}_1.fastq.gz",
+        "-2": out / f"{stem}_2.fastq.gz",
+        "-0": out / f"{stem}.fastq.gz",
+        "-s": out / f"{stem}_singletons.fastq.gz",
+    }
+    collate = _sp.Popen(
+        [samtools, "collate", "-u", "-O", "-@", str(threads), str(bam), str(out / "collate_tmp")],
+        stdout=_sp.PIPE,
+    )
+    args = [samtools, "fastq", "-@", str(threads), "-n"]
+    for flag, path in outputs.items():
+        args += [flag, str(path)]
+    fastq = _sp.run([*args, "-"], stdin=collate.stdout, capture_output=True, text=True)
+    collate.stdout.close()
+    collate.wait()
+    if collate.returncode != 0 or fastq.returncode != 0:
+        raise BackendError(f"samtools conversion failed: {(fastq.stderr or '')[-300:]}")
+    # Keep only files that received reads; samtools writes empty gzip members.
+    import gzip as _gzip
+
+    kept = []
+    for path in outputs.values():
+        if path.exists():
+            with _gzip.open(path, "rb") as handle:
+                if handle.read(1):
+                    kept.append(path)
+                    continue
+            path.unlink()
+    return kept
 
 
 def _convert_downloaded(

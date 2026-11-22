@@ -315,23 +315,50 @@ installed automatically on first use, as prebuilt binaries under
 cluster with a small home quota). No conda is involved, so the sra-tools/aria2
 conflict does not arise. To install them ahead of time: `omixfetch setup`.
 
-For each run it uses the first route that works, falling through on failure:
-ENA's own FASTQ, then NCBI's `.sra` converted with `fasterq-dump`, then the
-original submission converted with 10x `bamtofastq`.
+#### How it decides: the decision tree
 
-**10x submissions are handled specially.** When a 10x BAM is loaded into SRA,
-the cell barcode and UMI — stored in BAM tags, not as a read — are dropped, so
-the `.sra` holds only the cDNA read. GSE184708 shows it plainly: declared
-paired-end, 98 bases per spot, `spots_with_mates` 0. Converting that `.sra`
-would give FASTQ that Cell Ranger cannot use. The pipeline detects this from
-NCBI's metadata, skips the `.sra` route for such runs, and uses the original
-BAM with `bamtofastq`, which rebuilds R1/R2/I1 from the tags. Before each BAM
-download it reads the header (a few MB) to confirm the `10x_bam_to_fastq`
-lines `bamtofastq` needs are present. It checks spot counts
-against ENA's metadata, refuses a route whose converter is missing *before*
-downloading anything, checks free disk space per run, and records progress in
-`<ACC>/.omixfetch/state.json` — rerun the same command after an interruption
-and finished runs are skipped. Results are listed in `<ACC>/fastq_manifest.tsv`.
+By default (`--routes auto`) each run follows this tree. It's driven by what
+the submitter **actually uploaded**, because that fixes what can be recovered:
+
+```
+run
+├─ no public files ............................ skip (controlled access)
+├─ submitted as BAM/CRAM   (header read with a 4 MB range request)
+│   ├─ 10x_bam_to_fastq lines ................. AWS BAM → bamtofastq
+│   │                                            .sra and ENA FASTQ excluded: derived
+│   │                                            from the BAM, they lost the barcode read
+│   ├─ single-cell, no 10x lines .............. no faithful route
+│   ├─ aligner kept unmapped reads ............ AWS BAM → samtools fastq
+│   └─ dropped unmapped reads / unknown ....... no faithful route
+└─ submitted as FASTQ
+    └─ ENA FASTQ  or  AWS .sra → fasterq-dump
+       ranked by measured throughput × size, conversion included
+```
+
+The submission type comes from NCBI's record of the original file, backed by
+ENA. Single-cell status comes from the BAM header, because NCBI's
+`LibrarySource` can't be trusted: it says `TRANSCRIPTOMIC` for GSE184708,
+which is 10x data. Throughput is measured once per series (about 16 MB per
+source; `--no-measure` to skip), so "fastest" means fastest *from your
+machine*. On a network where ENA is slow, a FASTQ submission is fetched as
+`.sra` from AWS and converted, rather than as ENA's ready-made FASTQ.
+
+"No faithful route" fails the run with the reason rather than producing
+incomplete FASTQ. `--allow-incomplete` accepts the loss. `--routes sra,original`
+forces an order, but data-loss exclusions still apply.
+
+For single-cell `.sra` conversions, `fasterq-dump` runs with
+`--split-files --include-technical`. SRA often flags barcode and index reads as
+technical, and the usual `--skip-technical` would drop them silently.
+
+#### The report
+
+Every run writes `<ACC>/download_report.html`: one self-contained file, no
+scripts or external assets. It shows each run's submission type, the branch
+taken, which routes were not used and why, the estimate, the outcome, spot
+counts expected against written, bytes, time and throughput, plus any
+failures, the measured rates and the tool versions. A `--dry-run` writes the
+same report as a plan, before anything is downloaded.
 
 Useful options: `--routes sra,original` to change the order, `--parallel-runs`,
 `--include 'SRR160361*'` to fetch a subset, `--keep-intermediate` to keep the

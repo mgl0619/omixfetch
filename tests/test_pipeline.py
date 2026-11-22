@@ -82,7 +82,7 @@ def test_falls_through_to_next_route_on_failure(tmp_path, store):
         "sra": [_file("SRR3.sra")],
         "original": [_file("SRR3.bam")],
     })
-    def bam(bam_path, out):
+    def bam(bam_path, out, converter=None):
         fq = out / "SRR3_R1.fastq.gz"
         fq.write_bytes(b"x")
         return [fq]

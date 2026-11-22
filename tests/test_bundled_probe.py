@@ -139,13 +139,17 @@ def test_tenx_run_skips_the_lossy_sra_route(tmp_path):
         for f in files:
             (dest / f.filename).write_bytes(b"x")
 
-    def convert_bam(bam, out):
+    def convert_bam(bam, out, converter=None):
         fq = out / "R1.fastq.gz"
         fq.write_bytes(b"x")
         return [fq]
 
+    from omixfetch.probe import COMPLETE, BamAssessment
+
     plan = RunPlan("SRR1", "GSM1", None,
-                   {"sra": [_f("SRR1.sra")], "original": [_f("SRR1.bam")]}, tenx=True)
+                   {"sra": [_f("SRR1.sra")], "original": [_f("SRR1.bam")]}, tenx=True,
+                   submitted="bam",
+                   bam_verdict=BamAssessment("bamtofastq", COMPLETE, "cellranger", "10x"))
     tools = Tools(download=download, convert_sra=lambda s, o: None,
                   convert_bam=convert_bam, log=lambda m: None)
     state = process_run(plan, tmp_path, StateStore(tmp_path / "s.json"), tools,
@@ -162,7 +166,7 @@ def test_non_tenx_bam_is_rejected_before_download(tmp_path):
 
     plan = RunPlan("SRR2", "GSM2", None, {"original": [_f("SRR2.bam")]})
     tools = Tools(download=lambda f, d: fetched.append(f), check_bam=check_bam,
-                  convert_bam=lambda b, o: [], log=lambda m: None)
+                  convert_bam=lambda *a: [], log=lambda m: None)
     state = process_run(plan, tmp_path, StateStore(tmp_path / "s.json"), tools,
                         check_space=False)
     assert state.status == "failed"

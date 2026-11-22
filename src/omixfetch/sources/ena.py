@@ -39,6 +39,7 @@ RUN_FIELDS = [
     "library_source",
     "library_selection",
     "instrument_model",
+    "submitted_format",
     "read_count",
     "base_count",
     "fastq_ftp",
